@@ -1,0 +1,150 @@
+@import 'tailwindcss';
+
+/* ── Palette (spec §3.1) ───────────────────────────────────────────────────
+   Pure black, pure white, mid-greys. No brand colour, no accent hue, no
+   gradient. Verdict tone is typographic, not chromatic: a colour-coded verdict
+   would read as a score, and there is no score. */
+:root {
+  color-scheme: light dark;
+  --background: oklch(1 0 0); /* #ffffff */
+  --foreground: oklch(0 0 0); /* #000000 */
+  --muted: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.45 0 0); /* body copy, labels */
+  --border: oklch(0.82 0 0); /* solid rules */
+  --border-dashed: oklch(0.7 0 0); /* the dashed grid */
+  --ring: oklch(0 0 0); /* focus */
+  --cross: oklch(0.6 0 0); /* cross accent */
+  --radius: 0rem; /* sharp corners, everywhere */
+}
+
+/* Dark mode is a straight inversion — the same palette seen from the other
+   side. No toggle, no stored preference, no flash-of-wrong-theme script: the
+   system query is the whole mechanism, and `color-scheme` above hands form
+   controls and scrollbars to the browser. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0 0 0);
+    --foreground: oklch(1 0 0);
+    --muted: oklch(0.18 0 0);
+    --muted-foreground: oklch(0.68 0 0);
+    --border: oklch(0.3 0 0);
+    --border-dashed: oklch(0.38 0 0);
+    --ring: oklch(1 0 0);
+    --cross: oklch(0.55 0 0);
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border-dashed);
+  --color-border-solid: var(--border);
+  --color-ring: var(--ring);
+  --color-cross: var(--cross);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+}
+
+@layer base {
+  * {
+    border-color: var(--border-dashed);
+    outline-color: var(--ring);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.025em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Target hygiene (spec §4.2) ────────────────────────────────────────────
+   Applied to every option and rail control. `:active` gives back the tap
+   feedback the removed highlight would have provided, and it is the only
+   feedback that survives a slow network. Hover is gated so a touch device never
+   gets a sticky hover state after a tap. */
+.horoscode-target {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.horoscode-target:active {
+  background-color: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+@media (hover: hover) {
+  .horoscode-target:hover {
+    background-color: color-mix(in oklab, var(--foreground) 4%, transparent);
+  }
+}
+
+/* ── Motion (spec §3.3) ────────────────────────────────────────────────────
+   Small, fast, and fully removable. Everything sits inside the no-preference
+   query, so under reduced motion each becomes an instant state change and
+   nothing in the flow waits on an animation. No confetti, no sound, no score-up
+   flourish. */
+@media (prefers-reduced-motion: no-preference) {
+  .horoscode-phase {
+    animation: horoscode-fade 180ms ease-out both;
+  }
+  .horoscode-slot {
+    animation: horoscode-fade 180ms ease-out both;
+  }
+  .horoscode-in-1 {
+    animation: horoscode-rise 180ms ease-out both;
+  }
+  .horoscode-in-2 {
+    animation: horoscode-rise 180ms ease-out 90ms both;
+  }
+  .horoscode-in-3 {
+    animation: horoscode-rise 180ms ease-out 180ms both;
+  }
+  .horoscode-pip {
+    animation: horoscode-pip 60ms ease-out both;
+  }
+}
+
+@keyframes horoscode-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes horoscode-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes horoscode-pip {
+  from {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  to {
+    transform: none;
+  }
+}
