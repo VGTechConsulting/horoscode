@@ -18,7 +18,7 @@ Three requirements shape every decision below and are worth stating before the d
 - **For VG Tech:** a shareable artefact that puts *automation is cheap, independent verification is the scarce thing* in front of engineers, with the firm's name on it once, quietly, at the top and bottom.
 - **Secondary:** an indexable page ranking for the vocabulary this audience searches — vibe coding, agentic coding, dark factory, AI code review.
 
-**Why a horoscope frame carries the argument rather than diluting it.** A horoscope takes a handful of facts you did not choose, maps them through a fixed table, and hands you a statement about what is coming. This app does exactly that — five inputs, a deterministic table, a consequence — with one difference the frame makes funny instead of pious: **here the mapping is real and you can read it.** The five stars are not your birthday, they are how you write code, who checks it, who decides, whether *done* was written down, and what breaks when it fails; those genuinely determine the forecast, and the arithmetic is in one file with a name. The joke and the thesis are the same sentence.
+**Why a horoscope frame carries the argument rather than diluting it.** A horoscope takes a handful of facts you did not choose, maps them through a fixed table, and hands you a statement about what is coming. This app does exactly that — five inputs, a deterministic table, a consequence — with one difference the frame makes funny instead of pious: **here the mapping is real and you can read it.** The five stars are not your birthday, they are how you write code, who checks it, who decides, what standard can contradict the implementation, and what breaks when it fails; those genuinely determine the forecast, and the arithmetic is in one file with a name. The joke and the thesis are the same sentence.
 
 **Non-goals**, which the frame does not soften: scoring people, ranking signs, implying a maturity ladder. There is no best sign. There *is* a mismatch between a position and its stakes, and that mismatch is what the app measures.
 
@@ -28,7 +28,7 @@ Three requirements shape every decision below and are worth stating before the d
 
 1. **No randomness, ever.** Same five stars, same reading, forever. A single `Math.random()` would make every §13 assertion meaningless and turn a deterministic argument into a toy. §13 greps for one.
 2. **No dates, birthdays, names, or star signs as input.** The five stars are the five axes. Nothing about the visitor's identity is asked, so nothing about it can be stored, and the honesty line stays true.
-3. **The eighteen names are not zodiac names.** Craftsman, Centaur, Dark Factory, Spec Runner, Believer — the names are the model's, they are what the reference section ranks for, and they are what makes the page worth passing on.
+3. **The eighteen names are not zodiac names.** Craftsman, Centaur, Dark Factory, Spec Runner, Believer — the names are the model's, they are what the sign catalogue ranks for, and they are what makes the page worth passing on.
 4. **The copy never predicts anything outside the loop it models.** No luck, no money, no relationships, no week ahead. Every forecast line in §7 is a statement about what this posture does to this codebase at these stakes.
 5. **One honesty line, on screen, above the fold**, mono, in the hero:
 
@@ -171,12 +171,12 @@ Three layouts, one component. Tailwind's `sm` (640px) and `lg` (1024px) are the 
 | Options | 1 column, full-bleed rows, icon left, text right | Cards: 2–3 columns | Cards: 3–4 columns, one row |
 | Authorship / Verification / Stakes (3 options) | 3 rows | `sm:grid-cols-3` | `sm:grid-cols-3` |
 | Judgement (4 options) | 4 rows | `sm:grid-cols-2` (2 × 2) | `lg:grid-cols-4` |
-| Requirements (2 options) | 2 rows | `sm:grid-cols-2` | `sm:grid-cols-2` |
+| Reference (2 options) | 2 rows | `sm:grid-cols-2` | `sm:grid-cols-2` |
 | Star rail | **pinned to the bottom of the stage**, above the footer | top of stage | top of stage |
 | Icon size | 20px, inline left | 28px, above the name | 28px |
 | Stage padding | `px-5 py-4` | `md:px-10 md:py-10` | `md:px-10 md:py-10` |
 | Reading meters | stacked | side by side | side by side, verdict block right-aligned |
-| Reference cards (eighteen signs) | 1 column | `md:grid-cols-2` | `md:grid-cols-2` |
+| Sign catalogue cards (eighteen signs) | 1 column | `md:grid-cols-2` | `md:grid-cols-2` |
 
 **The rail moves on phones and that is the one structural difference between the layouts.** On a phone the rail is the re-pick affordance and it belongs in the thumb arc at the bottom of the screen; on a tablet or a desktop it is a progress indicator and belongs at the top where progress indicators are read. It is `sticky bottom-0` within the stage below `sm`, with `padding-bottom: env(safe-area-inset-bottom)` so the home indicator never eats a slot, and it carries a top border rather than a bottom one in that position.
 
@@ -225,7 +225,7 @@ Static except where §11.2 says otherwise. No backend, no database, no API route
 ```
 app/
   layout.tsx            fonts, <html lang="en">, color-scheme, Analytics
-  page.tsx              server: metadata, schemas, hero, reference section
+  page.tsx              server: metadata, schemas, hero, sign catalogue
   globals.css           tokens, dashed grid, cross accent, motion, target hygiene
   opengraph-image.tsx   static fallback card
   api/og/route.tsx      dynamic card from the five params
@@ -245,16 +245,6 @@ scripts/
 
 **`lib/horoscode.ts` imports nothing.** It is loadable from a plain Node script, which is what makes the §13 harness possible without a test runner. Icons live in a separate module for exactly that reason.
 
-**Legacy URL compatibility**, in `next.config.mjs` — cheap, and it keeps every link ever shared from the in-site version resolving:
-
-| Source | Destination | Status |
-| --- | --- | --- |
-| `/toolbox/horoscode` | `/` | 308 |
-| `/compass` | `/` | 308 |
-| `/toolbox/compass` | `/` | 308 |
-
-Next preserves the query string on all three, single-hop, no chains.
-
 **Stack:** Next 16 (App Router), React 19, TypeScript, Tailwind v4, `lucide-react`, `@vercel/analytics`. No state library, no form library, no animation library, no UI kit.
 
 ---
@@ -270,12 +260,12 @@ Five axes ("stars"), fixed order, not configurable. Every value the UI shows is 
 | `code` | Authorship | How does the code get written? | `hand` → Forged · `blended` → Assisted · `delegated` → Summoned |
 | `review` | Verification | Who is the last set of eyes before it ships? | `hand` → Every line · `blended` → Second pair · `delegated` → Machine-gated |
 | `judgement` | Judgement | Who decides it is correct? | `me` → Own taste · `team` → Peer council · `process` → Codified law · `llm` → The oracle |
-| `requirements` | Requirements | Was "done" defined before the work started? | `fixed` → Specified · `flexible` → Emergent |
+| `reference` | Reference | Is there an acceptance standard the code-and-review loop cannot change? | `independent` → Independent reference · `loop` → Loop-owned reference |
 | `environment` | Stakes | What happens when it breaks? | `hobby` → Sandbox · `team` → Live service · `regulated` → Under audit |
 
-Each option carries a first-person line beneath its name (e.g. *I type it. The structure and the details are mine.*). Three slots carry a helper line above the options, because three get misread: Judgement (*How far the decision has been delegated away from you. Monotone in delegation, not in quality.*), Requirements (*Waterfall, fixed-bid, coursework, and katas are Specified. Agile product work and weekend projects are Emergent.*), and Stakes (*Answer for the project, not the employer. The same person picks differently for a weekend build and for the day job.*).
+Each option carries a first-person line beneath its name (e.g. *I type it. The structure and the details are mine.*). Reference uses these exact lines: Independent reference — *A contract, test, policy, rubric, or dataset is controlled outside the code-and-review loop.*; Loop-owned reference — *The same loop can reinterpret or edit what counts as done.* Three slots carry a helper line above the options, because three get misread: Judgement (*How far the decision has been delegated away from you. Monotone in delegation, not in quality.*), Reference (*The standard may evolve. What matters is who can change it, not whether the project is Waterfall or Agile or whether the standard was written first.*), and Stakes (*Answer for the project, not the employer. The same person picks differently for a weekend build and for the day job.*).
 
-Short rail labels below `sm`, where ~62px per slot is all there is: `Code`, `Review`, `Judge`, `Spec`, `Stakes`.
+Short rail labels below `sm`, where ~62px per slot is all there is: `Code`, `Review`, `Judge`, `Ref`, `Stakes`.
 
 ### 6.2 Arithmetic
 
@@ -284,18 +274,20 @@ Exact, in scaled integers, rounded exactly once. Nothing downstream re-rounds, s
 ```ts
 CODE_VALUE   = { hand: 15, blended: 50, delegated: 85 }
 REVIEW_VALUE = { hand: 15, blended: 50, delegated: 85 }
-JUDGEMENT_BONUS   = { me: -10, team: 10, process: 15, llm: -15 }
-REQUIREMENTS_BONUS = { fixed: 10, flexible: 0 }   // fixed *adds* an oracle; flexible does not remove one
+JUDGEMENT_BONUS = { me: -10, team: 10, process: 15, llm: -15 }
+REFERENCE_BONUS = { independent: 10, loop: 0 }
 REQUIRED_INDEPENDENCE = { hobby: 20, team: 55, regulated: 85 }
 
 automation  = (code + review) / 2
 correlation = round(code × review / 100)
-raw         = 1000 − 6·review − 4·correlation + 10·judgementBonus + 10·requirementsBonus
+raw         = 1000 − 6·review − 4·correlation + 10·judgementBonus + 10·referenceBonus
 independence = clamp(round(raw / 10), 0, 100)
 margin      = independence − REQUIRED_INDEPENDENCE[environment]
 ```
 
 `correlation` is the term that says a machine reviewing machine-written code is not an independent check: it rises with the product of the two, so it costs most exactly where authorship and verification are both delegated.
+
+Reference and Judgement are deliberately orthogonal. **Reference asks who controls the acceptance standard; Judgement asks who or what applies it and declares the result correct.** A codified gate earns the Judgement bonus because enforcement is consistent. It earns the Reference bonus only when the code-and-review loop cannot edit or reinterpret the standard it applies. A test suite generated and freely rewritten by that same loop is therefore `process` + `loop`, not the same control counted twice.
 
 ### 6.3 Verdict bands
 
@@ -364,7 +356,7 @@ forecastFor(metrics, environment): string   // one lookup, no branching
 
 ---
 
-## 8. Signs, houses, risings
+## 8. Signs and houses
 
 ### 8.1 The nine houses
 
@@ -376,51 +368,51 @@ Authorship × Verification, resolved before stakes are considered:
 | **Assisted** | Pair Programmer | Centaur | Shipper |
 | **Summoned** | Supervisor ⁺ | Orchestrator | Dark Factory ⁺ ˣ |
 
-⁺ = splits at Sandbox stakes into a Specified/Emergent pair. ˣ = splits above Sandbox on Judgement (§8.3).
+⁺ = splits at Sandbox stakes on Reference. ˣ = splits above Sandbox on Judgement (§8.3).
 
 ```ts
 resolveSign(position, environment) =
-  environment === 'hobby' && house.sandbox   ? house.sandbox[position.requirements]
+  environment === 'hobby' && house.sandbox   ? house.sandbox[position.reference]
   : house.oracle && position.judgement === 'llm' ? house.oracle
   : house.base
 ```
 
 Pure, total, exhaustive: 216 combinations, 18 signs, no fallback. Order matters and is asserted: the Sandbox branch is tested first, so nothing at Sandbox stakes ever reaches the Judgement branch.
 
-**One discriminator per house, chosen by what the stakes leave undetermined.** Below Sandbox the consequence is missing, so **Requirements** resolves the class — what you are doing is defined by whether the target was written down. Above Sandbox the consequence defines the class and a pre-written target is a risk modifier instead (that is the `+10`, and it never moves the name). In exactly one house — the lights-out corner — the consequence is not enough on its own, because two very different postures share it, and **Judgement** separates them (§8.3).
+**One discriminator per house, chosen by what the stakes leave undetermined.** At Sandbox the consequence is absent, so **Reference** resolves the class in four houses: an independent target makes the work directed, while a loop-owned target makes it exploratory. Above Sandbox the consequence defines the class and an independent reference is a risk modifier instead (that is the `+10`, and it never moves the name). In exactly one house — the lights-out corner — the consequence is not enough on its own, because two very different postures share it, and **Judgement** separates them (§8.3).
 
 ### 8.2 The eighteen
 
 | Sign | Epithet | House (Authorship · Verification) | Reached at | Icon |
 | --- | --- | --- | --- | --- |
 | The Craftsman | nothing ships unread | Forged · Every line | Live service, Under audit | `Anvil` |
-| The Learner | the long way round | Forged · Every line | Sandbox + Specified | `Sprout` |
-| The Hobbyist | for its own sake | Forged · Every line | Sandbox + Emergent | `Puzzle` |
+| The Learner | the long way round | Forged · Every line | Sandbox + Independent reference | `Sprout` |
+| The Hobbyist | for its own sake | Forged · Every line | Sandbox + Loop-owned reference | `Puzzle` |
 | The Practitioner | hand-made, machine-checked | Forged · Second pair | all stakes | `Wrench` |
 | The Lone Author | a team of one | Forged · Machine-gated | Live service, Under audit | `Feather` |
-| The Candidate | unaided, then graded | Forged · Machine-gated | Sandbox + Specified | `GraduationCap` |
-| The Weekend Builder | shipped by Sunday, gated by the model | Forged · Machine-gated | Sandbox + Emergent | `Tent` |
+| The Candidate | unaided, then graded | Forged · Machine-gated | Sandbox + Independent reference | `GraduationCap` |
+| The Weekend Builder | shipped by Sunday, gated by the model | Forged · Machine-gated | Sandbox + Loop-owned reference | `Tent` |
 | The Pair Programmer | two hands, one pen | Assisted · Every line | all stakes | `Handshake` |
 | The Centaur | half and half, both ways | Assisted · Second pair | all stakes | `Blend` |
 | The Shipper | merge and move | Assisted · Machine-gated | all stakes | `Rocket` |
 | The Supervisor | the human gate | Summoned · Every line | Live service, Under audit | `Radar` |
-| The Benchmarker | runs agents against a known answer | Summoned · Every line | Sandbox + Specified | `FlaskConical` |
-| The Skeptic | read it all anyway | Summoned · Every line | Sandbox + Emergent | `Binoculars` |
+| The Benchmarker | runs agents against a known answer | Summoned · Every line | Sandbox + Independent reference | `FlaskConical` |
+| The Skeptic | read it all anyway | Summoned · Every line | Sandbox + Loop-owned reference | `Binoculars` |
 | The Orchestrator | fleets, not diffs | Summoned · Second pair | all stakes | `Network` |
 | The Dark Factory | lights-out delivery | Summoned · Machine-gated | Live service, Under audit — Judgement not The oracle | `Factory` |
 | The Believer | takes the model at its word | Summoned · Machine-gated | Live service, Under audit — Judgement is The oracle | `Church` |
-| The Spec Runner | wrote the spec, let it rip | Summoned · Machine-gated | Sandbox + Specified | `FileCog` |
-| The Vibe Coder | ship it and see | Summoned · Machine-gated | Sandbox + Emergent | `Sparkles` |
+| The Spec Runner | wrote the spec, let it rip | Summoned · Machine-gated | Sandbox + Independent reference | `FileCog` |
+| The Vibe Coder | ship it and see | Summoned · Machine-gated | Sandbox + Loop-owned reference | `Sparkles` |
 
 Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `link`, `house`, `environments`. Seventeen of them port verbatim; the eighteenth is authored below (§14).
 
 ### 8.3 The Believer
 
-**Why the lights-out corner needs two names.** Summoned authorship with Machine-gated verification means agents write it and a machine clears it — but that says nothing about what the machine is measured against. A Dark Factory that runs on codified law has an oracle: tests, gates, and policy a human wrote down, which the model does not get to edit. The same corner with **The oracle** as Judgement has none — the thing that generated the code, the thing that reviewed it, and the thing that decides it is correct are the same kind of system with the same blind spots. That is not a degree of the Dark Factory, it is a different failure, and until now the model computed the difference (`JUDGEMENT_BONUS.llm = −15`) without ever naming it. The Believer is the name.
+**Why the lights-out corner needs two names.** Summoned authorship with Machine-gated verification means agents write it and a machine clears it — but that says nothing about what has final authority. A Dark Factory keeps at least that authority outside the model: a person, a team, or a codified gate can contradict it. The same corner with **The oracle** as Judgement has none — the thing that generated the code, the thing that reviewed it, and the thing that decides it is correct are the same kind of system with the same blind spots. That is not a degree of the Dark Factory, it is a different failure, and until now the model computed the difference (`JUDGEMENT_BONUS.llm = −15`) without ever naming it. The Believer is the name.
 
 **Why only this house.** Judgement does not split the other eight, and this is a rule rather than an omission: everywhere else a human still writes the code or still reads it, so an over-trusted model is a modifier on a class that a person is still inside. Here it is the last human out of the loop, and the loop closes. One house, one extra sign — the alternative is a Judgement split everywhere, thirty-six signs, and a model nobody can hold in their head.
 
-**Why not at Sandbox.** At Sandbox stakes the house already splits by Requirements into Spec Runner and Vibe Coder, and the Vibe Coder is the Believer without consequences — *ship it and see* is the same posture where nothing is downstream, and it does not need a second name to say so. The resolution order in §8.1 enforces this: the Sandbox branch runs first, so The Believer is reachable at Live service and Under audit only.
+**Why not at Sandbox.** At Sandbox stakes the house already splits by Reference into Spec Runner and Vibe Coder, and the Vibe Coder is the Believer without consequences — *ship it and see* is the same posture where nothing is downstream, and it does not need a second name to say so. The resolution order in §8.1 enforces this: the Sandbox branch runs first, so The Believer is reachable at Live service and Under audit only.
 
 ```ts
 {
@@ -436,7 +428,7 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
 
 **body**
 
-> Agents write it, an AI reviewer clears it, and when someone asks how you know it is right, the answer is that the model said so. The Dark Factory next door has a standard the machines are held to — tests, gates, and policy a person wrote down and the model cannot quietly amend. Here the standard is the model's own opinion, so the thing that generated the code, the thing that reviewed it, and the thing that ruled on it all share a set of priors, and a wrong answer gets confirmed three times instead of caught once. This is the lowest independence the map can reach, and it is the only sign that gets there by trusting rather than by cutting corners — which is exactly why it is invisible from the inside.
+> Agents write it, an AI reviewer clears it, and when someone asks how you know it is right, the answer is that the model said so. The Dark Factory next door keeps at least one authority outside the model — a person, a team, or a codified gate can still contradict what the machines produced. Here the final authority is the model's own opinion, so the thing that generated the code, the thing that reviewed it, and the thing that ruled on it all share a set of priors, and a wrong answer gets confirmed three times instead of caught once. This is the lowest independence the map can reach, and it is the only sign that gets there by trusting rather than by cutting corners — which is exactly why it is invisible from the inside.
 
 **signature**
 
@@ -460,29 +452,17 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
 > - Take a handful of model-approved diffs and read them yourself, cold. The hit rate is the only calibration you have, and right now you do not have it.
 > - Move Judgement to Codified law before you move anything else. It costs no throughput, it is the cheapest change available here, and it is the whole difference between this sign and the Dark Factory.
 
-**Arithmetic, unchanged.** No weight moves; the four states that reach The Believer already carried these values and simply resolved to a different name. Independence is fifteen under Specified and five under Emergent, against a floor of fifty-five at Live service and eighty-five Under audit — so **every state that reaches The Believer is `under-verified`, and it is the only sign of the eighteen that can say so.** The Dark Factory next door spans under-verified and thin, which is the arithmetic agreeing with the split: a lights-out pipeline held to codified law can clear the bar at Live service, and the same pipeline judged by the model cannot, anywhere.
+**Arithmetic, unchanged.** No weight moves; the four states that reach The Believer already carried these values and simply resolved to a different name. Independence is fifteen with an Independent reference and five with a Loop-owned reference, against a floor of fifty-five at Live service and eighty-five Under audit — so **every state that reaches The Believer is `under-verified`, and it is the only sign of the eighteen that can say so.** The Dark Factory next door spans under-verified and thin, which is the arithmetic agreeing with the split: a lights-out pipeline held to codified law can clear the bar at Live service, and the same pipeline judged by the model cannot, anywhere.
 
-The lowest independence the model reaches belongs to the position Summoned · Machine-gated · The oracle · Emergent — it is the unique minimum, and it is a Believer reading everywhere except Sandbox, where it is the Vibe Coder. Independence never reads Stakes, so that is a statement about the position and §13 asserts it as one.
+The lowest independence the model reaches belongs to the position Summoned · Machine-gated · The oracle · Loop-owned reference — it is the unique minimum, and it is a Believer reading everywhere except Sandbox, where it is the Vibe Coder. Independence never reads Stakes, so that is a statement about the position and §13 asserts it as one.
 
-### 8.4 Risings
-
-Two records, not thirty-six. `Specified` (*the target was written down*) and `Emergent` (*the target moves with the work*) each carry a body, one strength, and one failure mode, and compose onto whichever sign resolved — class plus background.
-
-**The badge renders only where Requirements did not already name the class:**
-
-```ts
-originFor(state) = state.environment === 'hobby' && house.sandbox ? null : RISINGS[state.requirements]
-```
-
-On a Hobbyist reveal, *Emergent rising* would restate the class name in smaller type, and the eight Sandbox records were written knowing their origin. Risings are absent on exactly those eight, and §13 asserts it.
-
-### 8.5 Icons
+### 8.4 Icons
 
 Thirty-three line icons from `lucide-react`, `currentColor`, no fills, no colour coding, no emoji. **The trait set and the sign set are disjoint by construction**, so a slot never looks like a result; both maps are exhaustively keyed, so a nineteenth sign without an icon is a compile error rather than a blank square.
 
 The Believer takes **`Church`** — the one piece of overt horoscope iconography in the set, and it earns the exception because the name has already committed to the metaphor. `BadgeCheck` is the documented swap if it reads as commentary rather than as a joke; it was not the default because at small sizes it is hard to tell from `ShieldCheck`, which is the Machine-gated trait icon and appears on the same reading.
 
-Sizes: option 20 (mobile) / 28 (≥sm), rail slot 14, rising badge 14, reveal 40, reference card 18.
+Sizes: option 20 (mobile) / 28 (≥sm), rail slot 14, reveal 40, catalogue card 18.
 
 ---
 
@@ -500,7 +480,7 @@ A band, not a screen — the stage must be reachable with one flick.
 
 - Eyebrow: `CrossAccent` + `Horoscode` in mono.
 - H1: `What kind of software engineer` / **`are you in 2026?`**
-- Sub: *Five stars — how you write it, who checks it, who decides, whether done was written down, and what breaks. They align on one of eighteen signs.*
+- Sub: *Five stars — how you write it, who checks it, who decides, what can contradict the implementation, and what breaks. They align on one of eighteen signs.*
 - Honesty line, mono, muted: *No stars were consulted. Five picks, one lookup table, and arithmetic you can read in the source.*
 
 ### 9.3 Pick phase
@@ -513,25 +493,27 @@ In order:
 
 1. Sign icon, 40px.
 2. `Your reading` — mono label.
-3. Name — `The` light, the noun semibold — then the rising badge where `originFor` returns one. Epithet in mono beneath.
-4. Body, then the rising's two sentences where the badge renders.
+3. Name — `The` light, the noun semibold. Epithet in mono beneath.
+4. Body.
 5. Meters, then the verdict block: `Forecast` label, chip, forecast line, `meterCaption`.
 6. Signature — three bullets.
 7. Plays to / Breaks when.
 8. Next moves — three imperatives, then `verdictAdvice`.
 9. Actions: `Read again`, `See all eighteen signs`, `Copy link`, `Copy as text`.
 
-`See all eighteen signs` is an in-page anchor to the reference section (§9.5), which is the only place the full set is enumerated. It is a link, not a control — no client state, no scroll-jacking beyond the anchor.
+`See all eighteen signs` is an in-page anchor to the sign catalogue (§9.5), which is the only place the full set is enumerated. It is a link, not a control — no client state, no scroll-jacking beyond the anchor.
 
 `Read again` clears the five stars and the URL params and returns to the first pick. Nothing else is cleared, because nothing else is kept (§10.2).
 
 **The star rail stays live**, and this is the engagement mechanic: tapping a filled star returns to that pick, and choosing something new returns straight to the reading. Its accessible name is `Your five stars`; per-slot labels keep the axis vocabulary (`Change Authorship — currently Summoned`), because a screen-reader user re-picking needs the axis name, not the frame's noun.
 
-### 9.5 Reference section
+The rail is also the complete trait summary. Reference is displayed there exactly like the other four stars; it is not composed onto the sign name, body, strengths, or failure modes as a second taxonomy.
+
+### 9.5 Sign catalogue
 
 Server-rendered, and the reason the page is indexable: a tool whose content is entirely behind client state gives a crawler nothing. Eighteen cards — icon, name, epithet, tagline, body, the conditions that reach it, failure modes, outbound link — grouped into the ten reachable above Sandbox and the eight that exist only there, each with `id="sign-<id>"` for deep links.
 
-**It is also the only enumeration of the eighteen**, which is a change in its job rather than in its markup: with no chart on the page, this section is where `See all eighteen signs` lands and where a visitor compares their reading against the rest. Two consequences follow. The conditions line on each card carries the full reachability — house, stakes tiers, and the Requirements or Judgement value where one of those resolves the sign — because there is no grid left to read it off. And the card for the visitor's own sign takes `aria-current="true"` and a dashed outline when the reading is complete, which is the one piece of client state this otherwise-static section accepts.
+**It is also the only enumeration of the eighteen**, which is a change in its job rather than in its markup: with no chart on the page, this section is where `See all eighteen signs` lands and where a visitor compares their reading against the rest. Two consequences follow. The conditions line on each card carries the full reachability — house, stakes tiers, and the Reference or Judgement value where one of those resolves the sign — because there is no grid left to read it off. And the card for the visitor's own sign takes `aria-current="true"` and a dashed outline when the reading is complete, which is the one piece of client state this otherwise-static section accepts. The Reference star gets no separate cards; the model explanation in §6.2 is its single explanatory surface outside the picker and rail.
 
 ---
 
@@ -544,12 +526,10 @@ Server-rendered, and the reason the page is indexable: a tool whose content is e
 | `c` | Authorship | `hand` · `blended` · `delegated` |
 | `r` | Verification | `hand` · `blended` · `delegated` |
 | `j` | Judgement | `me` · `team` · `process` · `llm` |
-| `s` | Requirements | `fixed` · `flexible` (`s` for spec — `r` was taken) |
+| `s` | Reference | `independent` · `loop` (`s` for standard — `r` was taken) |
 | `e` | Stakes | `hobby` · `team` · `regulated` |
 
-Five params, one per star, and no sixth. Words, not numbers. Every value validated, unknown params normalised away. Numeric `c`/`r` accepted on read for compatibility with links minted by iteration 1 of the in-site tool (`≤33 → hand`, `≤66 → blended`, else `delegated`).
-
-**One consequence of the eighteenth sign, stated rather than discovered.** Params are unchanged and every link ever shared still opens on a valid reading, but a link carrying `c=delegated&r=delegated&j=llm` above Sandbox now resolves to The Believer where it previously resolved to the Dark Factory. The arithmetic did not move, so the verdict, the forecast, and both meters are identical — only the name and the authored copy differ, which is the whole point of the split. Four of the two hundred and sixteen states change their answer, and they are exactly the four §8.3 exists to name.
+Five params, one per star, and no sixth. Words, not numbers. Every value is validated and unknown params are normalised away. There are no legacy aliases: values outside the table above are invalid rather than translated into a current trait.
 
 Read once after mount — reading `location` during render would diverge from the server tree — and written with `router.replace(..., { scroll: false })` on each discrete pick. **No debounce**, so there is no pending timer for a copy action to race. The address bar is left untouched until the first real interaction, so an arrival URL carrying campaign params is not rewritten out from under whatever recorded it.
 
@@ -566,7 +546,7 @@ If a second-run mechanic is wanted later, the honest version is a counter in the
 Both are synchronous derivations of the state that produced the rendered result; `window.location` is never read beyond `origin`.
 
 - **Copy link** → `origin + serialise(state)`.
-- **Copy as text** → `summariseAsText`: name · rising — epithet / verdict label / forecast line / the five axes and traits / the link. Words only — no metric ever reaches a clipboard that never appeared on screen.
+- **Copy as text** → `summariseAsText`: name — epithet / verdict label / forecast line / the five axes and traits / the link. Words only — no metric ever reaches a clipboard that never appeared on screen, and no modifier is added to the name that was not present in the reading.
 
 On a clipboard rejection (denied permission, insecure context) the app says nothing rather than confirming a copy that did not happen.
 
@@ -624,18 +604,18 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 - All 216 states resolve: every metric is an integer, `independence` ∈ [0, 100], `automation` ∈ [0, 100].
 - The scaled-integer identity: `independence` equals the same expression computed in floats and rounded once.
 - The four bands partition the integer margin range with no gap and no overlap.
-- `independence` is monotone non-increasing in `review` and — at fixed `review` — non-increasing in `code`, under both Requirements values.
-- The Summoned × Machine-gated house is strictly lowest at the trait centroids, and **the minimum independence over all 216 states is attained by exactly one position** — Summoned · Machine-gated · The oracle · Emergent — which resolves to The Believer above Sandbox and to the Vibe Coder at it. Asserted as a unique argmin over positions, not as a threshold, because a threshold passes when a third position ties it. Independence does not read Stakes, so the assertion is about the position and says so.
+- `independence` is monotone non-increasing in `review` and — at fixed `review` — non-increasing in `code`, under both Reference values.
+- Reference never changes `automation`; changing `loop` to `independent` changes only `independence`, by the declared bonus except where the clamp applies.
+- The Summoned × Machine-gated house is strictly lowest at the trait centroids, and **the minimum independence over all 216 states is attained by exactly one position** — Summoned · Machine-gated · The oracle · Loop-owned reference — which resolves to The Believer above Sandbox and to the Vibe Coder at it. Asserted as a unique argmin over positions, not as a threshold, because a threshold passes when a third position ties it. Independence does not read Stakes, so the assertion is about the position and says so.
 - `pips` is monotone non-decreasing.
 
 **Signs**
 - All eighteen reachable; the eight Sandbox signs reachable **only** at `hobby`; The Believer reachable **only** above it.
-- Requirements never changes the sign above Sandbox, and changes it in exactly the four split houses at Sandbox.
+- Reference never changes the sign above Sandbox, and changes it in exactly the four split houses at Sandbox.
 - **Judgement changes the sign in exactly one house and only above Sandbox**, asserted as set equality against `{Summoned × Machine-gated}` — a count would pass if the split landed on the wrong house. Within it, `llm` resolves to The Believer and the other three resolve to the Dark Factory.
 - **Every state that reaches The Believer is `under-verified`**, and no other sign has that property — the second half matters, because the first alone would still pass if the split had swallowed states that belong to a neighbour.
 - The two branches of `resolveSign` are ordered, not overlapping: no `hobby` state reaches the Judgement branch, checked by construction over all 216 rather than by reading the function.
 - `environments` on every record matches what resolution actually produces.
-- Risings absent on exactly the eight Sandbox signs.
 - Margin `−5` is attainable (the band edge is not decorative).
 
 **Forecasts**
@@ -644,13 +624,15 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 - No forecast line appears verbatim inside any `verdictAdvice` output.
 
 **Copy and contract**
-- **No digit in any user-facing string** — every option name and line, helper, question, verdict label and blurb, meter caption, forecast, advice, sign field, and rising field. Spelled-out numerals are the rule ("eighteen", "five").
+- **No digit in any user-facing string** — every option name and line, helper, question, verdict label and blurb, meter caption, forecast, advice, and sign field. Spelled-out numerals are the rule ("eighteen", "five").
 - `serialise` round-trips over all 216 complete states plus every partial plus empty; parsing is a pure function of the URL.
 - **`serialise` emits exactly the five star params and no others**, and `parseState` drops every unrecognised key — the assertion that catches a sixth param being reintroduced by a feature that needs somewhere to put its state.
+- The reading, dynamic share card, and `summariseAsText` resolve the same sign name and epithet. None adds a Reference-derived modifier to the sign name.
 - Every `link.href` in the eighteen records resolves (HEAD request, run in CI only).
 
 **Mechanical guards**
 - **No randomness**: grep `lib/`, `components/`, `content/`, `app/` for `Math.random`, `Date.now`, and `new Date`, failing on a hit.
+- **No second result taxonomy**: grep those directories for the identifiers `Rising`, `RISINGS`, and `risingFor`, failing on a hit. Natural-language uses of “rises” remain valid in forecast copy.
 - No `data-cal-link`, no chat-widget script, no `Navbar`/`Footer` import anywhere in `app/`.
 - **No client-side storage**: grep `lib/`, `components/`, and `app/` for `localStorage`, `sessionStorage`, `document.cookie`, and `indexedDB`, failing on a hit. §10.2 is a claim the privacy page repeats, so it is worth a grep rather than a convention.
 - **Every interactive element declares a minimum target**: grep the component for `<button` and `role="button"` occurrences whose class list lacks one of the sanctioned min-height utilities (`min-h-11`, `min-h-[44px]`, `min-h-[64px]`, `min-h-[72px]`, `sm:min-h-[190px]`), failing on a hit. Crude, and it has caught the real regression it exists for: a control added without the floor.
@@ -667,9 +649,8 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 8. Keyboard only, desktop: complete a reading, revisit a slot, reach every action.
 9. VoiceOver on iOS and NVDA on Windows: the phase change is announced once, the rail slots read their axis and current trait, the reading heading takes focus.
 10. A shared link opens directly on the reading with all five stars filled.
-11. Legacy links — `/toolbox/horoscode?c=delegated&r=hand&j=llm&s=flexible&e=team` and `/compass?…` — land on `/` with params intact. A legacy link still carrying `g=` opens on the reading with the param dropped from the address bar, not on an error.
-12. `See all eighteen signs` from a completed reading lands on the reference section with the visitor's own card marked.
-13. Lighthouse on mobile: performance ≥ 95, accessibility 100, no layout shift on the stage.
+11. `See all eighteen signs` from a completed reading lands on the sign catalogue with the visitor's own card marked.
+12. Lighthouse on mobile: performance ≥ 95, accessibility 100, no layout shift on the stage.
 
 ---
 
@@ -681,13 +662,12 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 | --- | --- | --- |
 | Seventeen of the eighteen signs | `tagline`, `body`, `signature[3]`, `strengths[2]`, `failureModes[2]`, `nextMoves[3]` | `lib/horoscode.ts` → `ARCHETYPES`, in the `vgtc` repo |
 | **The Believer** | all of the above | **authored in §8.3 of this document** — it does not exist upstream |
-| The two risings | `body`, `strength`, `failureMode` | same file → `ORIGINS` |
 
-These port **verbatim** into `content/signs.ts`. Zero-diff on record copy is the evidence that this is a port and not a rewrite. Upstream's `GOALS` are not ported — there are no transits here (§15) — and neither is `relatedGoals`, which is the one field of the sign record that gets dropped on the way in. Three mechanical changes are required and are the only permitted edits:
+The seventeen upstream records port **verbatim** into `content/signs.ts`; The Believer is copied from §8.3. Zero-diff on the upstream record copy is the evidence that this is a port and not a rewrite. Upstream's `ORIGINS` and `GOALS` are not ported — there is no second result taxonomy and there are no transits here (§15) — and neither is `relatedGoals`, which is the one field of the sign record that gets dropped on the way in. Three mechanical changes are required and are the only permitted edits:
 
 1. **`link.href` becomes absolute** — `/insights/…` and `/services/…` become `https://www.vgtc.io/insights/…` etc., with `target="_blank" rel="noopener"`. These are the only outbound links in the app besides the wordmark, and they are the one place the reading points at the firm's writing, which is where it should point.
 2. **`relatedGoals` is deleted from every record**, along with the `GoalId` type it refers to. It is the only field whose removal touches the ported copy, and it removes no prose.
-3. **Internal identifiers align with the frame's vocabulary** — `Archetype` → `Sign`, `ArchetypeId` → `SignId`, `ARCHETYPES` → `SIGNS`, `resolveArchetype` → `resolveSign`, `Cell` → `House`, `Origin` → `Rising`. The in-site version deliberately kept the old identifiers to avoid a four-hundred-reference rename inside a shipped module; a new codebase has no such debt and should be internally consistent from the first commit. The `#archetype-<id>` anchors become `#sign-<id>`, and the **string ids do not change** (`dark-factory`, `spec-runner`, …), because they are in every shared URL.
+3. **Internal identifiers align with the frame's vocabulary** — `Archetype` → `Sign`, `ArchetypeId` → `SignId`, `ARCHETYPES` → `SIGNS`, `resolveArchetype` → `resolveSign`, `Cell` → `House`. The in-site version deliberately kept the old identifiers to avoid a four-hundred-reference rename inside a shipped module; a new codebase has no such debt and should be internally consistent from the first commit. The `#archetype-<id>` anchors become `#sign-<id>`, and the string ids remain aligned with the ported records (`dark-factory`, `spec-runner`, …).
 
 If the source repo is unavailable, the fields above are authorable from the tables in §8.2 — but the result is a different product's copy, and this spec is not the place that decides that.
 
@@ -697,13 +677,13 @@ If the source repo is unavailable, the fields above are authorable from the tabl
 
 - Any backend, account, saved history, or server-side storage. **Client-side storage too** (§10.2) — no cookies, no local storage, nothing.
 - **Transits.** The eight goals, their per-stakes practices, the derived target sign, and the gap table are all out. The reading answers *what are you* and stops there; *where should you be going* is a second product wearing the same page, it doubles the authored copy, and it is the part that reads as consulting rather than as a toy.
-- **The signs chart.** The 3 × 3 grid of houses with all eighteen signs on it, its discovery markers, and the charted counter. The reference section (§9.5) already enumerates the eighteen, in server HTML, with more copy per sign and a crawler that can read it — the chart was a second enumeration competing with the first.
+- **The signs chart.** The 3 × 3 grid of houses with all eighteen signs on it, its discovery markers, and the charted counter. The sign catalogue (§9.5) already enumerates the eighteen, in server HTML, with more copy per sign and a crawler that can read it — the chart was a second enumeration competing with the first.
 - **Randomness of any kind**, including a "daily reading" that varies by date. It is the one change that would make the page dishonest, and §13 greps for it.
 - Birthdays, names, star signs, or any personal input.
 - Renaming the eighteen signs into zodiac vocabulary.
 - Team mode; more than five stars; more than eighteen signs; a sixth axis as "advanced".
 - **A Judgement split in any house but the lights-out corner** (§8.3). Four values across nine houses is thirty-six signs and a model nobody can hold in their head; the one split earns itself because it is the only place where naming it removes the last human from the loop.
-- A *who set the target* question — it replaces Requirements rather than joining it.
+- A sixth requirements-methodology or target-timing axis. Reference already captures the relevant distinction: whether the code-and-review loop controls the acceptance standard. Waterfall versus Agile and written-first versus discovered-later are deliberately not scored.
 - Free-text input or model-generated result copy.
 - Any CTA, lead capture, email field, or booking surface.
 - Sound, scores, streaks, leaderboards, collection mechanics, share-to-social buttons that load a third-party script.
@@ -711,7 +691,7 @@ If the source repo is unavailable, the fields above are authorable from the tabl
 
 ## 16. Future
 
-- **Sign permalinks** at `/signs/[sign]` — eighteen indexable pages, each opening on that sign's reading with stars pre-filled. The highest-leverage SEO follow-up, and the reference section already carries the copy.
+- **Sign permalinks** at `/signs/[sign]` — eighteen indexable pages, each opening on that sign's reading with stars pre-filled. The highest-leverage SEO follow-up, and the sign catalogue already carries the copy.
 - **A second toy**, if the domain becomes a playground rather than one page. Nothing in this spec assumes `/` is the only route.
 - **A house view** at `/houses/[house]` — nine pages, each the signs that share an Authorship × Verification position. This is the indexable, server-rendered answer to what the chart was for, and it is the shape the chart should have taken if it comes back at all.
-- **An insight article** on the verification-independence argument, cross-linked from the reference section back into vgtc.io.
+- **An insight article** on the verification-independence argument, cross-linked from the sign catalogue back into vgtc.io.
