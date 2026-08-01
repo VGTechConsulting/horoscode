@@ -24,7 +24,7 @@ written down (see `lib/site.ts`). It defaults to `https://horoscode.dev`.
 ```
 app/
   layout.tsx            fonts, top bar, bottom rule, Analytics
-  page.tsx              metadata, schemas, hero, reference section
+  page.tsx              metadata, schemas, hero, sign catalogue
   globals.css           tokens, motion, target hygiene
   opengraph-image.tsx   static share card
   api/og/route.tsx      share card drawn from the five params
@@ -39,7 +39,7 @@ lib/
   analytics.ts          one thin track() wrapper
   site.ts               the one constant that knows about a domain
 content/
-  signs.ts              the eighteen records and the two risings
+  signs.ts              the eighteen records
 scripts/
   verify.mjs            the assertion harness
 ```
@@ -53,11 +53,13 @@ runner here.
 `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, and the harness, which
 asserts the properties the spec claims in prose: the arithmetic is exact over all two
 hundred and sixteen states, the four verdict bands partition the margin range, the eighteen
-signs are each reachable and reachable only where their record says, Judgement splits
-exactly one house, every Believer state is under-verified, exactly two forecast cells are
-dead, no user-facing string carries a digit, the URL round-trips and emits exactly five
-params, and the sources contain no randomness, no client-side storage, and no button
-without a minimum target.
+signs are each reachable and reachable only where their record says, Reference moves
+independence by its declared bonus and nothing else, Judgement splits exactly one house,
+every Believer state is under-verified, exactly two forecast cells are dead, no user-facing
+string carries a digit, the URL round-trips and emits exactly five params, the reading, the
+share card, and the copied text carry the same sign name, and the sources contain no
+randomness, no second result taxonomy, no client-side storage, and no button without a
+minimum target.
 
 `CI=1 pnpm verify` adds a HEAD check on every outbound link in the eighteen records.
 
@@ -67,7 +69,8 @@ has not been run here.
 
 ## Content provenance
 
-Seventeen of the eighteen sign records and both risings port verbatim from `lib/horoscode.ts`
-in the `vgtc` repository. The Believer is authored in §8.3 of the spec. The only permitted
-edits on ported copy are the three mechanical ones in §14: absolute link hrefs, the deleted
-`relatedGoals` field, and the vocabulary rename.
+Seventeen of the eighteen sign records port verbatim from `lib/horoscode.ts` in the `vgtc`
+repository. The Believer is authored in §8.3 of the spec. Upstream's `ORIGINS` and `GOALS`
+are not ported — there is no second result taxonomy here and there are no transits (§15).
+The only permitted edits on ported copy are the three mechanical ones in §14: absolute link
+hrefs, the deleted `relatedGoals` field, and the vocabulary rename.

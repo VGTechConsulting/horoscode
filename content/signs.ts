@@ -1,21 +1,22 @@
-// The eighteen signs and the two risings (spec §8, §14).
+// The eighteen signs (spec §8, §14).
 //
 // Seventeen of the eighteen records port verbatim from the in-site version's
 // `ARCHETYPES`; The Believer is authored in §8.3 of the spec and does not exist
-// upstream. Three mechanical changes are the only permitted edits on the ported
-// copy (§14):
+// upstream. Upstream's `ORIGINS` are not ported — there is no second result
+// taxonomy here (§15). Three mechanical changes are the only permitted edits on
+// the ported copy (§14):
 //
 //   1. `link.href` is absolute and points at vgtc.io.
 //   2. `relatedGoals` is deleted — there are no transits here (§15).
-//   3. `Archetype` → `Sign`, `ARCHETYPES` → `SIGNS`, `cell` → `house`,
-//      `Origin` → `Rising`. The *string ids* do not change, because they are in
-//      every shared URL and in every `#sign-<id>` anchor.
+//   3. `Archetype` → `Sign`, `ARCHETYPES` → `SIGNS`, `cell` → `house`. The
+//      *string ids* stay aligned with the ported records, and they are in every
+//      `#sign-<id>` anchor.
 //
 // Data only: no React, no icons, no DOM, and the axis types arrive as type-only
 // imports, so this module is loadable from a plain node script alongside
 // lib/horoscode.ts (§5, §13).
 
-import type { Environment, Requirements, Zone } from '../lib/horoscode.ts'
+import type { Environment, Zone } from '../lib/horoscode.ts'
 
 export type SignId =
   | 'learner'
@@ -51,7 +52,7 @@ export interface Sign {
   failureModes: [string, string]
   nextMoves: [string, string, string]
   link: { label: string; href: string }
-  /** Where it sits on the three-by-three, for the reference section. */
+  /** Where it sits on the three-by-three, for the sign catalogue. */
   house: { code: Zone; review: Zone }
   /** Stakes tiers this sign occupies within its house. */
   environments: Environment[]
@@ -581,14 +582,14 @@ export const SIGNS: Record<SignId, Sign> = {
     environments: ['team', 'regulated'],
   },
   // The eighteenth sign, authored in spec §8.3 — it does not exist upstream. The
-  // lights-out house splits on Judgement because a Dark Factory held to codified
-  // law has an oracle the model does not get to edit, and this one does not.
+  // lights-out house splits on Judgement because a Dark Factory keeps at least
+  // one authority outside the model, and this one keeps none.
   believer: {
     id: 'believer',
     name: 'The Believer',
     epithet: 'takes the model at its word',
     tagline: 'Machines write it, machines check it, and the machine says it is correct',
-    body: 'Agents write it, an AI reviewer clears it, and when someone asks how you know it is right, the answer is that the model said so. The Dark Factory next door has a standard the machines are held to — tests, gates, and policy a person wrote down and the model cannot quietly amend. Here the standard is the model\'s own opinion, so the thing that generated the code, the thing that reviewed it, and the thing that ruled on it all share a set of priors, and a wrong answer gets confirmed three times instead of caught once. This is the lowest independence the map can reach, and it is the only sign that gets there by trusting rather than by cutting corners — which is exactly why it is invisible from the inside.',
+    body: 'Agents write it, an AI reviewer clears it, and when someone asks how you know it is right, the answer is that the model said so. The Dark Factory next door keeps at least one authority outside the model — a person, a team, or a codified gate can still contradict what the machines produced. Here the final authority is the model\'s own opinion, so the thing that generated the code, the thing that reviewed it, and the thing that ruled on it all share a set of priors, and a wrong answer gets confirmed three times instead of caught once. This is the lowest independence the map can reach, and it is the only sign that gets there by trusting rather than by cutting corners — which is exactly why it is invisible from the inside.',
     signature: [
       'The answer to how do you know it works is a transcript of the model agreeing',
       'Nobody on the team can name a check the model does not also run',
@@ -616,9 +617,10 @@ export const SIGNS: Record<SignId, Sign> = {
   },
 }
 
-/** House by house, base class first, then Specified, then Emergent — so the
- *  reference section reads in the same order the matrix does (§8.2). The
- *  Believer sits with its house-mate, because the two are the split. */
+/** House by house, base class first, then the Independent-reference sign, then
+ *  the Loop-owned one — so the sign catalogue reads in the same order the matrix
+ *  does (§8.2). The Believer sits with its house-mate, because the two are the
+ *  split. */
 export const SIGN_ORDER: SignId[] = [
   'craftsman',
   'learner',
@@ -639,39 +641,3 @@ export const SIGN_ORDER: SignId[] = [
   'spec-runner',
   'vibe-coder',
 ]
-
-// ─── Risings (spec §8.4) ────────────────────────────────────────────────────
-
-export interface Rising {
-  id: Requirements
-  name: string
-  epithet: string
-  body: string
-  strength: string
-  failureMode: string
-}
-
-/** Two records, not thirty-six. A rising composes onto whichever sign resolved —
- *  class plus background — everywhere it did not already name the class. */
-export const RISINGS: Record<Requirements, Rising> = {
-  fixed: {
-    id: 'fixed',
-    name: 'Specified',
-    epithet: 'the target was written down',
-    body: 'Someone wrote down what done means before the work started, so verification has something to check against that the implementation did not influence. That is an independent oracle, and it is the cheapest one available.',
-    strength:
-      'The acceptance criteria were produced by a different process, at a different time, by people who had not seen the code',
-    failureMode:
-      'The spec is the oracle, and specs go stale — you can satisfy every criterion and still ship the wrong thing, faster than ever; and a spec you wrote yourself is the one you can quietly move, which the model still pays in full',
-  },
-  flexible: {
-    id: 'flexible',
-    name: 'Emergent',
-    epithet: 'the target moves with the work',
-    body: 'Done is discovered as you go, with the people who asked for it. Better at finding the right product, and it puts the entire burden of independence on review, because there is no pre-written reference point to fall back on.',
-    strength:
-      'The product gets to be right rather than merely delivered, because the target can still move',
-    failureMode:
-      'Correct gets decided after the code exists, and increasingly by whatever wrote it — the failure is silent because nothing was written down to contradict',
-  },
-}

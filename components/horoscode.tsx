@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowDown, ArrowLeft, Check, Copy, RotateCcw } from 'lucide-react'
 import { CrossAccent } from '@/components/cross-accent'
 import { track } from '@/lib/analytics'
-import { ICON_SIZE, RISING_ICON, SIGN_ICON, TRAIT_ICON } from '@/lib/horoscode-icons'
+import { ICON_SIZE, SIGN_ICON, TRAIT_ICON } from '@/lib/horoscode-icons'
 import {
   EMPTY_STATE,
   HOROSCODE_PATH,
@@ -32,7 +32,6 @@ import {
   parseState,
   positionOf,
   resolveSign,
-  risingFor,
   serialise,
   summariseAsText,
   traitName,
@@ -50,7 +49,7 @@ const OPTION_GRID: Record<SlotId, string> = {
   code: 'sm:grid-cols-3',
   review: 'sm:grid-cols-3',
   judgement: 'sm:grid-cols-2 lg:grid-cols-4',
-  requirements: 'sm:grid-cols-2',
+  reference: 'sm:grid-cols-2',
   environment: 'sm:grid-cols-3',
 }
 
@@ -371,14 +370,9 @@ function Reading({
   headingRef: React.RefObject<HTMLHeadingElement | null>
 }) {
   const sign = resolveSign(positionOf(state), state.environment)
-  // Null on the eight Sandbox signs, where Requirements named the sign rather
-  // than modifying it — "The Hobbyist, Emergent rising" would restate the name
-  // in smaller type (§8.4). The rail still shows the pick, always.
-  const rising = risingFor(state)
   const metrics = computeMetrics(positionOf(state), state.environment)
   const meters = metersFor(metrics)
   const Icon = SIGN_ICON[sign.id]
-  const RisingIcon = rising ? RISING_ICON[rising.id] : null
 
   return (
     <div className="horoscode-phase flex flex-col flex-1 min-h-0 px-5 py-8 md:px-10 md:py-10">
@@ -398,30 +392,19 @@ function Reading({
         className="horoscode-in-2 text-3xl md:text-5xl font-light tracking-tight text-foreground text-balance mt-2 outline-none"
       >
         The <span className="font-semibold">{sign.name.replace('The ', '')}</span>
-        {/* A horoscope's rising sign modifies how the sun sign presents without
-            replacing it, which is exactly what the Requirements record does. */}
-        {rising && RisingIcon && (
-          <span className="inline-flex items-center gap-2 align-middle border border-dashed border-border px-2.5 py-1 ml-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            <RisingIcon size={ICON_SIZE.risingBadge} aria-hidden="true" />
-            {rising.name} rising
-          </span>
-        )}
       </h2>
 
+      {/* Name and epithet, and nothing composed on top of them: Reference is a
+          star on the rail like the other four, not a second taxonomy the sign
+          wears (§9.4). */}
       <p className="horoscode-in-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground mt-3">
         {sign.epithet}
-        {rising && ` · ${rising.epithet}`}
       </p>
 
-      <div className="horoscode-in-3 mt-5 space-y-3">
+      <div className="horoscode-in-3 mt-5">
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl">
           {sign.body}
         </p>
-        {rising && (
-          <p className="text-sm text-muted-foreground leading-relaxed font-light max-w-3xl">
-            {rising.body}
-          </p>
-        )}
       </div>
 
       <div className="horoscode-in-3 mt-auto pt-6 flex flex-col sm:flex-row sm:items-end gap-6 sm:gap-10">
@@ -528,18 +511,11 @@ export function Horoscode() {
       code: current.code,
       review: current.review,
       judgement: current.judgement,
-      requirements: current.requirements,
+      reference: current.reference,
       environment: current.environment,
       run: runRef.current,
     })
-  }, [
-    onReading,
-    state.code,
-    state.review,
-    state.judgement,
-    state.requirements,
-    state.environment,
-  ])
+  }, [onReading, state.code, state.review, state.judgement, state.reference, state.environment])
 
   // Focus follows the phase: the new group's first option, or the current choice
   // when a filled slot is revisited, or the sign heading on the reading. Never
@@ -736,8 +712,8 @@ export function Horoscode() {
             onCopy={copy}
             onReadAgain={readAgain}
           />
-          {/* The one piece of client state the otherwise-static reference
-              section accepts (§9.5). */}
+          {/* The one piece of client state the otherwise-static sign catalogue
+              accepts (§9.5). */}
           <CurrentSignMarker signId={sign.id} />
         </>
       )}
@@ -761,7 +737,6 @@ function ReadingDetail({
   onReadAgain: () => void
 }) {
   const sign = resolveSign(positionOf(state), state.environment)
-  const rising = risingFor(state)
   const metrics = computeMetrics(positionOf(state), state.environment)
 
   return (
@@ -800,16 +775,6 @@ function ReadingDetail({
                   {line}
                 </li>
               ))}
-              {/* Marked so it reads as coming from the rising, not the class —
-                  and omitted entirely where the class already is the rising. */}
-              {rising && (
-                <li className="text-xs text-muted-foreground font-light leading-relaxed">
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 mr-2">
-                    {rising.name}
-                  </span>
-                  {rising.strength}
-                </li>
-              )}
             </ul>
           </div>
           <div>
@@ -825,14 +790,6 @@ function ReadingDetail({
                   {line}
                 </li>
               ))}
-              {rising && (
-                <li className="text-xs text-muted-foreground font-light leading-relaxed">
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 mr-2">
-                    {rising.name}
-                  </span>
-                  {rising.failureMode}
-                </li>
-              )}
             </ul>
           </div>
         </div>
@@ -922,7 +879,7 @@ function ReadingDetail({
 }
 
 /**
- * The reference section is server HTML, and the visitor's own card is the only
+ * The sign catalogue is server HTML, and the visitor's own card is the only
  * thing in it that depends on a reading. Rather than move eighteen cards into
  * the client tree — which would take the crawlable copy with them — this marks
  * the one card that resolved and clears the mark when the stars change.

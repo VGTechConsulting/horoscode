@@ -1,13 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { glyphDataUri } from '@/lib/sign-glyphs'
-import {
-  computeMetrics,
-  isComplete,
-  parseState,
-  positionOf,
-  resolveSign,
-  risingFor,
-} from '@/lib/horoscode'
+import { computeMetrics, isComplete, parseState, positionOf, resolveSign } from '@/lib/horoscode'
 import { SITE_NAME } from '@/lib/site'
 
 export const size = { width: 1200, height: 630 }
@@ -18,6 +11,9 @@ export const contentType = 'image/png'
  * verdict chip on the black-and-white grid. No external fetch of any kind — the
  * card is drawn from the five params and nothing else, which is also why it
  * renders in the default typeface rather than pulling a font file over the wire.
+ *
+ * The name and epithet are the reading's, unmodified: nothing derived from
+ * Reference is composed onto them here that a visitor did not see (§13).
  */
 export function GET(request: Request) {
   const params = new URL(request.url).searchParams
@@ -26,7 +22,6 @@ export function GET(request: Request) {
   if (!isComplete(state)) return new ImageResponse(<FallbackCard />, size)
 
   const sign = resolveSign(positionOf(state), state.environment)
-  const rising = risingFor(state)
   const metrics = computeMetrics(positionOf(state), state.environment)
 
   return new ImageResponse(
@@ -37,10 +32,7 @@ export function GET(request: Request) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={glyphDataUri(sign.id)} width={72} height={72} alt="" />
           <div style={{ ...heading, marginTop: 28 }}>{sign.name}</div>
-          <div style={epithetStyle}>
-            {sign.epithet}
-            {rising ? ` · ${rising.name} rising` : ''}
-          </div>
+          <div style={epithetStyle}>{sign.epithet}</div>
           <div style={{ display: 'flex', marginTop: 36 }}>
             <div style={chip}>{metrics.verdict.label}</div>
           </div>

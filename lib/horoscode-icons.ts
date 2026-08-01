@@ -1,4 +1,4 @@
-// Horoscode icons (spec §8.5).
+// Horoscode icons (spec §8.4).
 //
 // Kept out of lib/horoscode.ts so the model stays pure and dependency-free and
 // can be loaded from a plain node script — importing `lucide-react` there would
@@ -47,7 +47,7 @@ import {
 } from 'lucide-react'
 // Relative and type-only, so this module carries no runtime dependency on the
 // model and the model carries none on lucide.
-import type { Requirements, SignId, SlotId } from './horoscode.ts'
+import type { SignId, SlotId } from './horoscode.ts'
 
 export const SIGN_ICON: Record<SignId, LucideIcon> = {
   craftsman: Anvil,
@@ -82,22 +82,17 @@ export const TRAIT_ICON: Record<SlotId, Record<string, LucideIcon>> = {
   code: { hand: Hammer, blended: PenTool, delegated: Bot },
   review: { hand: Eye, blended: Glasses, delegated: ShieldCheck },
   judgement: { me: User, team: Users, process: Stamp, llm: Cpu },
-  requirements: { fixed: ScrollText, flexible: RefreshCw },
+  // A standard held outside the loop is a written one somebody else keeps; a
+  // loop-owned one is whatever the loop last decided it was.
+  reference: { independent: ScrollText, loop: RefreshCw },
   environment: { hobby: Gamepad2, team: Banknote, regulated: Gavel },
 }
 
-/** The rising badge restates the trait, so it reuses the trait's own icon. */
-export const RISING_ICON: Record<Requirements, LucideIcon> = {
-  fixed: ScrollText,
-  flexible: RefreshCw,
-}
-
-/** Sizes (§8.5). */
+/** Sizes (§8.4). */
 export const ICON_SIZE = {
   optionMobile: 20,
   optionDesktop: 28,
   railSlot: 14,
-  risingBadge: 14,
   reveal: 40,
   card: 18,
 } as const

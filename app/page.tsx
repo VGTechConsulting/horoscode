@@ -1,11 +1,9 @@
 import type { Metadata } from 'next'
 import { CrossAccent } from '@/components/cross-accent'
 import { Horoscode } from '@/components/horoscode'
-import { ICON_SIZE, RISING_ICON, SIGN_ICON } from '@/lib/horoscode-icons'
+import { ICON_SIZE, SIGN_ICON } from '@/lib/horoscode-icons'
 import {
-  REQUIREMENTS_STOPS,
-  RISINGS,
-  SANDBOX_REQUIREMENTS,
+  SANDBOX_REFERENCE,
   SIGNS,
   SIGN_ORDER,
   URL_PARAMS,
@@ -62,8 +60,8 @@ export async function generateMetadata({
 /** The ten signs stakes reaches above Sandbox, then the eight that exist only
  *  there. Both keep SIGN_ORDER's relative order, so each group still reads house
  *  by house (§9.5). */
-const SANDBOX_ONLY = SIGN_ORDER.filter((id) => id in SANDBOX_REQUIREMENTS)
-const EVERYWHERE_ELSE = SIGN_ORDER.filter((id) => !(id in SANDBOX_REQUIREMENTS))
+const SANDBOX_ONLY = SIGN_ORDER.filter((id) => id in SANDBOX_REFERENCE)
+const EVERYWHERE_ELSE = SIGN_ORDER.filter((id) => !(id in SANDBOX_REFERENCE))
 
 const COLS = 2
 
@@ -98,7 +96,7 @@ function breadcrumbSchema() {
  *  modes, outbound link — the crawlable copy the client island cannot provide.
  *  The conditions line carries the full reachability, because with no chart on
  *  the page there is no grid left to read it off (§9.5). */
-function ReferenceCard({ id, index, count }: { id: SignId; index: number; count: number }) {
+function SignCard({ id, index, count }: { id: SignId; index: number; count: number }) {
   const sign = SIGNS[id]
   const Icon = SIGN_ICON[id]
   const lastRow = Math.floor((count - 1) / COLS)
@@ -188,8 +186,8 @@ export default function Page() {
             <span className="font-semibold">are you in 2026?</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl font-light">
-            Five stars — how you write it, who checks it, who decides, whether done was written
-            down, and what breaks. They align on one of eighteen signs.
+            Five stars — how you write it, who checks it, who decides, what can contradict the
+            implementation, and what breaks. They align on one of eighteen signs.
           </p>
           {/* The honesty line, above the fold, mono (§1.1). */}
           <p className="font-mono text-[10px] text-muted-foreground/80 leading-relaxed max-w-2xl mt-4">
@@ -201,7 +199,7 @@ export default function Page() {
 
       <Horoscode />
 
-      {/* The reference section — server-rendered, and the reason the page is
+      {/* The sign catalogue — server-rendered, and the reason the page is
           indexable: a tool whose content is entirely behind client state gives a
           crawler nothing. It is also the only enumeration of the eighteen
           (§9.5). */}
@@ -225,59 +223,32 @@ export default function Page() {
             the same model on both sides of the loop is the case that fails silently, because the
             priors that produced the bug are the priors used to look for it.
           </p>
-          <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-10">
+          <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-6">
             Five stars produce the answer: how the code gets written, who is the last set of eyes
-            before it ships, who decides it is correct, whether &ldquo;done&rdquo; was written down
-            before the work started, and what happens when it breaks. The first two place you on the
-            map. Judgement and stakes decide what the position costs — and in the lights-out house,
-            where agents write it and a machine clears it, Judgement decides the name too: a dark
-            factory held to codified law has an oracle the model does not get to edit, and one that
-            takes the model at its word has none. The fourth star is your rising sign — a requirement
-            written before the code exists is an oracle the implementation could not influence, which
-            is the cheapest independent verification available, and its absence is why fully agentic
-            delivery against a moving target is the sharpest case on this map.
+            before it ships, who decides it is correct, whether the acceptance standard is one the
+            code-and-review loop can change, and what happens when it breaks. The first two place
+            you on the map. Judgement and stakes decide what the position costs — and in the
+            lights-out house, where agents write it and a machine clears it, Judgement decides the
+            name too: a dark factory where a person, a team, or a codified gate can still contradict
+            the machines is not the same posture as one that takes the model at its word.
           </p>
-
-          {/* Two risings, applied on top of whichever sign resolves — except at
-              Sandbox in the split houses, where Requirements named the sign
-              itself and the badge would only restate it (§8.4). */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 border border-dashed border-border mb-10">
-            {REQUIREMENTS_STOPS.map((id, i) => {
-              const rising = RISINGS[id]
-              const RisingIcon = RISING_ICON[id]
-              return (
-                <div
-                  key={id}
-                  className={[
-                    'p-6 border-dashed border-border',
-                    i === 0 ? 'max-sm:border-b sm:border-r' : '',
-                  ].join(' ')}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <RisingIcon
-                      size={ICON_SIZE.risingBadge}
-                      className="text-foreground"
-                      aria-hidden="true"
-                    />
-                    <span className="text-sm font-semibold text-foreground">{rising.name}</span>
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground/80">
-                      rising
-                    </span>
-                  </div>
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                    {rising.epithet}
-                  </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed font-light">
-                    {rising.body}
-                  </p>
-                </div>
-              )
-            })}
-          </div>
+          {/* Reference gets no cards of its own — the model explanation is its
+              single explanatory surface outside the picker and the rail
+              (§9.5). */}
+          <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-10">
+            The fourth star, Reference, is asked separately from Judgement on purpose. Reference
+            asks who controls the acceptance standard; Judgement asks who or what applies it and
+            declares the result correct. A codified gate earns its own credit because enforcement is
+            consistent — but a test suite the same loop generates and freely rewrites is not a
+            standard held outside that loop, and counting it as both is the mistake the pair of
+            questions exists to avoid. The standard is allowed to evolve. What matters is who can
+            change it, which is why neither Waterfall against Agile nor written-first against
+            discovered-later is scored anywhere on this map.
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 border border-dashed border-border">
             {EVERYWHERE_ELSE.map((id, idx) => (
-              <ReferenceCard key={id} id={id} index={idx} count={EVERYWHERE_ELSE.length} />
+              <SignCard key={id} id={id} index={idx} count={EVERYWHERE_ELSE.length} />
             ))}
           </div>
 
@@ -289,16 +260,17 @@ export default function Page() {
           </div>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-10">
             When nothing is at stake there is no consequence to define the sign, so what remains is
-            whether a target existed before the work started: with one the work is directed — you
-            are aiming at something already described — and without one it is exploratory, because
-            you find out what you are building by building it. That is the whole difference between
-            a Learner and a Hobbyist, or a Benchmarker and a Skeptic. Above Sandbox the consequence
-            defines the sign and a pre-written target is a risk modifier instead.
+            who controls the target: with a standard held outside the loop the work is directed —
+            you are aiming at something you cannot quietly move — and with a loop-owned one it is
+            exploratory, because what counts as done is settled by the same loop that writes the
+            code. That is the whole difference between a Learner and a Hobbyist, or a Benchmarker
+            and a Skeptic. Above Sandbox the consequence defines the sign and an independent
+            reference is a risk modifier instead.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 border border-dashed border-border">
             {SANDBOX_ONLY.map((id, idx) => (
-              <ReferenceCard key={id} id={id} index={idx} count={SANDBOX_ONLY.length} />
+              <SignCard key={id} id={id} index={idx} count={SANDBOX_ONLY.length} />
             ))}
           </div>
         </div>

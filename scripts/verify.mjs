@@ -22,12 +22,11 @@ import {
   JUDGEMENT_STOPS,
   PIP_COUNT,
   REACHABILITY,
-  REQUIREMENTS_BONUS,
-  REQUIREMENTS_STOPS,
+  REFERENCE_BONUS,
+  REFERENCE_STOPS,
   REQUIRED_INDEPENDENCE,
   REVIEW_VALUE,
-  RISINGS,
-  SANDBOX_REQUIREMENTS,
+  SANDBOX_REFERENCE,
   SIGNS,
   SIGN_ORDER,
   SLOTS,
@@ -47,14 +46,13 @@ import {
   pips,
   positionOf,
   resolveSign,
-  risingFor,
   serialise,
   summariseAsText,
   traitName,
   verdictAdvice,
   verdictFor,
 } from '../lib/horoscode.ts'
-import { ICON_SIZE, RISING_ICON, SIGN_ICON, TRAIT_ICON } from '../lib/horoscode-icons.ts'
+import { ICON_SIZE, SIGN_ICON, TRAIT_ICON } from '../lib/horoscode-icons.ts'
 import { SIGN_GLYPH, glyphDataUri } from '../lib/sign-glyphs.ts'
 
 const ROOT = new URL('../', import.meta.url)
@@ -78,7 +76,7 @@ function check(name, fn) {
 }
 
 const states = allStates()
-const positionKey = (p) => `${p.code}:${p.review}:${p.judgement}:${p.requirements}`
+const positionKey = (p) => `${p.code}:${p.review}:${p.judgement}:${p.reference}`
 
 // ─── Totality and arithmetic (§13) ──────────────────────────────────────────
 
@@ -108,7 +106,7 @@ check('The scaled-integer identity: the float expression rounds to the same valu
       0.6 * review -
       0.4 * correlation +
       JUDGEMENT_BONUS[state.judgement] +
-      REQUIREMENTS_BONUS[state.requirements]
+      REFERENCE_BONUS[state.reference]
     const expected = Math.min(100, Math.max(0, Math.round(float)))
     const actual = computeMetrics(positionOf(state), state.environment).independence
     assert(actual === expected, `independence ${actual} != float-rounded ${expected} at ${positionKey(state)}`)
@@ -131,13 +129,13 @@ check('The four bands partition the integer margin range — no gap, no overlap'
   }
 })
 
-check('Independence is monotone non-increasing in review, then in code, under both Requirements', () => {
-  for (const requirements of REQUIREMENTS_STOPS) {
+check('Independence is monotone non-increasing in review, then in code, under both References', () => {
+  for (const reference of REFERENCE_STOPS) {
     for (const judgement of JUDGEMENT_STOPS) {
       for (const code of ZONE_STOPS) {
         let previous = Infinity
         for (const review of ZONE_STOPS) {
-          const value = computeMetrics({ code, review, judgement, requirements }, 'team').independence
+          const value = computeMetrics({ code, review, judgement, reference }, 'team').independence
           assert(value <= previous, `independence rose with review at ${code}/${review}/${judgement}`)
           previous = value
         }
@@ -145,7 +143,7 @@ check('Independence is monotone non-increasing in review, then in code, under bo
       for (const review of ZONE_STOPS) {
         let previous = Infinity
         for (const code of ZONE_STOPS) {
-          const value = computeMetrics({ code, review, judgement, requirements }, 'team').independence
+          const value = computeMetrics({ code, review, judgement, reference }, 'team').independence
           assert(value <= previous, `independence rose with code at ${code}/${review}/${judgement}`)
           previous = value
         }
@@ -154,17 +152,53 @@ check('Independence is monotone non-increasing in review, then in code, under bo
   }
 })
 
+check('Reference moves independence by the declared bonus, and moves nothing else', () => {
+  // Changing `loop` to `independent` changes only independence, by
+  // REFERENCE_BONUS.independent, except where the clamp applies (§13).
+  const delta = REFERENCE_BONUS.independent - REFERENCE_BONUS.loop
+  for (const code of ZONE_STOPS) {
+    for (const review of ZONE_STOPS) {
+      for (const judgement of JUDGEMENT_STOPS) {
+        for (const environment of ENVIRONMENT_STOPS) {
+          const loop = computeMetrics({ code, review, judgement, reference: 'loop' }, environment)
+          const independent = computeMetrics(
+            { code, review, judgement, reference: 'independent' },
+            environment,
+          )
+          assert(
+            loop.automation === independent.automation,
+            `Reference changed automation at ${code}/${review}/${judgement}`,
+          )
+          assert(
+            loop.correlation === independent.correlation && loop.required === independent.required,
+            `Reference changed a term other than independence at ${code}/${review}/${judgement}`,
+          )
+          const clamped = loop.independence === 0 || independent.independence === 100
+          assert(
+            independent.independence - loop.independence === delta || clamped,
+            `Reference moved independence by ${independent.independence - loop.independence} at ${code}/${review}/${judgement}`,
+          )
+          assert(
+            independent.margin - loop.margin === independent.independence - loop.independence,
+            `margin did not follow independence at ${code}/${review}/${judgement}`,
+          )
+        }
+      }
+    }
+  }
+})
+
 check('Summoned × Machine-gated is strictly lowest at the trait centroids', () => {
-  for (const requirements of REQUIREMENTS_STOPS) {
+  for (const reference of REFERENCE_STOPS) {
     for (const judgement of JUDGEMENT_STOPS) {
       const corner = computeMetrics(
-        { code: 'delegated', review: 'delegated', judgement, requirements },
+        { code: 'delegated', review: 'delegated', judgement, reference },
         'team',
       ).independence
       for (const code of ZONE_STOPS) {
         for (const review of ZONE_STOPS) {
           if (code === 'delegated' && review === 'delegated') continue
-          const other = computeMetrics({ code, review, judgement, requirements }, 'team').independence
+          const other = computeMetrics({ code, review, judgement, reference }, 'team').independence
           assert(corner < other, `${code}/${review} is not above the lights-out corner`)
         }
       }
@@ -184,20 +218,20 @@ check('The minimum independence is a unique argmin over positions (§8.3)', () =
   const argmin = [...byPosition.entries()].filter(([, v]) => v === minimum).map(([k]) => k)
   assert(argmin.length === 1, `minimum independence is attained by ${argmin.length} positions: ${argmin.join(', ')}`)
   assert(
-    argmin[0] === 'delegated:delegated:llm:flexible',
-    `the unique minimum is at ${argmin[0]}, expected delegated:delegated:llm:flexible`,
+    argmin[0] === 'delegated:delegated:llm:loop',
+    `the unique minimum is at ${argmin[0]}, expected delegated:delegated:llm:loop`,
   )
   // Independence never reads Stakes, and the assertion above depends on it.
   for (const key of byPosition.keys()) {
-    const [code, review, judgement, requirements] = key.split(':')
+    const [code, review, judgement, reference] = key.split(':')
     const values = ENVIRONMENT_STOPS.map(
-      (environment) => computeMetrics({ code, review, judgement, requirements }, environment).independence,
+      (environment) => computeMetrics({ code, review, judgement, reference }, environment).independence,
     )
     assert(new Set(values).size === 1, `independence read Stakes at ${key}`)
   }
   // And the position it names is a Believer everywhere except Sandbox, where it
   // is the Vibe Coder.
-  const position = { code: 'delegated', review: 'delegated', judgement: 'llm', requirements: 'flexible' }
+  const position = { code: 'delegated', review: 'delegated', judgement: 'llm', reference: 'loop' }
   assert(resolveSign(position, 'hobby').id === 'vibe-coder', 'the minimum position is not the Vibe Coder at Sandbox')
   for (const environment of ['team', 'regulated']) {
     assert(resolveSign(position, environment).id === 'believer', `the minimum position is not a Believer at ${environment}`)
@@ -229,7 +263,7 @@ check('All eighteen signs are reachable, and the eight Sandbox signs only at San
   assert(SIGN_ORDER.length === 18, `SIGN_ORDER has ${SIGN_ORDER.length} entries`)
   for (const id of SIGN_ORDER) assert(reached.has(id), `${id} is unreachable`)
 
-  const sandboxOnly = SIGN_ORDER.filter((id) => id in SANDBOX_REQUIREMENTS).sort()
+  const sandboxOnly = SIGN_ORDER.filter((id) => id in SANDBOX_REFERENCE).sort()
   assert(sandboxOnly.length === 8, `${sandboxOnly.length} signs are Sandbox-named, expected eight`)
   for (const id of sandboxOnly) {
     const environments = [...reached.get(id)]
@@ -242,17 +276,17 @@ check('All eighteen signs are reachable, and the eight Sandbox signs only at San
   )
 })
 
-check('Requirements changes the sign in exactly the four split houses, and only at Sandbox', () => {
+check('Reference changes the sign in exactly the four split houses, and only at Sandbox', () => {
   const split = new Set()
   for (const code of ZONE_STOPS) {
     for (const review of ZONE_STOPS) {
       for (const judgement of JUDGEMENT_STOPS) {
         for (const environment of ENVIRONMENT_STOPS) {
-          const [fixed, flexible] = REQUIREMENTS_STOPS.map(
-            (requirements) => resolveSign({ code, review, judgement, requirements }, environment).id,
+          const [independent, loop] = REFERENCE_STOPS.map(
+            (reference) => resolveSign({ code, review, judgement, reference }, environment).id,
           )
-          if (fixed === flexible) continue
-          assert(environment === 'hobby', `Requirements moved the sign at ${environment} in ${code}/${review}`)
+          if (independent === loop) continue
+          assert(environment === 'hobby', `Reference moved the sign at ${environment} in ${code}/${review}`)
           split.add(`${code}:${review}`)
         }
       }
@@ -261,7 +295,7 @@ check('Requirements changes the sign in exactly the four split houses, and only 
   const expected = ['delegated:delegated', 'delegated:hand', 'hand:delegated', 'hand:hand']
   assert(
     JSON.stringify([...split].sort()) === JSON.stringify(expected),
-    `Requirements splits [${[...split].sort().join(', ')}], expected [${expected.join(', ')}]`,
+    `Reference splits [${[...split].sort().join(', ')}], expected [${expected.join(', ')}]`,
   )
 })
 
@@ -271,10 +305,10 @@ check('Judgement changes the sign in exactly one house, and only above Sandbox (
   const split = new Set()
   for (const code of ZONE_STOPS) {
     for (const review of ZONE_STOPS) {
-      for (const requirements of REQUIREMENTS_STOPS) {
+      for (const reference of REFERENCE_STOPS) {
         for (const environment of ENVIRONMENT_STOPS) {
           const ids = JUDGEMENT_STOPS.map(
-            (judgement) => resolveSign({ code, review, judgement, requirements }, environment).id,
+            (judgement) => resolveSign({ code, review, judgement, reference }, environment).id,
           )
           if (new Set(ids).size === 1) continue
           assert(environment !== 'hobby', `Judgement moved the sign at Sandbox in ${code}/${review}`)
@@ -289,10 +323,10 @@ check('Judgement changes the sign in exactly one house, and only above Sandbox (
   )
   // Within it: the oracle resolves to The Believer, the other three to the Dark
   // Factory.
-  for (const requirements of REQUIREMENTS_STOPS) {
+  for (const reference of REFERENCE_STOPS) {
     for (const environment of ['team', 'regulated']) {
       for (const judgement of JUDGEMENT_STOPS) {
-        const id = resolveSign({ code: 'delegated', review: 'delegated', judgement, requirements }, environment).id
+        const id = resolveSign({ code: 'delegated', review: 'delegated', judgement, reference }, environment).id
         assert(
           id === (judgement === 'llm' ? 'believer' : 'dark-factory'),
           `${judgement} at ${environment} resolves to ${id}`,
@@ -334,8 +368,8 @@ check('The two branches of resolveSign are ordered, not overlapping', () => {
     if (state.environment !== 'hobby' || !house.sandbox) continue
     const id = resolveSign(positionOf(state), state.environment).id
     assert(
-      id === house.sandbox[state.requirements],
-      `a Sandbox state resolved to ${id} rather than its Requirements pair at ${positionKey(state)}`,
+      id === house.sandbox[state.reference],
+      `a Sandbox state resolved to ${id} rather than its Reference pair at ${positionKey(state)}`,
     )
     if (house.oracle) assert(id !== house.oracle, `a Sandbox state reached the Judgement branch at ${positionKey(state)}`)
   }
@@ -352,18 +386,6 @@ check('`environments` on every record matches what resolution actually produces'
     assert(
       HOUSES[SIGNS[id].house.code][SIGNS[id].house.review] !== undefined,
       `${id}: house is not on the three-by-three`,
-    )
-  }
-})
-
-check('Risings are absent on exactly the eight Sandbox signs', () => {
-  for (const state of states) {
-    const sign = resolveSign(positionOf(state), state.environment)
-    const rising = risingFor(state)
-    const sandboxNamed = sign.id in SANDBOX_REQUIREMENTS
-    assert(
-      sandboxNamed ? rising === null : rising === RISINGS[state.requirements],
-      `rising mismatch on ${sign.id} at ${positionKey(state)}`,
     )
   }
 })
@@ -465,12 +487,6 @@ check('No user-facing string contains a digit', () => {
       for (const line of sign[field]) assert(/^\D*$/.test(line), `${id}: ${field} contains a digit — ${line}`)
     }
   }
-  for (const id of REQUIREMENTS_STOPS) {
-    const rising = RISINGS[id]
-    for (const field of ['name', 'epithet', 'body', 'strength', 'failureMode']) {
-      assert(/^\D*$/.test(rising[field]), `${id}: rising ${field} contains a digit — ${rising[field]}`)
-    }
-  }
 })
 
 check('Sign records carry every authored field, at the shape the reading expects', () => {
@@ -529,7 +545,7 @@ check('serialise emits exactly the five star params, and parseState drops the re
     c: 'delegated',
     r: 'delegated',
     j: 'llm',
-    s: 'flexible',
+    s: 'loop',
     e: 'team',
     g: 'autonomous',
     utm_source: 'newsletter',
@@ -538,10 +554,14 @@ check('serialise emits exactly the five star params, and parseState drops the re
   const parsed = parseState(noisy)
   assert(Object.keys(parsed).length === 5, `parseState returned ${Object.keys(parsed).length} keys`)
   assert(!('goal' in parsed), 'parseState kept a goal')
-  assert(serialise(parsed) === '/?c=delegated&r=delegated&j=llm&s=flexible&e=team', `unknown params survived: ${serialise(parsed)}`)
-  // Numeric `c` and `r` still parse, for links minted by iteration one.
-  const legacy = parseState(new URLSearchParams({ c: '90', r: '10', j: 'me', s: 'fixed', e: 'hobby' }))
-  assert(legacy.code === 'delegated' && legacy.review === 'hand', 'numeric compatibility parsing broke')
+  assert(serialise(parsed) === '/?c=delegated&r=delegated&j=llm&s=loop&e=team', `unknown params survived: ${serialise(parsed)}`)
+  // No legacy aliases: a value outside the table is invalid rather than
+  // translated into a current trait (§10.1).
+  const aliased = parseState(new URLSearchParams({ c: '90', r: '10', j: 'me', s: 'fixed', e: 'hobby' }))
+  assert(
+    aliased.code === null && aliased.review === null && aliased.reference === null,
+    'a legacy value was translated into a current trait',
+  )
   // An unrecognised value is normalised away rather than trusted.
   const bogus = parseState(new URLSearchParams({ c: 'wizard', j: 'coin-flip' }))
   assert(bogus.code === null && bogus.judgement === null, 'an unknown trait value survived parsing')
@@ -563,9 +583,6 @@ check('Icons are exhaustive, disjoint, and thirty-three in number', () => {
   assert(traitSet.size === 15, `${traitSet.size} distinct trait icons, expected fifteen`)
   for (const icon of signSet) assert(!traitSet.has(icon), 'a sign icon is also a trait icon')
   assert(signSet.size + traitSet.size === 33, 'the icon set is not thirty-three')
-  for (const id of REQUIREMENTS_STOPS) {
-    assert(RISING_ICON[id] === TRAIT_ICON.requirements[id], 'the rising badge does not reuse its trait icon')
-  }
   assert(ICON_SIZE.optionMobile === 20 && ICON_SIZE.optionDesktop === 28, 'option icon sizes drifted')
   assert(ICON_SIZE.railSlot === 14 && ICON_SIZE.reveal === 40 && ICON_SIZE.card === 18, 'icon sizes drifted')
 })
@@ -611,6 +628,41 @@ check('No randomness anywhere in the shipped sources (§1.1)', () => {
     const source = readFileSync(file, 'utf8')
     for (const forbidden of ['Math.random', 'Date.now', 'new Date(']) {
       assert(!source.includes(forbidden), `${relative(file)} contains ${forbidden}`)
+    }
+  }
+})
+
+check('No second result taxonomy anywhere in the shipped sources (§15)', () => {
+  // Identifiers, not prose: natural-language uses of "rises" remain valid in
+  // forecast copy, which is why the needles are capitalised or suffixed.
+  for (const file of shipped) {
+    const source = readFileSync(file, 'utf8')
+    for (const forbidden of ['Rising', 'RISINGS', 'risingFor']) {
+      assert(!source.includes(forbidden), `${relative(file)} carries the identifier ${forbidden}`)
+    }
+  }
+})
+
+check('The reading, the share card, and summariseAsText carry the same name (§13)', () => {
+  // No Reference-derived modifier is composed onto the sign name on any of the
+  // three surfaces. Two of them are JSX, so they are checked as sources: each
+  // must render the resolved sign's own name and epithet and nothing beside it.
+  for (const state of states) {
+    const sign = resolveSign(positionOf(state), state.environment)
+    const first = summariseAsText(state, 'https://horoscode.dev').split('\n')[0]
+    assert(
+      first === `${sign.name} — ${sign.epithet}`,
+      `summariseAsText composed something onto the name at ${positionKey(state)}: ${first}`,
+    )
+  }
+  const surfaces = ['components/horoscode.tsx', 'app/api/og/route.tsx']
+  const traitNames = REFERENCE_STOPS.map((value) => traitName('reference', value))
+  for (const path of surfaces) {
+    const source = readFileSync(new URL(path, ROOT), 'utf8')
+    assert(source.includes('resolveSign('), `${path} does not resolve the sign itself`)
+    assert(source.includes('sign.epithet'), `${path} does not render the resolved epithet`)
+    for (const name of traitNames) {
+      assert(!source.includes(name), `${path} composes the Reference trait "${name}" onto the sign`)
     }
   }
 })
@@ -663,10 +715,10 @@ check('Every button declares one of the sanctioned minimum targets (§4.2)', () 
 check('The five stars, their questions, and their helpers are intact (§6.1)', () => {
   assert(
     JSON.stringify([...SLOT_ORDER]) ===
-      JSON.stringify(['code', 'review', 'judgement', 'requirements', 'environment']),
+      JSON.stringify(['code', 'review', 'judgement', 'reference', 'environment']),
     'the slot order moved',
   )
-  const counts = { code: 3, review: 3, judgement: 4, requirements: 2, environment: 3 }
+  const counts = { code: 3, review: 3, judgement: 4, reference: 2, environment: 3 }
   const withHelper = SLOT_ORDER.filter((id) => SLOTS[id].helper)
   for (const id of SLOT_ORDER) {
     assert(SLOTS[id].options.length === counts[id], `${id}: option count moved`)
@@ -676,7 +728,7 @@ check('The five stars, their questions, and their helpers are intact (§6.1)', (
     }
   }
   assert(
-    JSON.stringify(withHelper) === JSON.stringify(['judgement', 'requirements', 'environment']),
+    JSON.stringify(withHelper) === JSON.stringify(['judgement', 'reference', 'environment']),
     `helpers sit on [${withHelper.join(', ')}], expected the three that get misread`,
   )
 })

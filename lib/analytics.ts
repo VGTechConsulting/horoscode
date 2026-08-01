@@ -6,7 +6,7 @@
 
 import { track as vercelTrack } from '@vercel/analytics'
 
-import type { Environment, Judgement, Requirements, SignId, SlotId, VerdictId, Zone } from './horoscode'
+import type { Environment, Judgement, Reference, SignId, SlotId, VerdictId, Zone } from './horoscode'
 
 interface PickEvent {
   slot: SlotId
@@ -20,7 +20,7 @@ interface ResultEvent {
   code: Zone
   review: Zone
   judgement: Judgement
-  requirements: Requirements
+  reference: Reference
   environment: Environment
   /** One-based, per session. */
   run: number

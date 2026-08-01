@@ -15,26 +15,26 @@
 // makes every string-producing function in this file part of that rule rather
 // than incidental to it.
 
-import { RISINGS, SIGNS, SIGN_ORDER, type Rising, type Sign, type SignId } from '../content/signs.ts'
+import { SIGNS, SIGN_ORDER, type Sign, type SignId } from '../content/signs.ts'
 
-export { RISINGS, SIGNS, SIGN_ORDER }
-export type { Rising, Sign, SignId }
+export { SIGNS, SIGN_ORDER }
+export type { Sign, SignId }
 
 // ─── Axis types ─────────────────────────────────────────────────────────────
 
 export type Zone = 'hand' | 'blended' | 'delegated'
 export type Judgement = 'me' | 'team' | 'process' | 'llm'
-export type Requirements = 'fixed' | 'flexible'
+export type Reference = 'independent' | 'loop'
 export type Environment = 'hobby' | 'team' | 'regulated'
 
 export const ZONE_STOPS = ['hand', 'blended', 'delegated'] as const
 export const JUDGEMENT_STOPS = ['me', 'team', 'process', 'llm'] as const
-export const REQUIREMENTS_STOPS = ['fixed', 'flexible'] as const
+export const REFERENCE_STOPS = ['independent', 'loop'] as const
 export const ENVIRONMENT_STOPS = ['hobby', 'team', 'regulated'] as const
 
 // ─── The five stars (spec §6.1) ─────────────────────────────────────────────
 
-export const SLOT_ORDER = ['code', 'review', 'judgement', 'requirements', 'environment'] as const
+export const SLOT_ORDER = ['code', 'review', 'judgement', 'reference', 'environment'] as const
 export type SlotId = (typeof SLOT_ORDER)[number]
 
 export interface TraitOption<T extends string> {
@@ -117,23 +117,23 @@ export const JUDGEMENT_SLOT: Slot<Judgement> = {
   ],
 }
 
-export const REQUIREMENTS_SLOT: Slot<Requirements> = {
-  id: 'requirements',
-  axis: 'Requirements',
-  short: 'Spec',
-  question: 'Was "done" defined before the work started?',
+export const REFERENCE_SLOT: Slot<Reference> = {
+  id: 'reference',
+  axis: 'Reference',
+  short: 'Ref',
+  question: 'Is there an acceptance standard the code-and-review loop cannot change?',
   helper:
-    'Waterfall, fixed-bid, coursework, and katas are Specified. Agile product work and weekend projects are Emergent.',
+    'The standard may evolve. What matters is who can change it, not whether the project is Waterfall or Agile or whether the standard was written first.',
   options: [
     {
-      value: 'fixed',
-      name: 'Specified',
-      line: 'The target is written down first — a spec, a contract, a rubric, a test suite.',
+      value: 'independent',
+      name: 'Independent reference',
+      line: 'A contract, test, policy, rubric, or dataset is controlled outside the code-and-review loop.',
     },
     {
-      value: 'flexible',
-      name: 'Emergent',
-      line: 'The target moves. We iterate with stakeholders and find out what done means.',
+      value: 'loop',
+      name: 'Loop-owned reference',
+      line: 'The same loop can reinterpret or edit what counts as done.',
     },
   ],
 }
@@ -169,7 +169,7 @@ export const SLOTS = {
   code: CODE_SLOT,
   review: REVIEW_SLOT,
   judgement: JUDGEMENT_SLOT,
-  requirements: REQUIREMENTS_SLOT,
+  reference: REFERENCE_SLOT,
   environment: ENVIRONMENT_SLOT,
 } as const
 
@@ -189,7 +189,7 @@ export interface HoroscodeState {
   code: Zone | null
   review: Zone | null
   judgement: Judgement | null
-  requirements: Requirements | null
+  reference: Reference | null
   environment: Environment | null
 }
 
@@ -197,7 +197,7 @@ export interface CompleteState extends HoroscodeState {
   code: Zone
   review: Zone
   judgement: Judgement
-  requirements: Requirements
+  reference: Reference
   environment: Environment
 }
 
@@ -205,7 +205,7 @@ export const EMPTY_STATE: HoroscodeState = {
   code: null,
   review: null,
   judgement: null,
-  requirements: null,
+  reference: null,
   environment: null,
 }
 
@@ -214,7 +214,7 @@ export function isComplete(state: HoroscodeState): state is CompleteState {
     state.code !== null &&
     state.review !== null &&
     state.judgement !== null &&
-    state.requirements !== null &&
+    state.reference !== null &&
     state.environment !== null
   )
 }
@@ -237,14 +237,6 @@ export function clamp(n: number, min: number, max: number): number {
   return n < min ? min : n > max ? max : n
 }
 
-/** Retained for one job only: iteration-one links carried numeric `c` and `r`,
- *  and the parser still accepts them (§10.1). */
-export function zoneOf(value: number): Zone {
-  if (value <= 33) return 'hand'
-  if (value <= 66) return 'blended'
-  return 'delegated'
-}
-
 // ─── Derived metrics (spec §6.2) ────────────────────────────────────────────
 
 /** Trait centroids — the representative value of each zone. */
@@ -258,9 +250,19 @@ export const JUDGEMENT_BONUS: Record<Judgement, number> = {
   llm: -15,
 }
 
-/** Fixed requirements *add* an oracle; flexible ones do not *remove* one — hence
- *  `{+10, 0}` rather than `{+5, −5}` (§6.2). */
-export const REQUIREMENTS_BONUS: Record<Requirements, number> = { fixed: 10, flexible: 0 }
+/**
+ * A standard the loop cannot edit *adds* an oracle; a loop-owned one does not
+ * *remove* one — hence `{+10, 0}` rather than `{+5, −5}` (§6.2).
+ *
+ * Reference and Judgement are deliberately orthogonal: Reference asks who
+ * controls the acceptance standard, Judgement asks who or what applies it and
+ * declares the result correct. A codified gate earns the Judgement bonus because
+ * enforcement is consistent; it earns this one only when the code-and-review
+ * loop cannot edit or reinterpret the standard it applies. A test suite
+ * generated and freely rewritten by that same loop is `process` + `loop`, not
+ * the same control counted twice.
+ */
+export const REFERENCE_BONUS: Record<Reference, number> = { independent: 10, loop: 0 }
 
 export const REQUIRED_INDEPENDENCE: Record<Environment, number> = {
   hobby: 20,
@@ -329,7 +331,7 @@ export interface Position {
   code: Zone
   review: Zone
   judgement: Judgement
-  requirements: Requirements
+  reference: Reference
 }
 
 export function positionOf(state: CompleteState): Position {
@@ -337,7 +339,7 @@ export function positionOf(state: CompleteState): Position {
     code: state.code,
     review: state.review,
     judgement: state.judgement,
-    requirements: state.requirements,
+    reference: state.reference,
   }
 }
 
@@ -350,8 +352,8 @@ export function computeMetrics(position: Position, environment: Environment): Me
 
   // Scaled by ten so the whole expression is exact integer arithmetic.
   const judgementBonus = JUDGEMENT_BONUS[position.judgement]
-  const requirementsBonus = REQUIREMENTS_BONUS[position.requirements]
-  const raw = 1000 - 6 * review - 4 * correlation + 10 * judgementBonus + 10 * requirementsBonus
+  const referenceBonus = REFERENCE_BONUS[position.reference]
+  const raw = 1000 - 6 * review - 4 * correlation + 10 * judgementBonus + 10 * referenceBonus
   const independence = clamp(Math.round(raw / 10), 0, 100)
 
   const required = REQUIRED_INDEPENDENCE[environment]
@@ -466,17 +468,18 @@ export function meterCaption(metrics: Metrics): string {
  * A house on the three-by-three: the sign it resolves to, plus the two
  * discriminators.
  *
- * One discriminator per house, chosen by what the stakes leave undetermined.
- * Below Sandbox the consequence is missing, so Requirements resolves the class.
- * Above Sandbox the consequence defines the class and a pre-written target is a
- * risk modifier instead. In exactly one house — the lights-out corner — the
- * consequence is not enough on its own, and Judgement separates the two
- * postures that share it (§8.3).
+ * One discriminator per house, chosen by what the stakes leave undetermined. At
+ * Sandbox the consequence is absent, so Reference resolves the class: an
+ * independent target makes the work directed, a loop-owned one makes it
+ * exploratory. Above Sandbox the consequence defines the class and an
+ * independent reference is a risk modifier instead. In exactly one house — the
+ * lights-out corner — the consequence is not enough on its own, and Judgement
+ * separates the two postures that share it (§8.3).
  */
 export interface House {
   base: SignId
   /** Present on the four houses where zero stakes means a different activity. */
-  sandbox?: Record<Requirements, SignId>
+  sandbox?: Record<Reference, SignId>
   /** Present on the one house where an unchecked model is the last thing in the
    *  loop rather than a modifier on a class a person is still inside. */
   oracle?: SignId
@@ -484,11 +487,11 @@ export interface House {
 
 export const HOUSES: Record<Zone, Record<Zone, House>> = {
   hand: {
-    hand: { base: 'craftsman', sandbox: { fixed: 'learner', flexible: 'hobbyist' } },
+    hand: { base: 'craftsman', sandbox: { independent: 'learner', loop: 'hobbyist' } },
     blended: { base: 'practitioner' },
     delegated: {
       base: 'lone-author',
-      sandbox: { fixed: 'candidate', flexible: 'weekend-builder' },
+      sandbox: { independent: 'candidate', loop: 'weekend-builder' },
     },
   },
   blended: {
@@ -497,11 +500,11 @@ export const HOUSES: Record<Zone, Record<Zone, House>> = {
     delegated: { base: 'shipper' },
   },
   delegated: {
-    hand: { base: 'supervisor', sandbox: { fixed: 'benchmarker', flexible: 'skeptic' } },
+    hand: { base: 'supervisor', sandbox: { independent: 'benchmarker', loop: 'skeptic' } },
     blended: { base: 'orchestrator' },
     delegated: {
       base: 'dark-factory',
-      sandbox: { fixed: 'spec-runner', flexible: 'vibe-coder' },
+      sandbox: { independent: 'spec-runner', loop: 'vibe-coder' },
       oracle: 'believer',
     },
   },
@@ -517,7 +520,7 @@ export const HOUSES: Record<Zone, Record<Zone, House>> = {
  */
 export function resolveSign(position: Position, environment: Environment): Sign {
   const house = HOUSES[position.code][position.review]
-  if (environment === 'hobby' && house.sandbox) return SIGNS[house.sandbox[position.requirements]]
+  if (environment === 'hobby' && house.sandbox) return SIGNS[house.sandbox[position.reference]]
   if (house.oracle && position.judgement === 'llm') return SIGNS[house.oracle]
   return SIGNS[house.base]
 }
@@ -530,9 +533,9 @@ export function allStates(): CompleteState[] {
   for (const code of ZONE_STOPS) {
     for (const review of ZONE_STOPS) {
       for (const judgement of JUDGEMENT_STOPS) {
-        for (const requirements of REQUIREMENTS_STOPS) {
+        for (const reference of REFERENCE_STOPS) {
           for (const environment of ENVIRONMENT_STOPS) {
-            states.push({ code, review, judgement, requirements, environment })
+            states.push({ code, review, judgement, reference, environment })
           }
         }
       }
@@ -542,12 +545,12 @@ export function allStates(): CompleteState[] {
 }
 
 /** What actually reaches each sign, derived from `resolveSign` over all two
- *  hundred and sixteen states. The reference section prints its conditions from
+ *  hundred and sixteen states. The sign catalogue prints its conditions from
  *  here, so a card can never claim reachability the resolver does not produce
  *  (§9.5). */
 export interface Reachability {
   environments: Environment[]
-  requirements: Requirements[]
+  references: Reference[]
   judgements: Judgement[]
 }
 
@@ -557,11 +560,11 @@ export const REACHABILITY: Record<SignId, Reachability> = (() => {
     const id = resolveSign(positionOf(state), state.environment).id
     const entry = (seen[id] ??= {
       environments: new Set(),
-      requirements: new Set(),
+      references: new Set(),
       judgements: new Set(),
     })
     entry.environments.add(state.environment)
-    entry.requirements.add(state.requirements)
+    entry.references.add(state.reference)
     entry.judgements.add(state.judgement)
   }
   const map = {} as Record<SignId, Reachability>
@@ -569,30 +572,30 @@ export const REACHABILITY: Record<SignId, Reachability> = (() => {
     const entry = seen[id]
     map[id] = {
       environments: ENVIRONMENT_STOPS.filter((v) => entry?.environments.has(v)),
-      requirements: REQUIREMENTS_STOPS.filter((v) => entry?.requirements.has(v)),
+      references: REFERENCE_STOPS.filter((v) => entry?.references.has(v)),
       judgements: JUDGEMENT_STOPS.filter((v) => entry?.judgements.has(v)),
     }
   }
   return map
 })()
 
-/** The eight signs that exist only at Sandbox stakes, and the Requirements value
+/** The eight signs that exist only at Sandbox stakes, and the Reference value
  *  that reaches each. Derived, so it cannot drift from the houses. */
-export const SANDBOX_REQUIREMENTS: Partial<Record<SignId, Requirements>> = (() => {
-  const map: Partial<Record<SignId, Requirements>> = {}
+export const SANDBOX_REFERENCE: Partial<Record<SignId, Reference>> = (() => {
+  const map: Partial<Record<SignId, Reference>> = {}
   for (const code of ZONE_STOPS) {
     for (const review of ZONE_STOPS) {
       const { sandbox } = HOUSES[code][review]
       if (!sandbox) continue
-      for (const requirements of REQUIREMENTS_STOPS) map[sandbox[requirements]] = requirements
+      for (const reference of REFERENCE_STOPS) map[sandbox[reference]] = reference
     }
   }
   return map
 })()
 
 /**
- * The conditions line each reference card prints: house, stakes tiers, and the
- * Requirements or Judgement values where one of those resolves the sign. With no
+ * The conditions line each catalogue card prints: house, stakes tiers, and the
+ * Reference or Judgement values where one of those resolves the sign. With no
  * chart on the page this is the only place reachability is stated, so it carries
  * all of it (§9.5).
  */
@@ -603,8 +606,8 @@ export function conditionsFor(id: SignId): string[] {
     `${traitName('code', sign.house.code)} · ${traitName('review', sign.house.review)}`,
     reach.environments.map((e) => traitName('environment', e)).join(' · '),
   ]
-  if (reach.requirements.length < REQUIREMENTS_STOPS.length) {
-    lines.push(reach.requirements.map((r) => traitName('requirements', r)).join(' · '))
+  if (reach.references.length < REFERENCE_STOPS.length) {
+    lines.push(reach.references.map((r) => traitName('reference', r)).join(' · '))
   }
   if (reach.judgements.length < JUDGEMENT_STOPS.length) {
     lines.push(
@@ -612,19 +615,6 @@ export function conditionsFor(id: SignId): string[] {
     )
   }
   return lines
-}
-
-// ─── Risings (spec §8.4) ────────────────────────────────────────────────────
-
-/**
- * The badge renders only where Requirements did *not* already name the class.
- * On a Hobbyist reading, "Emergent rising" would restate the class name in
- * smaller type, and the eight Sandbox records were written knowing their origin.
- * Risings are absent on exactly those eight, and the harness asserts it.
- */
-export function risingFor(state: CompleteState): Rising | null {
-  const house = HOUSES[state.code][state.review]
-  return state.environment === 'hobby' && house.sandbox ? null : RISINGS[state.requirements]
 }
 
 // ─── Verdict follow-up line (spec §6.4) ─────────────────────────────────────
@@ -647,11 +637,10 @@ export function verdictAdvice(metrics: Metrics, sign: Sign): string {
 
 // ─── URL serialisation (spec §10.1) ─────────────────────────────────────────
 
-/** The app is one route. Both legacy paths redirect here, single-hop, with the
- *  query string preserved — see next.config.mjs. */
+/** The app is one route. */
 export const HOROSCODE_PATH = '/'
 
-/** Five params, one per star, and no sixth. `s` for spec — `r` was taken by
+/** Five params, one per star, and no sixth. `s` for standard — `r` was taken by
  *  Verification. */
 export const URL_PARAMS = ['c', 'r', 'j', 's', 'e'] as const
 
@@ -661,20 +650,11 @@ function isZone(v: string | null | undefined): v is Zone {
 function isJudgement(v: string | null | undefined): v is Judgement {
   return v != null && (JUDGEMENT_STOPS as readonly string[]).includes(v)
 }
-function isRequirements(v: string | null | undefined): v is Requirements {
-  return v != null && (REQUIREMENTS_STOPS as readonly string[]).includes(v)
+function isReference(v: string | null | undefined): v is Reference {
+  return v != null && (REFERENCE_STOPS as readonly string[]).includes(v)
 }
 function isEnvironment(v: string | null | undefined): v is Environment {
   return v != null && (ENVIRONMENT_STOPS as readonly string[]).includes(v)
-}
-
-/** Words now, numbers during iteration one. One line keeps every link made then
- *  working, and costs nothing (§10.1). */
-function parseZone(v: string | null | undefined): Zone | null {
-  if (isZone(v)) return v
-  if (v == null || v === '') return null
-  const n = Number(v)
-  return Number.isFinite(n) ? zoneOf(clamp(n, 0, 100)) : null
 }
 
 /**
@@ -687,7 +667,7 @@ export function serialise(state: HoroscodeState): string {
   if (state.code) q.set('c', state.code)
   if (state.review) q.set('r', state.review)
   if (state.judgement) q.set('j', state.judgement)
-  if (state.requirements) q.set('s', state.requirements)
+  if (state.reference) q.set('s', state.reference)
   if (state.environment) q.set('e', state.environment)
   const query = q.toString()
   return query ? `${HOROSCODE_PATH}?${query}` : HOROSCODE_PATH
@@ -700,19 +680,23 @@ type ParamSource = { get(key: string): string | null }
  * session, and never falls back to a default — each star is read against
  * *empty* (§10.1). Unset means empty slot, which means the flow starts there,
  * which is why a naked path is an empty flow for everybody. Unknown params are
- * normalised away rather than passed through.
+ * normalised away rather than passed through, and there are no legacy aliases:
+ * a value outside the table is invalid rather than translated into a current
+ * trait.
  */
 export function parseState(source: ParamSource | null | undefined): HoroscodeState {
   if (!source) return { ...EMPTY_STATE }
+  const code = source.get('c')
+  const review = source.get('r')
   const judgement = source.get('j')
-  const requirements = source.get('s')
+  const reference = source.get('s')
   const environment = source.get('e')
 
   return {
-    code: parseZone(source.get('c')),
-    review: parseZone(source.get('r')),
+    code: isZone(code) ? code : null,
+    review: isZone(review) ? review : null,
     judgement: isJudgement(judgement) ? judgement : null,
-    requirements: isRequirements(requirements) ? requirements : null,
+    reference: isReference(reference) ? reference : null,
     environment: isEnvironment(environment) ? environment : null,
   }
 }
@@ -726,14 +710,15 @@ export function parseSerialised(url: string): HoroscodeState {
 // ─── Plain-text summary (spec §10.3) ────────────────────────────────────────
 
 /** Words only. No metric ever reaches a clipboard that never appeared on
- *  screen. The forecast travels with it, because a verdict label alone is the
- *  clinical half of the reading (§7). */
+ *  screen, and no modifier is added to the name that was not present in the
+ *  reading — the reading, the share card, and this string resolve the same sign
+ *  name and epithet. The forecast travels with it, because a verdict label alone
+ *  is the clinical half of the reading (§7, §10.3). */
 export function summariseAsText(state: CompleteState, origin: string): string {
   const sign = resolveSign(positionOf(state), state.environment)
-  const rising = RISINGS[state.requirements]
   const metrics = computeMetrics(positionOf(state), state.environment)
   return [
-    `${sign.name} · ${rising.name} — ${sign.epithet}`,
+    `${sign.name} — ${sign.epithet}`,
     metrics.verdict.label,
     forecastFor(metrics, state.environment),
     SLOT_ORDER.map((slot) => `${SLOTS[slot].axis}: ${traitName(slot, state[slot])}`).join(' · '),
