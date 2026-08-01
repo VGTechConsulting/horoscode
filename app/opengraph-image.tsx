@@ -5,8 +5,18 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'Horoscode — what kind of software engineer are you?'
 
-/** The no-params card, and the whole share surface if `app/api/og` is ever
- *  deleted (§11.2). */
+/** Drawn once at build time and written into the artifact as a file — see
+ *  `app/sitemap.ts`. */
+export const dynamic = 'force-static'
+
+/** The whole share surface: one generic 1200 × 630 card, generated at build time
+ *  and served as a static file (github-pages-deployment.spec.md §4.1). It names
+ *  no sign, epithet, or verdict — the per-result card needed a request-time
+ *  handler, which a static export has nowhere to put. Nothing is fetched while
+ *  drawing it, which is also why it renders in the default typeface.
+ *
+ *  A shared result still restores the correct reading: the five params travel in
+ *  the URL, and the unfurler's preview is the only thing that goes generic. */
 export default function OpengraphImage() {
   return new ImageResponse(
     (

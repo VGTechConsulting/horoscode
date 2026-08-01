@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import Link from 'next/link'
-import { Analytics } from '@vercel/analytics/next'
 import { SITE_NAME, SITE_URL, TITLE } from '@/lib/site'
 import './globals.css'
 
@@ -86,7 +85,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <TopBar />
         <main>{children}</main>
         <BottomRule />
-        <Analytics />
       </body>
     </html>
   )

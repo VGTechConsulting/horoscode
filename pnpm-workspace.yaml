@@ -1,3 +1,6 @@
-allowBuilds:
-  sharp: true
-  unrs-resolver: true
+# `allowBuilds` is pnpm 11 syntax; this project pins pnpm 10 through
+# `packageManager`, whose spelling for the same setting is `onlyBuiltDependencies`
+# (github-pages-deployment.spec.md §2.3).
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver

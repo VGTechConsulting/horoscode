@@ -1,0 +1,92 @@
+name: Pages
+
+# Verify and build on every pull request; verify, build, and deploy on a merge
+# to main (github-pages-deployment.spec.md §6). There is no long-lived
+# deployment branch: the artifact goes straight from this workflow to Pages.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Read-only by default. The deploy job widens this for itself and nothing else.
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  # Superseded pull-request runs are worth cancelling. A run on main is not:
+  # cancelling the workflow would cancel its deploy job too, and an in-progress
+  # production deployment must be left to finish (§6.3).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Upload and deploy happen only for main. A push to any other branch, and any
+  # pull request, stops after the build (§6.1).
+  DEPLOYABLE: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # No version input: the exact pnpm from `packageManager` in package.json,
+      # rather than whatever is global on the runner (§2.3).
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          # 22 satisfies the assertion harness, which imports lib/horoscode.ts
+          # directly and needs Node ≥ 22.18 to strip its types on load.
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      # Typecheck, lint, and the assertion harness. Actions sets CI, which is
+      # what turns on the outbound-link HEAD check over the eighteen records.
+      - run: pnpm verify
+
+      - run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://horoscode.vgtc.io
+
+      - name: Assert the export produced an index
+        run: test -f out/index.html
+
+      # Without this, Pages runs the artifact through Jekyll, which drops
+      # directories whose name begins with an underscore — every Next.js asset
+      # lives under _next (§6.2).
+      - name: Create .nojekyll
+        run: touch out/.nojekyll
+
+      - name: Assert the artifact is servable as static files
+        run: pnpm verify:export
+
+      - uses: actions/configure-pages@v6
+        if: env.DEPLOYABLE == 'true'
+
+      - uses: actions/upload-pages-artifact@v5
+        if: env.DEPLOYABLE == 'true'
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

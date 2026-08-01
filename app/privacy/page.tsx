@@ -5,7 +5,7 @@ import { CrossAccent } from '@/components/cross-accent'
 export const metadata: Metadata = {
   title: 'Privacy — Horoscode',
   description: 'Horoscode stores nothing. No cookies, no local storage, no accounts.',
-  alternates: { canonical: '/privacy' },
+  alternates: { canonical: '/privacy/' },
 }
 
 /** One screen, no legalese, and accurate — which is the whole reason it exists
@@ -25,9 +25,8 @@ export default function PrivacyPage() {
         </h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light">
           Your five picks live in the page&rsquo;s address bar and nowhere else — there are no
-          cookies, no local storage, and no accounts, so closing the tab is the whole of it.
-          Anonymous, aggregate page analytics are collected by Vercel Analytics, which does not use
-          cookies and does not track you across sites.
+          cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole
+          of it.
         </p>
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/80 mt-10">
           <Link href="/" className="inline-flex items-center min-h-11 hover:text-foreground transition-colors">

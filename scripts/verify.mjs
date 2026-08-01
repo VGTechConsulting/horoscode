@@ -472,7 +472,7 @@ check('No user-facing string contains a digit', () => {
     }
     // Prose lines only — the URL line is exempt, though it happens to be
     // digit-free too now that every param value is a word.
-    for (const line of summariseAsText(state, 'https://horoscode.dev').split('\n').slice(0, -1)) {
+    for (const line of summariseAsText(state, 'https://horoscode.vgtc.io').split('\n').slice(0, -1)) {
       assert(/^\D*$/.test(line), `summariseAsText leaked a digit at ${positionKey(state)}: ${line}`)
     }
   }
@@ -643,19 +643,21 @@ check('No second result taxonomy anywhere in the shipped sources (§15)', () => 
   }
 })
 
-check('The reading, the share card, and summariseAsText carry the same name (§13)', () => {
-  // No Reference-derived modifier is composed onto the sign name on any of the
-  // three surfaces. Two of them are JSX, so they are checked as sources: each
-  // must render the resolved sign's own name and epithet and nothing beside it.
+check('The reading and summariseAsText carry the same name (§13)', () => {
+  // No Reference-derived modifier is composed onto the sign name on either
+  // surface. One of them is JSX, so it is checked as a source: it must render
+  // the resolved sign's own name and epithet and nothing beside it. The share
+  // card is no longer a surface here — it is generic, and names no sign at all
+  // (github-pages-deployment.spec.md §4.1).
   for (const state of states) {
     const sign = resolveSign(positionOf(state), state.environment)
-    const first = summariseAsText(state, 'https://horoscode.dev').split('\n')[0]
+    const first = summariseAsText(state, 'https://horoscode.vgtc.io').split('\n')[0]
     assert(
       first === `${sign.name} — ${sign.epithet}`,
       `summariseAsText composed something onto the name at ${positionKey(state)}: ${first}`,
     )
   }
-  const surfaces = ['components/horoscode.tsx', 'app/api/og/route.tsx']
+  const surfaces = ['components/horoscode.tsx']
   const traitNames = REFERENCE_STOPS.map((value) => traitName('reference', value))
   for (const path of surfaces) {
     const source = readFileSync(new URL(path, ROOT), 'utf8')
@@ -676,6 +678,32 @@ check('No client-side storage anywhere in the shipped sources (§10.2)', () => {
       assert(!source.includes(forbidden), `${relative(file)} contains ${forbidden}`)
     }
   }
+})
+
+check('No shipped source references a removed vendor or a retired origin', () => {
+  // Vercel Analytics is gone because `/_vercel/insights/*` does not exist on
+  // GitHub Pages, and `horoscode.dev` is not the origin any more. Both are the
+  // kind of thing that comes back one import at a time
+  // (github-pages-deployment.spec.md §8.1).
+  for (const file of shipped) {
+    const source = readFileSync(file, 'utf8')
+    for (const forbidden of ['@vercel/analytics', '/_vercel/insights', 'horoscode.dev']) {
+      assert(!source.includes(forbidden), `${relative(file)} references ${forbidden}`)
+    }
+  }
+})
+
+check('The build is rooted at `/`, not at `/horoscode` (§1.1)', () => {
+  // A basePath would make the unredirected project URL work and move the
+  // custom-domain app to https://horoscode.vgtc.io/horoscode/, which is not the
+  // public URL. The export config is asserted here too, since every artifact
+  // check downstream assumes it.
+  const config = readFileSync(new URL('next.config.mjs', ROOT), 'utf8')
+  for (const forbidden of ['basePath', 'assetPrefix']) {
+    assert(!config.includes(forbidden), `next.config.mjs sets ${forbidden}`)
+  }
+  assert(config.includes("output: 'export'"), 'next.config.mjs does not enable static export')
+  assert(config.includes('trailingSlash: true'), 'next.config.mjs does not enable trailing slashes')
 })
 
 check('The app carries no booking surface, chat widget, navbar, or site footer (§2)', () => {

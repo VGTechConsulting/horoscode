@@ -6,55 +6,30 @@ import {
   SANDBOX_REFERENCE,
   SIGNS,
   SIGN_ORDER,
-  URL_PARAMS,
   conditionsFor,
-  isComplete,
-  parseState,
-  serialise,
   type SignId,
 } from '@/lib/horoscode'
 import { DESCRIPTION, SITE_URL, TITLE } from '@/lib/site'
 
 /**
- * The share card is generated from the five params, so `generateMetadata` reads
- * them (§11.2). The cost, stated rather than discovered: this opts `/` into
- * dynamic rendering. The HTML is identical either way and the route is cacheable
- * at the edge, so the practical effect is one render per unique param set. If
- * that is unwanted, the fallback is `app/opengraph-image.tsx` alone and
- * `app/api/og/route.tsx` is deleted with no other change.
+ * Static metadata. The share card no longer varies by param, so nothing here
+ * reads the request — which is what lets `/` prerender to a single
+ * `out/index.html` (github-pages-deployment.spec.md §3.2, §4.1). The five params
+ * remain a client-side state input after hydration, exactly as in §10.1 of the
+ * main spec; a link unfurler simply gets the generic card.
  */
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}): Promise<Metadata> {
-  const raw = await searchParams
-  const params = new URLSearchParams()
-  for (const key of URL_PARAMS) {
-    const value = raw[key]
-    if (typeof value === 'string') params.set(key, value)
-  }
-  const state = parseState(params)
-  const complete = isComplete(state)
-
-  return {
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
     title: TITLE,
     description: DESCRIPTION,
-    alternates: { canonical: '/' },
-    openGraph: {
-      type: 'website',
-      title: TITLE,
-      description: DESCRIPTION,
-      url: complete ? serialise(state) : '/',
-      // Only where all five stars are present. Anything less has no sign to
-      // draw, and the static card in app/opengraph-image.tsx takes over.
-      ...(complete
-        ? { images: [{ url: `/api/og?${serialise(state).split('?')[1]}`, width: 1200, height: 630 }] }
-        : {}),
-    },
-    twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
-    robots: { index: true, follow: true },
-  }
+    url: '/',
+  },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
+  robots: { index: true, follow: true },
 }
 
 /** The ten signs stakes reaches above Sandbox, then the eight that exist only
