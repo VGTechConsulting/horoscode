@@ -37,6 +37,10 @@ pnpm preview            # serves out/ on http://localhost:3000
 `pnpm preview` uses a pinned `serve`, not `next start` — the app has no Node.js runtime in
 production, so starting one locally would preview something that does not exist.
 
+The `postbuild` lifecycle finalizes Next's extensionless generated share card as
+`out/opengraph-image.png` and rewrites the generated metadata to that URL. The explicit
+extension lets static hosts return the correct `image/png` media type.
+
 `NEXT_PUBLIC_SITE_URL` is the only environment variable and the only place a domain is
 written down (see `lib/site.ts`). It defaults to `https://horoscode.vgtc.io`, which is the
 same value CI passes explicitly; the two must agree.
@@ -90,6 +94,7 @@ lib/
 content/
   signs.ts              the eighteen records
 scripts/
+  finalize-export.mjs   gives the generated share card a static-host-safe URL
   verify.mjs            the assertion harness, over the sources
   verify-export.mjs     the assertion harness, over out/
 ```
@@ -134,10 +139,9 @@ screen readers, both copy paths, a hard refresh on every exported route, Lightho
 listed at the end of §13 of the main spec and §9 of the deployment spec, and has not been
 run here.
 
-## Content provenance
+## Content
 
-Seventeen of the eighteen sign records port verbatim from `lib/horoscode.ts` in the `vgtc`
-repository. The Believer is authored in §8.3 of the spec. Upstream's `ORIGINS` and `GOALS`
-are not ported — there is no second result taxonomy here and there are no transits (§15).
-The only permitted edits on ported copy are the three mechanical ones in §14: absolute link
-hrefs, the deleted `relatedGoals` field, and the vocabulary rename.
+All eighteen sign records and their shipped copy live in `content/signs.ts`. The main spec
+defines the model and content constraints; this repository contains everything required to
+build, test, deploy, and maintain the application. Links from sign records intentionally
+point to public VG Tech articles and services.

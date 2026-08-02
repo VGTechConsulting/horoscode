@@ -70,10 +70,9 @@ check('Every exported route is present as a file Pages can serve', () => {
   }
   const manifest = files.find((f) => /manifest\.webmanifest$/.test(f))
   assert(manifest, 'no web manifest was exported')
-  // Next writes the generated card at the route path, which carries no
-  // extension of its own — hence the prefix match rather than `.png`.
-  const og = files.find((f) => /^opengraph-image(\.[^/]+)?$/.test(f))
-  assert(og, 'no static Open Graph image was exported')
+  const og = 'opengraph-image.png'
+  assert(has(og), 'out/opengraph-image.png is missing')
+  assert(!has('opengraph-image'), 'the extensionless Open Graph image was not finalized')
   const png = readFileSync(new URL(og, OUT))
   assert(png.length > 0, `out/${og} is empty`)
   assert(png.subarray(1, 4).toString('latin1') === 'PNG', `out/${og} is not a PNG`)
@@ -125,6 +124,16 @@ check('Generated metadata names the canonical origin', () => {
     index.includes(`<link rel="canonical" href="${ORIGIN}/"`),
     'out/index.html carries no canonical link to the custom domain',
   )
+  assert(
+    index.includes(`${ORIGIN}/opengraph-image.png`),
+    'out/index.html does not point at the extensioned Open Graph image',
+  )
+  for (const file of text) {
+    assert(
+      !/\/opengraph-image(?!\.png)/.test(read(file)),
+      `out/${file} still uses the extensionless Open Graph image URL`,
+    )
+  }
   const sitemap = read('sitemap.xml')
   for (const url of [`${ORIGIN}/`, `${ORIGIN}/privacy/`]) {
     assert(sitemap.includes(`<loc>${url}</loc>`), `sitemap.xml is missing ${url}`)

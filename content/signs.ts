@@ -1,16 +1,6 @@
-// The eighteen signs (spec §8, §14).
-//
-// Seventeen of the eighteen records port verbatim from the in-site version's
-// `ARCHETYPES`; The Believer is authored in §8.3 of the spec and does not exist
-// upstream. Upstream's `ORIGINS` are not ported — there is no second result
-// taxonomy here (§15). Three mechanical changes are the only permitted edits on
-// the ported copy (§14):
-//
-//   1. `link.href` is absolute and points at vgtc.io.
-//   2. `relatedGoals` is deleted — there are no transits here (§15).
-//   3. `Archetype` → `Sign`, `ARCHETYPES` → `SIGNS`, `cell` → `house`. The
-//      *string ids* stay aligned with the ported records, and they are in every
-//      `#sign-<id>` anchor.
+// The canonical content for all eighteen signs (spec §8, §14). Public links are
+// absolute, record ids align with each `#sign-<id>` anchor, and the schema uses
+// the product vocabulary throughout.
 //
 // Data only: no React, no icons, no DOM, and the axis types arrive as type-only
 // imports, so this module is loadable from a plain node script alongside
@@ -64,10 +54,8 @@ export const SIGNS: Record<SignId, Sign> = {
     name: 'The Learner',
     epithet: 'the long way round',
     tagline: 'Hand-written, self-reviewed, nothing at stake',
-    // "every other archetype" is upstream's word, kept because §14 makes the
-    // port verbatim and the vocabulary rename explicitly covers identifiers
-    // rather than prose. It is the one place a visitor meets a noun the frame
-    // never defines, and it is a copy decision rather than a port decision.
+    // "Every other archetype" is deliberate user-facing copy. The code model
+    // itself consistently uses Sign terminology.
     body: 'Writing it all yourself on something that cannot hurt anyone. The slowest path and the only one that builds the intuition every other archetype spends down. The friction here is not waste — it is the deliverable.',
     signature: [
       'You reach for the docs before you reach for a prompt',
@@ -581,9 +569,9 @@ export const SIGNS: Record<SignId, Sign> = {
     house: { code: 'delegated', review: 'delegated' },
     environments: ['team', 'regulated'],
   },
-  // The eighteenth sign, authored in spec §8.3 — it does not exist upstream. The
-  // lights-out house splits on Judgement because a Dark Factory keeps at least
-  // one authority outside the model, and this one keeps none.
+  // The lights-out house splits on Judgement as specified in §8.3: a Dark
+  // Factory keeps at least one authority outside the model, while this sign
+  // keeps none.
   believer: {
     id: 'believer',
     name: 'The Believer',

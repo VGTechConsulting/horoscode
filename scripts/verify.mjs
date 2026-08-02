@@ -490,6 +490,20 @@ check('No user-facing string contains a digit', () => {
 })
 
 check('Sign records carry every authored field, at the shape the reading expects', () => {
+  const EXPECTED_FIELDS = [
+    'id',
+    'name',
+    'epithet',
+    'tagline',
+    'body',
+    'signature',
+    'strengths',
+    'failureModes',
+    'nextMoves',
+    'link',
+    'house',
+    'environments',
+  ].sort()
   for (const id of SIGN_ORDER) {
     const sign = SIGNS[id]
     assert(sign.id === id, `${id}: record id is ${sign.id}`)
@@ -498,7 +512,10 @@ check('Sign records carry every authored field, at the shape the reading expects
     assert(sign.failureModes.length === 2, `${id}: expected two failure modes`)
     assert(sign.nextMoves.length === 3, `${id}: expected three next moves`)
     assert(sign.link.href.startsWith('https://www.vgtc.io/'), `${id}: link is not absolute — ${sign.link.href}`)
-    assert(!('relatedGoals' in sign), `${id}: relatedGoals survived the port`)
+    assert(
+      JSON.stringify(Object.keys(sign).sort()) === JSON.stringify(EXPECTED_FIELDS),
+      `${id}: record fields drifted`,
+    )
   }
   assert(new Set(SIGN_ORDER).size === SIGN_ORDER.length, 'SIGN_ORDER repeats an id')
   assert(

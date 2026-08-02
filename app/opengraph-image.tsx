@@ -5,8 +5,8 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'Horoscode — what kind of software engineer are you?'
 
-/** Drawn once at build time and written into the artifact as a file — see
- *  `app/sitemap.ts`. */
+/** Drawn once at build time, then finalized as `opengraph-image.png` by the
+ *  postbuild script so static hosts serve it with the correct media type. */
 export const dynamic = 'force-static'
 
 /** The whole share surface: one generic 1200 × 630 card, generated at build time

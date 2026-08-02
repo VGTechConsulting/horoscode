@@ -2,7 +2,7 @@
 
 Pick five traits, one at a time, and a fixed lookup table tells you which of eighteen engineering signs you are, and what the forecast is. Eighteen signs, no forms, no numbers on screen, no backend, no randomness, no account, and nothing on the page trying to sell you anything.
 
-**This document is self-contained.** It supersedes nothing and depends on nothing: it is the complete build instruction for a separate Next.js application, deployable to its own domain, with one external content dependency stated explicitly in §14. The in-site version at `vgtc.io/toolbox/horoscode` and the specs behind it ([docs/ai-software-engineer-selector.spec.md](ai-software-engineer-selector.spec.md)) are the provenance of the model and the authored copy; they are not a prerequisite for reading this.
+**This document is self-contained.** It supersedes nothing and depends on nothing: it is the complete build instruction for a separate Next.js application, deployable to its own domain. The canonical long-form content is committed alongside the implementation as described in §14; all required sources and specifications are included here.
 
 Three requirements shape every decision below and are worth stating before the detail:
 
@@ -58,7 +58,7 @@ The app is a VG Tech artefact that does not behave like a VG Tech page. Concrete
 - No inbound links into the firm's funnel beyond the two in the table above — the wordmark and the attribution line, both to the homepage.
 - No case studies, no logos, no testimonial strip.
 
-The argument for restraint is the same one that took the CTA off the in-site version: this audience shares tools and ignores calendars. One quiet wordmark on something worth passing on outperforms a conversion surface on something nobody sends to a colleague. If the firm later wants a conversion surface here, the honest version is a second mono link in the bottom rule, not a section.
+The argument for restraint is simple: this audience shares tools and ignores calendars. One quiet wordmark on something worth passing on outperforms a conversion surface on something nobody sends to a colleague. If the firm later wants a conversion surface here, the honest version is a second mono link in the bottom rule, not a section.
 
 **Naming and domain.** Product name `Horoscode`. Suggested host `horoscode.dev` or `horoscode.vgtc.io`; the spec is host-agnostic and reads the origin from `NEXT_PUBLIC_SITE_URL` (§11.1). Nothing in the code hard-codes a domain except that constant.
 
@@ -404,7 +404,7 @@ Pure, total, exhaustive: 216 combinations, 18 signs, no fallback. Order matters 
 | The Spec Runner | wrote the spec, let it rip | Summoned · Machine-gated | Sandbox + Independent reference | `FileCog` |
 | The Vibe Coder | ship it and see | Summoned · Machine-gated | Sandbox + Loop-owned reference | `Sparkles` |
 
-Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `link`, `house`, `environments`. Seventeen of them port verbatim; the eighteenth is authored below (§14).
+Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `link`, `house`, `environments`. All eighteen canonical records live in `content/signs.ts`; the rule that distinguishes The Believer is specified below.
 
 ### 8.3 The Believer
 
@@ -654,22 +654,22 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 
 ---
 
-## 14. Content provenance
+## 14. Content source and maintenance
 
-**One external dependency, stated plainly.** The model in §6–§8 is fully specified here — every weight, band, matrix cell, and forecast line is reproduced above, and the app can be built from this document alone. The **long-form authored prose** is not reproduced, because it runs to several thousand words and re-transcribing it into a spec is where copy drifts:
+The model in §6–§8 is fully specified here — every weight, band, matrix cell, and forecast line is reproduced above. The canonical long-form copy for all eighteen signs is committed in `content/signs.ts`, so this repository contains everything required to build, test, deploy, and maintain the application.
 
-| Content | Fields | Source |
-| --- | --- | --- |
-| Seventeen of the eighteen signs | `tagline`, `body`, `signature[3]`, `strengths[2]`, `failureModes[2]`, `nextMoves[3]` | `lib/horoscode.ts` → `ARCHETYPES`, in the `vgtc` repo |
-| **The Believer** | all of the above | **authored in §8.3 of this document** — it does not exist upstream |
+| Content | Canonical source |
+| --- | --- |
+| Sign names, epithets, taglines, bodies, lists, placement, and public links | `content/signs.ts` |
+| The Believer's resolution rule and rationale | §8.3 and its record in `content/signs.ts` |
 
-The seventeen upstream records port **verbatim** into `content/signs.ts`; The Believer is copied from §8.3. Zero-diff on the upstream record copy is the evidence that this is a port and not a rewrite. Upstream's `ORIGINS` and `GOALS` are not ported — there is no second result taxonomy and there are no transits here (§15) — and neither is `relatedGoals`, which is the one field of the sign record that gets dropped on the way in. Three mechanical changes are required and are the only permitted edits:
+Content maintenance follows three rules:
 
-1. **`link.href` becomes absolute** — `/insights/…` and `/services/…` become `https://www.vgtc.io/insights/…` etc., with `target="_blank" rel="noopener"`. These are the only outbound links in the app besides the wordmark, and they are the one place the reading points at the firm's writing, which is where it should point.
-2. **`relatedGoals` is deleted from every record**, along with the `GoalId` type it refers to. It is the only field whose removal touches the ported copy, and it removes no prose.
-3. **Internal identifiers align with the frame's vocabulary** — `Archetype` → `Sign`, `ArchetypeId` → `SignId`, `ARCHETYPES` → `SIGNS`, `resolveArchetype` → `resolveSign`, `Cell` → `House`. The in-site version deliberately kept the old identifiers to avoid a four-hundred-reference rename inside a shipped module; a new codebase has no such debt and should be internally consistent from the first commit. The `#archetype-<id>` anchors become `#sign-<id>`, and the string ids remain aligned with the ported records (`dark-factory`, `spec-runner`, …).
+1. **Public links stay absolute** — insight and service links use `https://www.vgtc.io/…`, with `target="_blank" rel="noopener"` at the rendering surface.
+2. **The record schema stays narrow** — each sign contains only the fields listed in §8.2. There is no second result taxonomy and there are no transits (§15).
+3. **Identifiers use the product vocabulary** — `Sign`, `SignId`, `SIGNS`, `resolveSign`, and `House`; string ids remain aligned with their `#sign-<id>` anchors.
 
-If the source repo is unavailable, the fields above are authorable from the tables in §8.2 — but the result is a different product's copy, and this spec is not the place that decides that.
+Changes to the committed record strings are content changes and receive the same review as changes to the model. The assertion harness verifies record shape, reachability, naming, links, and the absence of a second taxonomy.
 
 ---
 

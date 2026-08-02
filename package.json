@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/finalize-export.mjs",
     "preview": "serve out --no-clipboard",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",

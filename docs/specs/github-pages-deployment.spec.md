@@ -84,7 +84,7 @@ The exported artifact must contain:
 | `/` | `out/index.html` |
 | `/privacy/` | `out/privacy/index.html` |
 | `/404.html` | `out/404.html` |
-| `/opengraph-image.*` | Static Open Graph image generated at build time |
+| `/opengraph-image.png` | Static Open Graph image generated at build time |
 | `/sitemap.xml` | `out/sitemap.xml` |
 | `/robots.txt` | `out/robots.txt` |
 | `/manifest.webmanifest` | Static manifest output |
@@ -148,6 +148,8 @@ This section supersedes `main.spec.md` §11.2 and the dynamic-share-card asserti
 - The image remains 1200 × 630 and retains the current black-and-white visual language.
 - The image is generic: it does not include the visitor's resolved sign, epithet, or verdict.
 - No external request is made while generating it.
+- A postbuild finalizer renames Next's extensionless export to `out/opengraph-image.png` and rewrites generated metadata to `/opengraph-image.png`, allowing static hosts to serve it as `image/png`.
+- The final artifact must not retain the extensionless `out/opengraph-image` file or any metadata reference to its generated query-string URL.
 
 The result URL continues to carry all five star parameters. Sharing a result therefore restores the correct interactive reading even though link unfurlers receive the generic image.
 
@@ -373,6 +375,7 @@ Run the existing manual pass from `main.spec.md` §13, with these substitutions:
 | `lib/analytics.ts` | Replace vendor wrapper with typed no-op |
 | `app/privacy/page.tsx` | Remove the analytics claim |
 | `app/sitemap.ts` | Ensure canonical trailing-slash URLs |
+| `scripts/finalize-export.mjs` | Give the generated Open Graph PNG an extension and rewrite its metadata URL |
 | `scripts/verify.mjs` | Remove dynamic-card assumptions and add deployment guards |
 | `scripts/verify-export.mjs` | Add artifact assertions |
 | `.github/workflows/pages.yml` | Add CI and Pages deployment pipeline |
