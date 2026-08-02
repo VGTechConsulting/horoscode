@@ -4,3 +4,9 @@
 onlyBuiltDependencies:
   - sharp
   - unrs-resolver
+
+# Next pins older build-time releases. Keep the static export on patched
+# versions until its dependency ranges catch up.
+overrides:
+  postcss: 8.5.25
+  sharp: 0.35.3
