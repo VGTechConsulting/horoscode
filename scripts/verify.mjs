@@ -697,6 +697,16 @@ check('No client-side storage anywhere in the shipped sources (§10.2)', () => {
   }
 })
 
+check('Both copy actions use the canonical site URL (§10.3)', () => {
+  const source = readFileSync(new URL('components/horoscode.tsx', ROOT), 'utf8')
+  assert(!source.includes('window.location.origin'), 'copy actions derive their origin from the current host')
+  assert(source.includes('SITE_URL + serialise(current)'), 'Copy link does not use SITE_URL')
+  assert(
+    source.includes('summariseAsText(current, SITE_URL)'),
+    'Copy as text does not use SITE_URL',
+  )
+})
+
 check('No shipped source references a removed vendor or a retired origin', () => {
   // Vercel Analytics is gone because `/_vercel/insights/*` does not exist on
   // GitHub Pages, and `horoscode.dev` is not the origin any more. Both are the

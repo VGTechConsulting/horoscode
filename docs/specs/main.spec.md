@@ -543,9 +543,9 @@ If a second-run mechanic is wanted later, the honest version is a counter in the
 
 ### 10.3 Copy actions
 
-Both are synchronous derivations of the state that produced the rendered result; `window.location` is never read beyond `origin`.
+Both are synchronous derivations of the state that produced the rendered result. They use `SITE_URL`, never `window.location`, so preview and noncanonical hosts still produce canonical public links.
 
-- **Copy link** → `origin + serialise(state)`.
+- **Copy link** → `SITE_URL + serialise(state)`.
 - **Copy as text** → `summariseAsText`: name — epithet / verdict label / forecast line / the five axes and traits / the link. Words only — no metric ever reaches a clipboard that never appeared on screen, and no modifier is added to the name that was not present in the reading.
 
 On a clipboard rejection (denied permission, insecure context) the app says nothing rather than confirming a copy that did not happen.

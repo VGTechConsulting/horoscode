@@ -16,6 +16,7 @@ import { ArrowDown, ArrowLeft, Check, Copy, RotateCcw } from 'lucide-react'
 import { CrossAccent } from '@/components/cross-accent'
 import { track } from '@/lib/analytics'
 import { ICON_SIZE, SIGN_ICON, TRAIT_ICON } from '@/lib/horoscode-icons'
+import { SITE_URL } from '@/lib/site'
 import {
   EMPTY_STATE,
   HOROSCODE_PATH,
@@ -603,14 +604,14 @@ export function Horoscode() {
     router.replace(HOROSCODE_PATH, { scroll: false })
   }, [router])
 
-  // Both copy actions are synchronous derivations of the state that produced the
-  // rendered result. `window.location` is never read beyond `origin` (§10.3).
+  // Both copy actions use the canonical public origin, even when the app is
+  // opened through a preview or noncanonical host (§10.3).
   const copy = useCallback(async (method: 'link' | 'text', current: HoroscodeState) => {
     if (!isComplete(current)) return
     const payload =
       method === 'link'
-        ? window.location.origin + serialise(current)
-        : summariseAsText(current, window.location.origin)
+        ? SITE_URL + serialise(current)
+        : summariseAsText(current, SITE_URL)
     try {
       await navigator.clipboard.writeText(payload)
     } catch {
