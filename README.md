@@ -80,6 +80,7 @@ app/
   layout.tsx            fonts, top bar, bottom rule
   page.tsx              static metadata, schemas, hero, sign catalogue
   globals.css           tokens, motion, target hygiene
+  icon.svg              the cross accent as a favicon, inverted by the system query
   opengraph-image.tsx   the one generic share card, drawn at build time
   privacy/page.tsx
 components/
@@ -123,16 +124,18 @@ signs are each reachable and reachable only where their record says, Reference m
 independence by its declared bonus and nothing else, Judgement splits exactly one house,
 every Believer state is under-verified, exactly two forecast cells are dead, no user-facing
 string carries a digit, the URL round-trips and emits exactly five params, the reading and
-the copied text carry the same sign name, the build is rooted at `/`, and the sources
+the copied text carry the same sign name, the icon is one scalable file in the two palette
+colours and the manifest points at it, the build is rooted at `/`, and the sources
 contain no randomness, no second result taxonomy, no client-side storage, no removed
 vendor, no retired origin, and no button without a minimum target.
 
 `CI=1 pnpm verify` adds a HEAD check on every outbound link in the eighteen records.
 
 `pnpm verify:export` asserts things about `out/` that the sources cannot show: every route
-exists as a file, nothing needs a runtime, no `/api/og` path survived, no output names the
-retired origin or an analytics beacon, generated metadata names the canonical origin, and
-`.nojekyll` is in place.
+exists as a file, nothing needs a runtime, every page links the exported icon and the
+manifest declares it, no `/api/og` path survived, no output names the retired origin or an
+analytics beacon, generated metadata names the canonical origin, and `.nojekyll` is in
+place.
 
 The manual pass — one-handed completion on a phone, reduced motion, dark mode, keyboard,
 screen readers, both copy paths, a hard refresh on every exported route, Lighthouse — is

@@ -70,6 +70,7 @@ check('Every exported route is present as a file Pages can serve', () => {
   }
   const manifest = files.find((f) => /manifest\.webmanifest$/.test(f))
   assert(manifest, 'no web manifest was exported')
+  assert(has('icon.svg'), 'out/icon.svg is missing — every page would render a blank tab')
   const og = 'opengraph-image.png'
   assert(has(og), 'out/opengraph-image.png is missing')
   assert(!has('opengraph-image'), 'the extensionless Open Graph image was not finalized')
@@ -92,6 +93,28 @@ check('The artifact needs no server to serve it', () => {
   // document, an asset, or one of the metadata files.
   const orphan = html.filter((f) => !/(^|\/)(index|404)\.html$/.test(f))
   assert(orphan.length === 0, `unroutable HTML in the artifact: ${orphan.join(', ')}`)
+})
+
+check('Every page links the icon, and the manifest declares it', () => {
+  // The link tag is injected per document, so a route that stopped inheriting
+  // the root layout would lose it silently. Next appends a cache-busting query
+  // to the href, which a static host ignores — match the path, not the whole
+  // attribute.
+  for (const file of html) {
+    assert(
+      /<link[^>]+rel="icon"[^>]+href="\/icon\.svg/.test(read(file)),
+      `out/${file} renders no icon link`,
+    )
+  }
+  const manifest = JSON.parse(read('manifest.webmanifest'))
+  assert(Array.isArray(manifest.icons) && manifest.icons.length > 0, 'the manifest declares no icons')
+  assert(
+    manifest.icons.some((i) => i.src === '/icon.svg' && i.sizes === 'any'),
+    'the manifest does not declare the scalable icon',
+  )
+  for (const icon of manifest.icons) {
+    assert(has(icon.src.replace(/^\//, '')), `the manifest names ${icon.src}, which was not exported`)
+  }
 })
 
 check('No `/api/og` path survived the deletion of the dynamic card (§4.1)', () => {

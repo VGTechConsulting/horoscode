@@ -622,6 +622,36 @@ check('The vendored share-card glyphs are exhaustive and distinct (§11.2)', () 
   }
 })
 
+check('The icon is one scalable file, and the manifest and the palette agree with it', () => {
+  // The favicon is a static file convention, not a generated route, so nothing
+  // downstream renames it the way finalize-export.mjs renames the share card.
+  // What is worth asserting is the part that is easy to break silently: an icon
+  // that inverts with the system the way everything else does, an opaque square
+  // so it cannot land on its own colour, and a manifest that actually points at
+  // it — `display: standalone` with no icons is an uninstallable manifest.
+  const icon = readFileSync(new URL('app/icon.svg', ROOT), 'utf8')
+  assert(icon.includes('viewBox="0 0 32 32"'), 'app/icon.svg lost its viewBox')
+  assert(
+    !/<svg[^>]*\s(width|height)=/.test(icon),
+    'app/icon.svg pins a pixel size — it would stop being treated as scalable',
+  )
+  assert(icon.includes('prefers-color-scheme: dark'), 'app/icon.svg does not invert with the system')
+  assert(/<rect class="bg"/.test(icon), 'app/icon.svg has no opaque ground')
+  assert(!icon.includes('<script'), 'app/icon.svg carries a script')
+  // Both ends of the palette, and nothing in between: the icon is the same
+  // black-and-white system as §3.1, with no brand colour and no accent hue.
+  const fills = [...icon.matchAll(/fill:\s*(#[0-9a-f]{3,8})/gi)].map((m) => m[1].toLowerCase())
+  assert(fills.length > 0, 'app/icon.svg declares no fill')
+  for (const fill of fills) {
+    assert(fill === '#ffffff' || fill === '#000000', `app/icon.svg introduces a colour — ${fill}`)
+  }
+
+  const manifest = readFileSync(new URL('app/manifest.ts', ROOT), 'utf8')
+  assert(manifest.includes("src: '/icon.svg'"), 'app/manifest.ts does not reference the icon')
+  assert(manifest.includes("sizes: 'any'"), 'the manifest icon is not declared scalable')
+  assert(manifest.includes("type: 'image/svg+xml'"), 'the manifest icon declares no media type')
+})
+
 // ─── Mechanical guards (§13) ────────────────────────────────────────────────
 
 function sourceFiles(dirs) {

@@ -1,0 +1,22 @@
+<!-- The cross accent at tab scale (spec §3.3) — the app's own mark rather than the firm's
+     wordmark, and a four-pointed star, which the frame will take.
+
+     Two departures from components/cross-accent.tsx, both forced by the size: the stroke is
+     an eighth of the box rather than a hairline, which would vanish at sixteen pixels, and
+     the square is opaque, because a favicon is composited onto chrome, launcher, and
+     bookmark backgrounds this file cannot see. Inversion is the system query and nothing
+     else, as in app/globals.css; the literals are that palette's two ends, in hex because
+     an SVG favicon is parsed on its own and cannot read the app's tokens. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg { fill: #ffffff }
+    .fg { fill: #000000 }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #000000 }
+      .fg { fill: #ffffff }
+    }
+  </style>
+  <rect class="bg" width="32" height="32"/>
+  <rect class="fg" x="14" y="0" width="4" height="32"/>
+  <rect class="fg" x="0" y="14" width="32" height="4"/>
+</svg>
