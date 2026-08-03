@@ -6,8 +6,15 @@
 // the properties the spec claims in prose. Exits non-zero on the first failure.
 //
 // Usage:
-//   node scripts/verify.mjs          # everything except the link check
-//   CI=1 node scripts/verify.mjs     # adds the outbound-link HEAD check
+//   node scripts/verify.mjs              # everything except the link check
+//   CHECK_LINKS=1 node scripts/verify.mjs  # adds the outbound-link HEAD check
+//
+// The link check is opt-in rather than on whenever CI is set, because it is the
+// only assertion here that can fail for a reason no commit caused: it reaches
+// eighteen URLs on a host this repository does not control. Gating pull requests
+// on someone else's uptime turns a link-rot monitor into a build gate, and a
+// contributor who changed a stylesheet gets a red check. It runs on a schedule
+// instead — see .github/workflows/links.yml.
 
 import { readFileSync, readdirSync } from 'node:fs'
 
@@ -799,9 +806,9 @@ check('The five stars, their questions, and their helpers are intact (§6.1)', (
   )
 })
 
-// ─── Outbound links, in CI only (§13) ───────────────────────────────────────
+// ─── Outbound links, opt-in (§13) ───────────────────────────────────────────
 
-const linkCheck = process.env.CI
+const linkCheck = process.env.CHECK_LINKS
   ? (async () => {
       checks += 1
       const hrefs = [...new Set(SIGN_ORDER.map((id) => SIGNS[id].link.href))]

@@ -262,6 +262,25 @@ Use current supported major versions at implementation time, with these minimums
 
 No third-party deployment action is permitted.
 
+Actions owned by GitHub may be referenced by major tag. `pnpm/action-setup` is the only
+one here that is not, and it is pinned to a commit SHA with the version in a trailing
+comment: a mutable major tag on a third-party action is a supply-chain decision taken by
+someone outside this repository. Dependabot's `github-actions` ecosystem moves the pin and
+the comment together.
+
+### 6.5 Outbound-link workflow
+
+The outbound-link check does not run on pull requests. It reaches eighteen URLs on a host
+this repository does not control, so it fails for reasons no commit caused, and gating
+contributor pull requests on a third party's uptime turns a link-rot monitor into a build
+gate.
+
+- `scripts/verify.mjs` gates the check on `CHECK_LINKS`, not on `CI`.
+- `.github/workflows/links.yml` runs `pnpm verify` with `CHECK_LINKS=1` on a weekly
+  schedule and on `workflow_dispatch`, with `contents: read` and no upload.
+- Every other assertion in the harness stays on the pull-request path, where it belongs:
+  all of them are deterministic and depend on nothing outside the repository.
+
 ---
 
 ## 7. GitHub Pages and DNS configuration
@@ -313,7 +332,7 @@ Update `scripts/verify.mjs` to reflect the static share surface:
 - Remove `app/api/og/route.tsx` from the sign-name/epithet surface assertion.
 - Keep the assertion that the reading and `summariseAsText` resolve the same sign name and epithet without a Reference-derived modifier.
 - Use `https://horoscode.vgtc.io` wherever the harness needs a representative origin.
-- Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, target-size, and outbound-link assertions.
+- Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, target-size, and outbound-link assertions. The outbound-link check moves behind `CHECK_LINKS` and off the pull-request path (§6.5); it is not removed.
 - Add a guard that shipped application sources do not reference `@vercel/analytics`, `/_vercel/insights`, or `horoscode.dev`.
 - Add a guard that `next.config.mjs` sets neither `basePath` nor `assetPrefix`, so the build stays rooted at `/` (§1.1).
 - Assert the §3.4 icon: a `viewBox` and no pinned pixel size, an opaque ground, a `prefers-color-scheme` rule, no script, no fill outside the two palette ends, and a manifest entry naming it with `sizes: 'any'`.
@@ -336,6 +355,10 @@ CI must check the built artifact for all of the following:
 - the artifact contains no exported `/api/og` path.
 
 These checks may live in `scripts/verify-export.mjs` and run after `pnpm build`. They must not use brittle hashed Next.js asset names.
+
+The origin the harness expects is read from `NEXT_PUBLIC_SITE_URL`, falling back to the
+same constant as `lib/site.ts`, so a fork can validate its own artifact against its own
+domain rather than this one.
 
 ---
 

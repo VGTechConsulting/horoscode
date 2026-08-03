@@ -73,6 +73,25 @@ is repository configuration, and GitHub Pages owns the redirect from
 `https://vgtechconsulting.github.io/horoscode/` to `https://horoscode.vgtc.io/`, query
 string intact.
 
+## Forking
+
+Everything here is MIT, sign copy included. Two things are wired to this deployment and
+will need changing in yours.
+
+**The origin.** `NEXT_PUBLIC_SITE_URL` is the only place a domain is written down. Set it
+in your build — the workflow passes it explicitly — and both the metadata and the copied
+links follow. `scripts/verify-export.mjs` reads the same variable, so the artifact harness
+checks your origin rather than this one.
+
+**The path.** This build is rooted at `/`, because it is served from a domain root. A
+project site at `https://<you>.github.io/horoscode/` is served from a subdirectory and
+needs `basePath` and `assetPrefix` set in `next.config.mjs`, or every `/_next/*` asset
+404s. One assertion in `scripts/verify.mjs` — *The build is rooted at `/`* — exists to stop
+that being reintroduced here by accident, so you will need to relax it. It is a deliberate
+invariant for this deployment, not a claim about how Next.js should be configured.
+
+The simplest way to avoid both is to deploy at a domain root of your own.
+
 ## Layout
 
 ```
@@ -128,7 +147,11 @@ colours and the manifest points at it, the build is rooted at `/`, and the sourc
 contain no randomness, no second result taxonomy, no client-side storage, no removed
 vendor, no retired origin, and no button without a minimum target.
 
-`CI=1 pnpm verify` adds a HEAD check on every outbound link in the eighteen records.
+`CHECK_LINKS=1 pnpm verify` adds a HEAD check on every outbound link in the eighteen
+records. It is deliberately not part of pull-request CI: it depends on a host this
+repository does not control, so a failure there is link rot rather than a regression,
+and gating a contributor's pull request on someone else's uptime is the wrong trade.
+`.github/workflows/links.yml` runs it weekly and on demand instead.
 
 `pnpm verify:export` asserts things about `out/` that the sources cannot show: every route
 exists as a file, nothing needs a runtime, every page links the exported icon and the

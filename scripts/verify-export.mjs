@@ -19,7 +19,10 @@ import { fileURLToPath } from 'node:url'
 const ROOT = new URL('../', import.meta.url)
 const OUT = new URL('out/', ROOT)
 
-const ORIGIN = 'https://horoscode.vgtc.io'
+// The origin the artifact is expected to name, read from the same variable the
+// build reads so a fork deploying to its own domain can run this harness against
+// its own output. The fallback matches lib/site.ts, which is what CI passes.
+const ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://horoscode.vgtc.io').replace(/\/$/, '')
 
 let failures = 0
 let checks = 0

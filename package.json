@@ -1,6 +1,20 @@
 {
   "name": "horoscode",
   "version": "1.0.0",
+  "description": "Pick five traits and a fixed lookup table returns one of eighteen engineering signs, with a forecast for the gap between automation and verification. No backend, no randomness, no storage.",
+  "license": "MIT",
+  "author": "VG Tech",
+  "homepage": "https://horoscode.vgtc.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VGTechConsulting/horoscode.git"
+  },
+  "bugs": "https://github.com/VGTechConsulting/horoscode/issues",
+  "keywords": [
+    "static-site",
+    "next",
+    "github-pages"
+  ],
   "private": true,
   "packageManager": "pnpm@10.20.0",
   "scripts": {
