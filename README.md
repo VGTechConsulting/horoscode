@@ -89,7 +89,6 @@ components/
 lib/
   horoscode.ts          pure model — no React, no icons, no DOM, no storage
   horoscode-icons.ts    lucide maps, kept out of the pure module
-  sign-glyphs.ts        vendored glyph paths
   analytics.ts          the typed track() boundary, currently a no-op
   site.ts               the one constant that knows about a domain
 content/

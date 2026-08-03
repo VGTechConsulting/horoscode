@@ -53,7 +53,6 @@ import {
   verdictFor,
 } from '../lib/horoscode.ts'
 import { ICON_SIZE, SIGN_ICON, TRAIT_ICON } from '../lib/horoscode-icons.ts'
-import { SIGN_GLYPH, glyphDataUri } from '../lib/sign-glyphs.ts'
 
 const ROOT = new URL('../', import.meta.url)
 
@@ -602,24 +601,6 @@ check('Icons are exhaustive, disjoint, and thirty-three in number', () => {
   assert(signSet.size + traitSet.size === 33, 'the icon set is not thirty-three')
   assert(ICON_SIZE.optionMobile === 20 && ICON_SIZE.optionDesktop === 28, 'option icon sizes drifted')
   assert(ICON_SIZE.railSlot === 14 && ICON_SIZE.reveal === 40 && ICON_SIZE.card === 18, 'icon sizes drifted')
-})
-
-check('The vendored share-card glyphs are exhaustive and distinct (§11.2)', () => {
-  assert(
-    JSON.stringify(Object.keys(SIGN_GLYPH).sort()) === JSON.stringify([...SIGN_ORDER].sort()),
-    'SIGN_GLYPH and the eighteen signs disagree',
-  )
-  const markup = Object.values(SIGN_GLYPH)
-  assert(new Set(markup).size === 18, 'two signs share a glyph')
-  for (const [id, glyph] of Object.entries(SIGN_GLYPH)) {
-    assert(/^<(path|circle|rect|line|polyline|polygon|ellipse)\s/.test(glyph), `${id}: glyph is not flat SVG markup`)
-    assert(!glyph.includes('<script'), `${id}: glyph carries a script`)
-  }
-  for (const id of SIGN_ORDER) {
-    const uri = glyphDataUri(id)
-    assert(uri.startsWith('data:image/svg+xml;utf8,'), `${id}: glyph is not a data URI`)
-    assert(!uri.includes('currentColor'), `${id}: a data URI cannot resolve currentColor`)
-  }
 })
 
 check('The icon is one scalable file, and the manifest and the palette agree with it', () => {
