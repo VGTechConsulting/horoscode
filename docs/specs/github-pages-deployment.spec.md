@@ -85,6 +85,7 @@ The exported artifact must contain:
 | `/privacy/` | `out/privacy/index.html` |
 | `/404.html` | `out/404.html` |
 | `/opengraph-image.png` | Static Open Graph image generated at build time |
+| `/icon.svg` | `out/icon.svg`, copied verbatim from `app/icon.svg` (§3.4) |
 | `/sitemap.xml` | `out/sitemap.xml` |
 | `/robots.txt` | `out/robots.txt` |
 | `/manifest.webmanifest` | Static manifest output |
@@ -134,6 +135,19 @@ The page must not read search parameters on the server or during metadata genera
 - Structured data uses the custom-domain URLs.
 - The manifest's `start_url` remains `/` because the installed application is rooted at the custom domain.
 - No metadata surface emits `horoscode.dev` or `vgtechconsulting.github.io`.
+
+### 3.4 Application icon
+
+The application ships one icon, `app/icon.svg`, picked up by Next as a static file convention rather than generated: it exports with a real extension, so unlike the share card in §4.1 it needs nothing from the postbuild finalizer.
+
+- The mark is the cross accent of `main.spec.md` §3.3 — the application's own glyph, not the firm's wordmark.
+- One scalable file covers every size. It declares a `viewBox` and no pixel `width` or `height`, because a pinned size would be treated as a raster of that size and rejected for the larger slots.
+- The stroke is an eighth of the box rather than the hairline `components/cross-accent.tsx` draws, which is invisible at sixteen pixels.
+- The square is opaque. A favicon is composited onto browser chrome, launcher, and bookmark backgrounds the file cannot see, and a transparent glyph that inverts can land on its own colour.
+- Light and dark come from `prefers-color-scheme` inside the file, matching `app/globals.css`. The two fills are that palette's ends — `#ffffff` and `#000000` — spelled in hex, because an SVG icon is parsed on its own and cannot read the application's tokens. No third colour.
+- `app/manifest.ts` declares it as the sole entry in `icons`, with `sizes: 'any'` and `type: 'image/svg+xml'`. A manifest with `display: 'standalone'` and no icons is not installable.
+
+Out of scope, and deliberately: an `apple-touch-icon`, which Safari will not accept as SVG and which would mean either a committed binary or a rasterizer this repository does not have.
 
 ---
 
@@ -301,6 +315,9 @@ Update `scripts/verify.mjs` to reflect the static share surface:
 - Use `https://horoscode.vgtc.io` wherever the harness needs a representative origin.
 - Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, target-size, and outbound-link assertions.
 - Add a guard that shipped application sources do not reference `@vercel/analytics`, `/_vercel/insights`, or `horoscode.dev`.
+- Add a guard that `next.config.mjs` sets neither `basePath` nor `assetPrefix`, so the build stays rooted at `/` (§1.1).
+- Assert the §3.4 icon: a `viewBox` and no pinned pixel size, an opaque ground, a `prefers-color-scheme` rule, no script, no fill outside the two palette ends, and a manifest entry naming it with `sizes: 'any'`.
+- Delete `lib/sign-glyphs.ts` and the assertion covering it. The vendored path data existed only because the per-result card of `main.spec.md` §11.2 could not call `lucide-react` across its `"use client"` boundary; §4.1 removed that card, leaving a module whose sole consumer was the check that verified it.
 
 ### 8.2 Export assertions
 
@@ -311,6 +328,7 @@ CI must check the built artifact for all of the following:
 - `out/404.html` exists.
 - `out/.nojekyll` exists before upload.
 - `out/sitemap.xml`, `out/robots.txt`, and the web manifest exist.
+- `out/icon.svg` exists, every exported page carries a `rel="icon"` link to it, and every icon the manifest names is a file that was exported (§3.4). Next appends a cache-busting query to the href, so the assertion matches the path, not the whole attribute.
 - no server bundle is required to serve the artifact;
 - no output file contains `horoscode.dev`;
 - no HTML or manifest file contains `/_vercel/insights`;
@@ -344,10 +362,11 @@ After a merge to `main`:
 9. A complete reading copied from the application begins with `https://horoscode.vgtc.io/?`.
 10. A copied link opened in a clean browser session restores the same sign and verdict.
 11. The generic Open Graph image loads from the custom domain.
-12. `sitemap.xml`, `robots.txt`, and the manifest contain only canonical custom-domain URLs where absolute URLs are required.
-13. Browser network inspection shows no request to `/_vercel/insights/*`.
-14. Browser storage inspection shows no cookies, local storage, session storage, or IndexedDB written by the app.
-15. No console error is emitted by a missing analytics script or endpoint.
+12. The icon loads from the custom domain and renders in the tab, in both colour schemes.
+13. `sitemap.xml`, `robots.txt`, and the manifest contain only canonical custom-domain URLs where absolute URLs are required.
+14. Browser network inspection shows no request to `/_vercel/insights/*`.
+15. Browser storage inspection shows no cookies, local storage, session storage, or IndexedDB written by the app.
+16. No console error is emitted by a missing analytics script or endpoint.
 
 ### 9.3 Regression pass
 
@@ -370,7 +389,10 @@ Run the existing manual pass from `main.spec.md` §13, with these substitutions:
 | `lib/site.ts` | Change the fallback origin to `https://horoscode.vgtc.io` |
 | `app/page.tsx` | Replace query-dependent metadata with static metadata |
 | `app/api/og/route.tsx` | Delete |
+| `lib/sign-glyphs.ts` | Delete — vendored only for the card §4.1 removes (§8.1) |
 | `app/opengraph-image.tsx` | Retain as the only share image; adjust comments if needed |
+| `app/icon.svg` | Add the application icon (§3.4) |
+| `app/manifest.ts` | Declare the icon, so `display: 'standalone'` is installable (§3.4) |
 | `app/layout.tsx` | Remove Vercel Analytics component and import |
 | `lib/analytics.ts` | Replace vendor wrapper with typed no-op |
 | `app/privacy/page.tsx` | Remove the analytics claim |

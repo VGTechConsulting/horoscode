@@ -2,7 +2,20 @@
 
 Pick five traits, one at a time, and a fixed lookup table tells you which of eighteen engineering signs you are, and what the forecast is. Eighteen signs, no forms, no numbers on screen, no backend, no randomness, no account, and nothing on the page trying to sell you anything.
 
-**This document is self-contained.** It supersedes nothing and depends on nothing: it is the complete build instruction for a separate Next.js application, deployable to its own domain. The canonical long-form content is committed alongside the implementation as described in §14; all required sources and specifications are included here.
+**This document specifies the product.** The model in §6–§8 is reproduced here in full — every weight, band, matrix cell, and forecast line — and the canonical long-form content is committed alongside the implementation as described in §14.
+
+**It is amended, and no longer self-contained.** `github-pages-deployment.spec.md` converted the application to a static export on GitHub Pages, and supersedes the sections below. Where the two disagree, the deployment spec wins.
+
+| Superseded here | By |
+| --- | --- |
+| §2, the suggested host | §1 — the canonical origin is `https://horoscode.vgtc.io`, and `horoscode.dev` is retired |
+| §5, the `/api/og` route and the stack | §2.1, §4.1, §5.1, §10 |
+| §11.2, the dynamic share card | §4.1 — one generic card for every reading, drawn at build time |
+| §12.1, the analytics vendor | §5.1 — the `track()` boundary survives as a typed no-op |
+| §12.2, the privacy copy | §5.2 — nothing is collected, so the sentence that said otherwise is gone |
+| §13, the dynamic-share-card assertions | §8.1, and §8.2 adds a second harness over the built artifact |
+
+Nothing in §6–§8 is touched by that amendment: the model, the weights, the bands, the houses, and the eighteen signs are as specified here.
 
 Three requirements shape every decision below and are worth stating before the detail:
 
@@ -60,7 +73,9 @@ The app is a VG Tech artefact that does not behave like a VG Tech page. Concrete
 
 The argument for restraint is simple: this audience shares tools and ignores calendars. One quiet wordmark on something worth passing on outperforms a conversion surface on something nobody sends to a colleague. If the firm later wants a conversion surface here, the honest version is a second mono link in the bottom rule, not a section.
 
-**Naming and domain.** Product name `Horoscode`. Suggested host `horoscode.dev` or `horoscode.vgtc.io`; the spec is host-agnostic and reads the origin from `NEXT_PUBLIC_SITE_URL` (§11.1). Nothing in the code hard-codes a domain except that constant.
+**Naming and domain.** Product name `Horoscode`. The spec is host-agnostic and reads the origin from `NEXT_PUBLIC_SITE_URL` (§11.1); nothing in the code hard-codes a domain except that constant.
+
+> Settled by `github-pages-deployment.spec.md` §1: the canonical origin is `https://horoscode.vgtc.io`. The other candidate this section used to offer, `horoscode.dev`, is retired, and §8.1 greps the sources for it.
 
 ---
 
@@ -213,22 +228,25 @@ Slack at every size, which is the point: the numbers above are minimums, and the
 
 ## 5. Routes and structure
 
-Static except where §11.2 says otherwise. No backend, no database, no API route that stores anything.
+Static throughout. No backend, no database, no API route that stores anything.
+
+> Amended by `github-pages-deployment.spec.md` §2.1: the build is `output: 'export'`, so nothing request-time survives anywhere. The `/api/og` route this table used to carry was the one exception, and §4.1 deleted it.
 
 | Route | File | Rendering |
 | --- | --- | --- |
 | `/` | `app/page.tsx` (server) + `components/horoscode.tsx` (`"use client"`) | The whole tool: hero, stage, reading, reference |
 | `/privacy` | `app/privacy/page.tsx` | One screen, honest, no cookies (§12.2) |
-| `/api/og` | `app/api/og/route.tsx` | Dynamic share card (§11.2) |
 | `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` | `app/sitemap.ts`, `app/robots.ts`, `app/manifest.ts` | Static |
+| `/icon.svg`, `/opengraph-image.png` | `app/icon.svg`, `app/opengraph-image.tsx` | Static (deployment spec §3.4, §4.1) |
 
 ```
 app/
-  layout.tsx            fonts, <html lang="en">, color-scheme, Analytics
-  page.tsx              server: metadata, schemas, hero, sign catalogue
+  layout.tsx            fonts, <html lang="en">, color-scheme, top bar, bottom rule
+  page.tsx              server: static metadata, schemas, hero, sign catalogue
   globals.css           tokens, dashed grid, cross accent, motion, target hygiene
-  opengraph-image.tsx   static fallback card
-  api/og/route.tsx      dynamic card from the five params
+  icon.svg              the cross accent as a favicon (deployment spec §3.4)
+  opengraph-image.tsx   the one generic share card, drawn at build time
+  manifest.ts, robots.ts, sitemap.ts
   privacy/page.tsx
 components/
   horoscode.tsx         the client island: stage, rail, reading
@@ -236,16 +254,19 @@ components/
 lib/
   horoscode.ts          pure model — no React, no icons, no DOM
   horoscode-icons.ts    lucide maps, kept out of the pure module
-  analytics.ts          one thin `track()` wrapper
+  analytics.ts          the typed `track()` boundary, a no-op (§12.1)
+  site.ts               the one constant that knows about a domain (§11.1)
 content/
   signs.ts              the eighteen records (§14)
 scripts/
-  verify.mjs            the assertion harness (§14)
+  finalize-export.mjs   gives the generated share card a static-host-safe URL
+  verify.mjs            the assertion harness, over the sources (§13)
+  verify-export.mjs     the assertion harness, over out/
 ```
 
-**`lib/horoscode.ts` imports nothing.** It is loadable from a plain Node script, which is what makes the §13 harness possible without a test runner. Icons live in a separate module for exactly that reason.
+**`lib/horoscode.ts` imports only `content/signs.ts`, which is data.** It is loadable from a plain Node script, which is what makes the §13 harness possible without a test runner. Icons live in a separate module for exactly that reason.
 
-**Stack:** Next 16 (App Router), React 19, TypeScript, Tailwind v4, `lucide-react`, `@vercel/analytics`. No state library, no form library, no animation library, no UI kit.
+**Stack:** Next 16 (App Router), React 19, TypeScript, Tailwind v4, `lucide-react`. No state library, no form library, no animation library, no UI kit, and — since `github-pages-deployment.spec.md` §5.1 — no analytics vendor.
 
 ---
 
@@ -564,6 +585,8 @@ On a clipboard rejection (denied permission, insecure context) the app says noth
 
 ### 11.2 The share card
 
+> **Superseded in full by `github-pages-deployment.spec.md` §4.1.** A static export has nowhere to run a request-time handler, so the per-result card is gone and `app/opengraph-image.tsx` is the whole share surface: one generic 1200 × 630 image for every reading, drawn at build time. A shared link still restores the exact reading — the five params travel in the URL, and only the unfurler's thumbnail goes generic. The fallback this section names below is what shipped. The rest is kept as the record of what was traded away.
+
 The frame is shareable and a static logo card wastes it. `generateMetadata({ searchParams })` reads the five params and points `openGraph.images` at `/api/og?c=…&r=…&j=…&s=…&e=…`, an `ImageResponse` route rendering the sign icon, the name, the epithet, and the verdict chip on the black-and-white grid — 1200 × 630, no external fetch, fonts inlined from the same `next/font` sources.
 
 **The cost, stated rather than discovered:** reading `searchParams` in `generateMetadata` opts `/` into dynamic rendering. The HTML is identical either way and the route is cacheable at the edge, so the practical effect is one render per unique param set. If that is unwanted, the fallback is `app/opengraph-image.tsx` alone — a static card — and the dynamic route is deleted with no other change.
@@ -576,7 +599,9 @@ The frame is shareable and a static logo card wastes it. `generateMetadata({ sea
 
 ### 12.1 Events
 
-Three, through Vercel Analytics' `track`, wrapped in `lib/analytics.ts` so the vendor is one import:
+> Amended by `github-pages-deployment.spec.md` §5.1: the vendor is gone, because GitHub Pages has none of the runtime endpoints it would beacon to. The three events, their payloads, and the `lib/analytics.ts` boundary all survive exactly as specified below — `track()` is a typed no-op, which is what keeps the eighteen call sites free of vendor conditionals. Nothing is logged, stored, queued, or sent.
+
+Three, through the `track()` wrapper in `lib/analytics.ts`, so the vendor is one import:
 
 | Event | Payload |
 | --- | --- |
@@ -590,15 +615,19 @@ Three, through Vercel Analytics' `track`, wrapped in `lib/analytics.ts` so the v
 
 ### 12.2 `/privacy`
 
-One screen, no legalese, and accurate — which is the whole reason it exists:
+One screen, no legalese, and accurate — which is the whole reason it exists.
 
-> Horoscode stores nothing. Your five picks live in the page's address bar and nowhere else — there are no cookies, no local storage, and no accounts, so closing the tab is the whole of it. Anonymous, aggregate page analytics are collected by Vercel Analytics, which does not use cookies and does not track you across sites.
+**Superseded by `github-pages-deployment.spec.md` §5.2.** The vendor sentence went with the vendor; the page now claims less, and all of it is true:
+
+> Horoscode stores nothing. Your five picks live in the page's address bar and nowhere else — there are no cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole of it.
 
 ---
 
 ## 13. Verification
 
 No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, and `node scripts/verify.mjs`, which imports `lib/horoscode.ts` directly and asserts:
+
+> Extended by `github-pages-deployment.spec.md` §8. The source harness below gains the deployment guards in §8.1 — no removed vendor, no retired origin, a build rooted at `/`, and the application icon — and a second harness, `scripts/verify-export.mjs`, asserts in §8.2 what only the built `out/` can show. `pnpm verify:export` runs it.
 
 **Totality and arithmetic**
 - All 216 states resolve: every metric is an integer, `independence` ∈ [0, 100], `automation` ∈ [0, 100].
@@ -627,7 +656,7 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 - **No digit in any user-facing string** — every option name and line, helper, question, verdict label and blurb, meter caption, forecast, advice, and sign field. Spelled-out numerals are the rule ("eighteen", "five").
 - `serialise` round-trips over all 216 complete states plus every partial plus empty; parsing is a pure function of the URL.
 - **`serialise` emits exactly the five star params and no others**, and `parseState` drops every unrecognised key — the assertion that catches a sixth param being reintroduced by a feature that needs somewhere to put its state.
-- The reading, dynamic share card, and `summariseAsText` resolve the same sign name and epithet. None adds a Reference-derived modifier to the sign name.
+- The reading and `summariseAsText` resolve the same sign name and epithet, and neither adds a Reference-derived modifier to it. *The share card was a third surface here until `github-pages-deployment.spec.md` §4.1 made it generic; it now names no sign at all, so there is nothing left to agree with (§8.1).*
 - Every `link.href` in the eighteen records resolves (HEAD request, run in CI only).
 
 **Mechanical guards**
