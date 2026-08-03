@@ -1,0 +1,48 @@
+{
+  "name": "horoscode",
+  "version": "1.0.0",
+  "description": "Pick five traits and a fixed lookup table returns one of eighteen engineering signs, with a forecast for the gap between automation and verification. No backend, no randomness, no storage.",
+  "license": "MIT",
+  "author": "VG Tech",
+  "homepage": "https://horoscode.vgtc.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VGTechConsulting/horoscode.git"
+  },
+  "bugs": "https://github.com/VGTechConsulting/horoscode/issues",
+  "keywords": [
+    "static-site",
+    "next",
+    "github-pages"
+  ],
+  "private": true,
+  "packageManager": "pnpm@10.20.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "node scripts/finalize-export.mjs",
+    "preview": "serve out --no-clipboard",
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "verify": "pnpm typecheck && pnpm lint && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verify.mjs",
+    "verify:export": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verify-export.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^1.18.0",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
+    "@types/node": "^22.19.21",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.12",
+    "postcss": "^8.5.15",
+    "serve": "14.2.6",
+    "tailwindcss": "^4.3.1",
+    "typescript": "^5.9.3"
+  }
+}

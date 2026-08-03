@@ -1,0 +1,12 @@
+# `allowBuilds` is pnpm 11 syntax; this project pins pnpm 10 through
+# `packageManager`, whose spelling for the same setting is `onlyBuiltDependencies`
+# (github-pages-deployment.spec.md §2.3).
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver
+
+# Next pins older build-time releases. Keep the static export on patched
+# versions until its dependency ranges catch up.
+overrides:
+  postcss: 8.5.25
+  sharp: 0.35.3
