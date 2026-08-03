@@ -21,15 +21,15 @@ Three requirements shape every decision below and are worth stating before the d
 
 1. **The app is a selection instrument.** Everything on screen exists to make one of two-to-four choices, five times, then read a result. Layout, typography, motion, and focus all serve tap-accuracy and tap-speed first (§4).
 2. **It is comfortable on a phone, a tablet, and a desktop** — not a desktop layout that survives a phone. The mobile case is designed first and the larger breakpoints spend the extra room on legibility rather than on density (§4.3).
-3. **It is loosely connected to VG Tech** — the wordmark, the copyright, the palette, and one outbound link. It is not the firm's website, it carries no navigation into it, and it asks for nothing (§2).
+3. **Attribution is the whole of its connection to VG Tech** — the wordmark, the copyright, the palette, and the attribution line. It is not the firm's website, it carries no navigation into it, and it asks the visitor for nothing (§2).
 
 ---
 
 ## 1. Purpose
 
 - **For the visitor:** five taps, one reading, a forecast, and a reason to take it again with different answers.
-- **For VG Tech:** a shareable artefact that puts *automation is cheap, independent verification is the scarce thing* in front of engineers, with the firm's name on it once, quietly, at the top and bottom.
-- **Secondary:** an indexable page ranking for the vocabulary this audience searches — vibe coding, agentic coding, dark factory, AI code review.
+- **The argument it carries:** *automation is cheap, independent verification is the scarce thing.* Every weight, band, and forecast line in §6–§8 is downstream of that sentence, which is why the model is specified here rather than tuned later.
+- **Indexable without JavaScript:** the sign catalogue is server-rendered (§9.5), so the eighteen signs and their copy are readable by a crawler. A tool whose content sits entirely behind client state gives one nothing.
 
 **Why a horoscope frame carries the argument rather than diluting it.** A horoscope takes a handful of facts you did not choose, maps them through a fixed table, and hands you a statement about what is coming. This app does exactly that — five inputs, a deterministic table, a consequence — with one difference the frame makes funny instead of pious: **here the mapping is real and you can read it.** The five stars are not your birthday, they are how you write code, who checks it, who decides, what standard can contradict the implementation, and what breaks when it fails; those genuinely determine the forecast, and the arithmetic is in one file with a name. The joke and the thesis are the same sentence.
 
@@ -41,7 +41,7 @@ Three requirements shape every decision below and are worth stating before the d
 
 1. **No randomness, ever.** Same five stars, same reading, forever. A single `Math.random()` would make every §13 assertion meaningless and turn a deterministic argument into a toy. §13 greps for one.
 2. **No dates, birthdays, names, or star signs as input.** The five stars are the five axes. Nothing about the visitor's identity is asked, so nothing about it can be stored, and the honesty line stays true.
-3. **The eighteen names are not zodiac names.** Craftsman, Centaur, Dark Factory, Spec Runner, Believer — the names are the model's, they are what the sign catalogue ranks for, and they are what makes the page worth passing on.
+3. **The eighteen names are not zodiac names.** Craftsman, Centaur, Dark Factory, Spec Runner, Believer — the names are the model's own vocabulary, and the sign catalogue is written in it.
 4. **The copy never predicts anything outside the loop it models.** No luck, no money, no relationships, no week ahead. Every forecast line in §7 is a statement about what this posture does to this codebase at these stakes.
 5. **One honesty line, on screen, above the fold**, mono, in the hero:
 
@@ -49,9 +49,9 @@ Three requirements shape every decision below and are worth stating before the d
 
 ---
 
-## 2. Relationship to VG Tech
+## 2. Attribution
 
-The app is a VG Tech artefact that does not behave like a VG Tech page. Concretely:
+The application is published by VG Tech and carries its mark. It carries nothing else from the firm's website. Concretely:
 
 **What is carried over**
 
@@ -68,10 +68,10 @@ The app is a VG Tech artefact that does not behave like a VG Tech page. Concrete
 
 - No navbar, no site footer, no service list, no team, no email addresses.
 - No booking CTA, no Cal.com embed, no chat widget, no newsletter, no exit intent.
-- No inbound links into the firm's funnel beyond the two in the table above — the wordmark and the attribution line, both to the homepage.
+- No links into the firm *from the frame* beyond the two in the table above, both to the homepage. The one editorial link each sign record carries (§14) is content, not chrome, and is governed there.
 - No case studies, no logos, no testimonial strip.
 
-The argument for restraint is simple: this audience shares tools and ignores calendars. One quiet wordmark on something worth passing on outperforms a conversion surface on something nobody sends to a colleague. If the firm later wants a conversion surface here, the honest version is a second mono link in the bottom rule, not a section.
+That list is a hard boundary, not a starting position: adding to it is out of scope (§15), and §13 greps the sources for a booking trigger, a third-party widget, and a site `Navbar` or `Footer` import.
 
 **Naming and domain.** Product name `Horoscode`. The spec is host-agnostic and reads the origin from `NEXT_PUBLIC_SITE_URL` (§11.1); nothing in the code hard-codes a domain except that constant.
 
@@ -609,7 +609,7 @@ Three, through the `track()` wrapper in `lib/analytics.ts`, so the vendor is one
 | `horoscode_result` | `sign`, `verdict`, the five traits, `run` (1-based per session) |
 | `horoscode_share` | `method` (`link` \| `text`), `sign` |
 
-`horoscode_pick` is what makes the funnel legible and it is the event that decides whether five slots was right. The result event fires once per arrival at a reading, keyed on the five traits, so a re-render is not a second result.
+`horoscode_pick` is the event that shows where a run stops, and so the one that decides whether five slots was the right number. The result event fires once per arrival at a reading, keyed on the five traits, so a re-render is not a second result.
 
 **No Google Analytics, no Clarity, no Meta pixel, no cookies of any kind.** This is a divergence from the main site and it is deliberate: it is what lets the honesty line and the privacy page both be true without a paragraph of exceptions.
 
@@ -720,7 +720,6 @@ Changes to the committed record strings are content changes and receive the same
 
 ## 16. Future
 
-- **Sign permalinks** at `/signs/[sign]` — eighteen indexable pages, each opening on that sign's reading with stars pre-filled. The highest-leverage SEO follow-up, and the sign catalogue already carries the copy.
+- **Sign permalinks** at `/signs/[sign]` — eighteen indexable pages, each opening on that sign's reading with stars pre-filled. The sign catalogue already carries the copy, so this is mostly routing.
 - **A second toy**, if the domain becomes a playground rather than one page. Nothing in this spec assumes `/` is the only route.
 - **A house view** at `/houses/[house]` — nine pages, each the signs that share an Authorship × Verification position. This is the indexable, server-rendered answer to what the chart was for, and it is the shape the chart should have taken if it comes back at all.
-- **An insight article** on the verification-independence argument, cross-linked from the sign catalogue back into vgtc.io.
