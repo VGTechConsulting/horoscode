@@ -88,9 +88,15 @@
 .horoscode-target:active {
   background-color: color-mix(in oklab, var(--foreground) 6%, transparent);
 }
+.horoscode-target.horoscode-target-inverted:active {
+  background-color: color-mix(in oklab, var(--foreground) 82%, transparent);
+}
 @media (hover: hover) {
   .horoscode-target:hover {
     background-color: color-mix(in oklab, var(--foreground) 4%, transparent);
+  }
+  .horoscode-target.horoscode-target-inverted:hover {
+    background-color: color-mix(in oklab, var(--foreground) 88%, transparent);
   }
 }
 

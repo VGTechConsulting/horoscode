@@ -844,7 +844,7 @@ function ReadingDetail({
               <button
                 type="button"
                 onClick={() => onCopy('link', state)}
-                className="horoscode-target inline-flex items-center gap-2 min-h-11 font-mono text-[10px] uppercase tracking-widest border border-foreground bg-foreground text-background px-4 cursor-pointer"
+                className="horoscode-target horoscode-target-inverted inline-flex items-center gap-2 min-h-11 font-mono text-[10px] uppercase tracking-widest border border-foreground bg-foreground text-background px-4 cursor-pointer"
               >
                 {copied === 'link' ? (
                   <Check size={11} aria-hidden="true" />
