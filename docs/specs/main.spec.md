@@ -57,7 +57,7 @@ The application is published by VG Tech and carries its mark. It carries nothing
 
 | Element | Treatment |
 | --- | --- |
-| Wordmark | `VG` + muted `/` + `Tech`, mono, `text-sm`, `tracking-widest`, uppercase — identical to the site's. Links to `https://vgtc.io`, `rel="noopener"`, `aria-label="VG Tech Consulting"`. Top bar only. |
+| Attribution | `A playground from VG Tech — vgtc.io`, mono, muted, linking to `https://vgtc.io` with `rel="noopener"`. Bottom rule only — the top bar carries the product name, not the firm's. |
 | Copyright | `© VG Tech` in the bottom rule, mono, `text-[10px]`, muted. Year-free, so it never goes stale. |
 | Palette | The same black-and-white system, token for token (§3.1). |
 | Type | Inter for text, JetBrains Mono for labels — the site's pairing, self-hosted via `next/font` (§3.2). |
@@ -68,7 +68,7 @@ The application is published by VG Tech and carries its mark. It carries nothing
 
 - No navbar, no site footer, no service list, no team, no email addresses.
 - No booking CTA, no Cal.com embed, no chat widget, no newsletter, no exit intent.
-- No links into the firm *from the frame* beyond the two in the table above, both to the homepage. The one editorial link each sign record carries (§14) is content, not chrome, and is governed there.
+- No links into the firm anywhere but the bottom rule, both to the homepage. Sign records carry no outbound link of their own: an editorial or service link at the end of a card reads as a pitch attached to the visitor's result, which is the impression the whole frame exists to avoid.
 - No case studies, no logos, no testimonial strip.
 
 That list is a hard boundary, not a starting position: adding to it is out of scope (§15), and §13 greps the sources for a booking trigger, a third-party widget, and a site `Navbar` or `Footer` import.
@@ -161,7 +161,7 @@ One question is on screen at a time, with its two-to-four options, and nothing e
 | Option card, `sm` and up | column cell × **min 190px** | The card format; the whole cell is the button. |
 | Rail slot | ≥ 1/5 viewport width × **min 64px** | Five across at 375px is 75px each. |
 | Stage-footer controls | **min 44px** tall, `px-4` | Back, Read again, Copy. |
-| Reading actions, footer and reference links | **min 44px** tall | The smallest targets in the app, and still at the floor. |
+| Reading actions and footer links | **min 44px** tall | The smallest targets in the app, and still at the floor. |
 
 **The button is the cell.** Every option is a `<button>` that fills its grid cell — `w-full h-full`, padding on the button not the cell — so there is no border strip that looks tappable and is not. No nested interactive elements inside an option card, ever: a link inside a tappable card is the single most common mis-tap on mobile.
 
@@ -425,7 +425,7 @@ Pure, total, exhaustive: 216 combinations, 18 signs, no fallback. Order matters 
 | The Spec Runner | wrote the spec, let it rip | Summoned · Machine-gated | Sandbox + Independent reference | `FileCog` |
 | The Vibe Coder | ship it and see | Summoned · Machine-gated | Sandbox + Loop-owned reference | `Sparkles` |
 
-Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `link`, `house`, `environments`. All eighteen canonical records live in `content/signs.ts`; the rule that distinguishes The Believer is specified below.
+Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `house`, `environments`. All eighteen canonical records live in `content/signs.ts`; the rule that distinguishes The Believer is specified below.
 
 ### 8.3 The Believer
 
@@ -443,7 +443,6 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
   tagline: 'Machines write it, machines check it, and the machine says it is correct',
   house: { code: 'delegated', review: 'delegated' },
   environments: ['team', 'regulated'],
-  link: { label: 'Golden datasets for testing AI', href: '/insights/golden-datasets-for-ai-testing' },
 }
 ```
 
@@ -491,22 +490,22 @@ Sizes: option 20 (mobile) / 28 (≥sm), rail slot 14, reveal 40, catalogue card 
 
 ### 9.1 Frame
 
-**Top bar** — `h-12`, dashed bottom border, two elements: the wordmark linking to `vgtc.io`, and after a muted separator a mono `Horoscode`. No nav links, no button. It scrolls away rather than sitting fixed, so the stage subtracts it only on first paint.
+**Top bar** — `h-12`, dashed bottom border, one element: a mono `Horoscode` wordmark. No nav links, no button, and no outbound link — the firm is named in the footer only. It scrolls away rather than sitting fixed, so the stage subtracts it only on first paint.
 
-**Bottom rule** — mono, `text-[10px]`, muted: `© VG Tech` · `Privacy` · `A playground from VG Tech — vgtc.io`. Each link ≥44px tall on touch.
+**Bottom rule** — mono, `text-[10px]`, muted: `© VG Tech` · `Privacy` · `GitHub` · `A playground from VG Tech — vgtc.io`. Each link ≥44px tall on touch.
 
 ### 9.2 Hero
 
 A band, not a screen — the stage must be reachable with one flick.
 
-- Eyebrow: `CrossAccent` + `Horoscode` in mono.
+- Eyebrow: `CrossAccent` + `Five stars, one sign` in mono. A descriptor, not the product name — the top bar already carries that, and every other eyebrow on the page describes its section.
 - H1: `What kind of software engineer` / **`are you in 2026?`**
 - Sub: *Five stars — how you write it, who checks it, who decides, what can contradict the implementation, and what breaks. They align on one of eighteen signs.*
 - Honesty line, mono, muted: *No stars were consulted. Five picks, one lookup table, and arithmetic you can read in the source.*
 
 ### 9.3 Pick phase
 
-Rail, question (+ helper where the slot has one), option grid, stage footer. The footer holds the counter — `Star 2 of 5` while picking, `3 of 5 stars` on a partial reading — plus `Back` where there is somewhere to go, and one disclosure line: *Nothing is stored. The five stars and the sign live in the URL.*
+Rail, question (+ helper where the slot has one), option grid, stage footer. The footer holds the counter — `Star 2 of 5` while picking, `3 of 5 stars` on a partial reading — plus `Back` where there is somewhere to go. No disclosure line — the storage claim lives on `/privacy` (§12.2) for whoever wants it.
 
 ### 9.4 The reading
 
@@ -532,7 +531,7 @@ The rail is also the complete trait summary. Reference is displayed there exactl
 
 ### 9.5 Sign catalogue
 
-Server-rendered, and the reason the page is indexable: a tool whose content is entirely behind client state gives a crawler nothing. Eighteen cards — icon, name, epithet, tagline, body, the conditions that reach it, failure modes, outbound link — grouped into the ten reachable above Sandbox and the eight that exist only there, each with `id="sign-<id>"` for deep links.
+Server-rendered, and the reason the page is indexable: a tool whose content is entirely behind client state gives a crawler nothing. Eighteen cards — icon, name, epithet, tagline, body, the conditions that reach it, failure modes — grouped into the ten reachable above Sandbox and the eight that exist only there, each with `id="sign-<id>"` for deep links.
 
 **It is also the only enumeration of the eighteen**, which is a change in its job rather than in its markup: with no chart on the page, this section is where `See all eighteen signs` lands and where a visitor compares their reading against the rest. Two consequences follow. The conditions line on each card carries the full reachability — house, stakes tiers, and the Reference or Judgement value where one of those resolves the sign — because there is no grid left to read it off. And the card for the visitor's own sign takes `aria-current="true"` and a dashed outline when the reading is complete, which is the one piece of client state this otherwise-static section accepts. The Reference star gets no separate cards; the model explanation in §6.2 is its single explanatory surface outside the picker and rail.
 
@@ -657,7 +656,7 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 - `serialise` round-trips over all 216 complete states plus every partial plus empty; parsing is a pure function of the URL.
 - **`serialise` emits exactly the five star params and no others**, and `parseState` drops every unrecognised key — the assertion that catches a sixth param being reintroduced by a feature that needs somewhere to put its state.
 - The reading and `summariseAsText` resolve the same sign name and epithet, and neither adds a Reference-derived modifier to it. *The share card was a third surface here until `github-pages-deployment.spec.md` §4.1 made it generic; it now names no sign at all, so there is nothing left to agree with (§8.1).*
-- Every `link.href` in the eighteen records resolves (HEAD request, run in CI only).
+- No record in `content/signs.ts` carries an outbound href, and no sign card or reading action renders one (§2).
 
 **Mechanical guards**
 - **No randomness**: grep `lib/`, `components/`, `content/`, `app/` for `Math.random`, `Date.now`, and `new Date`, failing on a hit.
@@ -689,12 +688,12 @@ The model in §6–§8 is fully specified here — every weight, band, matrix ce
 
 | Content | Canonical source |
 | --- | --- |
-| Sign names, epithets, taglines, bodies, lists, placement, and public links | `content/signs.ts` |
+| Sign names, epithets, taglines, bodies, lists, and placement | `content/signs.ts` |
 | The Believer's resolution rule and rationale | §8.3 and its record in `content/signs.ts` |
 
 Content maintenance follows three rules:
 
-1. **Public links stay absolute** — insight and service links use `https://www.vgtc.io/…`, with `target="_blank" rel="noopener"` at the rendering surface.
+1. **Records carry no links** — sign copy never points outward, to the firm or anywhere else (§2). The only outbound links on the site are in the bottom rule.
 2. **The record schema stays narrow** — each sign contains only the fields listed in §8.2. There is no second result taxonomy and there are no transits (§15).
 3. **Identifiers use the product vocabulary** — `Sign`, `SignId`, `SIGNS`, `resolveSign`, and `House`; string ids remain aligned with their `#sign-<id>` anchors.
 

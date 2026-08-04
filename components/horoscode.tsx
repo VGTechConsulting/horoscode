@@ -696,9 +696,6 @@ export function Horoscode() {
                   </button>
                 )}
               </div>
-              <p className="font-mono text-[9px] md:text-[10px] text-muted-foreground/80 leading-snug mt-1.5">
-                Nothing is stored. The five stars and the sign live in the URL.
-              </p>
             </div>
           </div>
         </div>
@@ -865,14 +862,6 @@ function ReadingDetail({
               </button>
             </>
           )}
-          <a
-            href={sign.link.href}
-            target="_blank"
-            rel="noopener"
-            className="horoscode-target inline-flex items-center gap-2 min-h-11 font-mono text-[10px] uppercase tracking-widest text-muted-foreground transition-colors md:ml-auto"
-          >
-            {sign.link.label}
-          </a>
         </div>
       </div>
     </section>

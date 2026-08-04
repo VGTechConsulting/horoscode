@@ -41,7 +41,6 @@ export interface Sign {
   strengths: [string, string]
   failureModes: [string, string]
   nextMoves: [string, string, string]
-  link: { label: string; href: string }
   /** Where it sits on the three-by-three, for the sign catalogue. */
   house: { code: Zone; review: Zone }
   /** Stakes tiers this sign occupies within its house. */
@@ -75,10 +74,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Pick one finished project and rewrite it with an agent, so you have a felt comparison rather than an opinion.',
       'Set an exit condition now: a date or a project after which you start delegating authorship deliberately.',
     ],
-    link: {
-      label: 'From manual coding to an agentic SDLC',
-      href: 'https://www.vgtc.io/insights/manual-to-agentic-sdlc',
-    },
     house: { code: 'hand', review: 'hand' },
     environments: ['hobby'],
   },
@@ -106,10 +101,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Let a model review something finished and read what it catches; you are not obliged to act on any of it.',
       'Keep one project deliberately unspecified. This posture is worth having on purpose rather than only by default.',
     ],
-    link: {
-      label: 'Individual vs corporate AI plans',
-      href: 'https://www.vgtc.io/insights/individual-vs-corporate-ai-plans',
-    },
     house: { code: 'hand', review: 'hand' },
     environments: ['hobby'],
   },
@@ -137,7 +128,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Measure review latency for a fortnight. If it is the top of the cycle-time chart, the bottleneck is real and not a preference.',
       'Write down which change classes must stay hand-written, so the answer is policy rather than habit when the pressure arrives.',
     ],
-    link: { label: 'AI SDLC, CI/CD & Quality Gates', href: 'https://www.vgtc.io/services/ai-sdlc' },
     house: { code: 'hand', review: 'hand' },
     environments: ['team', 'regulated'],
   },
@@ -165,10 +155,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Sample twenty AI-approved diffs and read them properly. The hit rate tells you whether the green check has earned its trust.',
       'Move judgement from taste to Codified law — tests, gates, and policy scale past the point where a person can hold the standard.',
     ],
-    link: {
-      label: 'Setting up Claude Code for automated test generation',
-      href: 'https://www.vgtc.io/insights/claude-code-test-generation',
-    },
     house: { code: 'hand', review: 'blended' },
     environments: ['hobby', 'team', 'regulated'],
   },
@@ -196,10 +182,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Spend a fraction of the practice time on the inverse exercise: review agent-written code and find the planted bug.',
       'When the practice ends, change the traits. This posture is correct for learning and expensive for delivery.',
     ],
-    link: {
-      label: 'Coding agent evaluation matrix',
-      href: 'https://www.vgtc.io/insights/coding-agent-evaluation-matrix',
-    },
     house: { code: 'hand', review: 'delegated' },
     environments: ['hobby'],
   },
@@ -227,10 +209,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Read one diff end to end yourself now and then — a calibration check on the reviewer rather than on the code.',
       'Name what would have to be true before you would read every line again, and you will know when this posture has outgrown its stakes.',
     ],
-    link: {
-      label: 'VS Code and its forks: the landscape in 2026',
-      href: 'https://www.vgtc.io/insights/vs-code-forks-ide-landscape-2026-h1',
-    },
     house: { code: 'hand', review: 'delegated' },
     environments: ['hobby'],
   },
@@ -258,7 +236,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Encode what the business cares about as tests and policy, so the machine reviewer is checking your rules rather than generic ones.',
       'Write the runbook now, while you are still here to write it.',
     ],
-    link: { label: 'AI SDLC, CI/CD & Quality Gates', href: 'https://www.vgtc.io/services/ai-sdlc' },
     house: { code: 'hand', review: 'delegated' },
     environments: ['team', 'regulated'],
   },
@@ -286,10 +263,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Differentiate review depth by change class instead of reading everything at the same speed.',
       'Add the tests and gates that let you skim safely, before you start skimming anyway.',
     ],
-    link: {
-      label: 'Agent workflow patterns for engineering teams',
-      href: 'https://www.vgtc.io/insights/agent-workflow-patterns',
-    },
     house: { code: 'blended', review: 'hand' },
     environments: ['hobby', 'team', 'regulated'],
   },
@@ -317,7 +290,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Instrument it — count how many merged diffs had no human reader last month. The number is usually a surprise.',
       'Move judgement from Peer council to Codified law on the load-bearing paths, so the standard survives the sprint that gets busy.',
     ],
-    link: { label: 'AI SDLC, CI/CD & Quality Gates', href: 'https://www.vgtc.io/services/ai-sdlc' },
     house: { code: 'blended', review: 'blended' },
     environments: ['hobby', 'team', 'regulated'],
   },
@@ -345,10 +317,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Build the golden dataset and the evals that let a machine gate mean something specific rather than generic.',
       'Re-check the blast radius quarterly. This posture is safe because of a fact that changes without telling you.',
     ],
-    link: {
-      label: 'Golden datasets for testing AI',
-      href: 'https://www.vgtc.io/insights/golden-datasets-for-ai-testing',
-    },
     house: { code: 'blended', review: 'delegated' },
     environments: ['hobby', 'team', 'regulated'],
   },
@@ -376,10 +344,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Write down the failure you expect before the run, so the result is able to contradict you.',
       'Evaluate the review as well as the code: hand the same diff to a second model and see whether it agrees.',
     ],
-    link: {
-      label: 'Coding agent evaluation matrix',
-      href: 'https://www.vgtc.io/insights/coding-agent-evaluation-matrix',
-    },
     house: { code: 'delegated', review: 'hand' },
     environments: ['hobby'],
   },
@@ -407,10 +371,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Pick a change class you will stop reading in full, and the tests that replace the reading.',
       'Decide a date to graduate. Skeptic is a posture for evaluation, not a destination.',
     ],
-    link: {
-      label: 'Coding agent evaluation matrix',
-      href: 'https://www.vgtc.io/insights/coding-agent-evaluation-matrix',
-    },
     house: { code: 'delegated', review: 'hand' },
     environments: ['hobby'],
   },
@@ -438,10 +398,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Track approval latency and diff size per reviewer. Fatigue shows up as approval speed before it shows up as incidents.',
       'Tier the changes: full human read for the audited paths, gated automation for the rest. Blanket review is what collapses.',
     ],
-    link: {
-      label: 'Compliance-Ready AI Operations',
-      href: 'https://www.vgtc.io/services/compliance-ai-operations',
-    },
     house: { code: 'delegated', review: 'hand' },
     environments: ['team', 'regulated'],
   },
@@ -469,10 +425,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Grow the golden dataset from real incidents, so the harness gets sharper on the failures you actually have.',
       'Keep a human gate on the change classes where a wrong answer is not reversible, and name them explicitly.',
     ],
-    link: {
-      label: 'Agentic Systems & AI Employees',
-      href: 'https://www.vgtc.io/services/agentic-systems',
-    },
     house: { code: 'delegated', review: 'blended' },
     environments: ['hobby', 'team', 'regulated'],
   },
@@ -500,10 +452,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Re-run last week\'s spec against a fresh agent and see whether it lands in the same place.',
       'Name the failure the AI reviewer would not catch, and you have named the human gate this needs before it points at anything real.',
     ],
-    link: {
-      label: 'Golden datasets for testing AI',
-      href: 'https://www.vgtc.io/insights/golden-datasets-for-ai-testing',
-    },
     house: { code: 'delegated', review: 'delegated' },
     environments: ['hobby'],
   },
@@ -531,10 +479,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'If it is going to live, read it once end to end before that becomes impossible.',
       'Add the two tests that would catch the failure you would actually be embarrassed by.',
     ],
-    link: {
-      label: 'How to build an AI agent with modern frameworks',
-      href: 'https://www.vgtc.io/insights/building-an-agent-modern-frameworks-mid-2026',
-    },
     house: { code: 'delegated', review: 'delegated' },
     environments: ['hobby'],
   },
@@ -562,10 +506,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'If judgement sits at Own taste or The oracle, move it to Codified law first. Rules are the only oracle that scales with agent count.',
       'Define the change classes that must never reach production unread, and enforce that in the pipeline rather than in policy documents.',
     ],
-    link: {
-      label: 'Compliance-Ready AI Operations',
-      href: 'https://www.vgtc.io/services/compliance-ai-operations',
-    },
     house: { code: 'delegated', review: 'delegated' },
     environments: ['team', 'regulated'],
   },
@@ -596,10 +536,6 @@ export const SIGNS: Record<SignId, Sign> = {
       'Take a handful of model-approved diffs and read them yourself, cold. The hit rate is the only calibration you have, and right now you do not have it.',
       'Move Judgement to Codified law before you move anything else. It costs no throughput, it is the cheapest change available here, and it is the whole difference between this sign and the Dark Factory.',
     ],
-    link: {
-      label: 'Golden datasets for testing AI',
-      href: 'https://www.vgtc.io/insights/golden-datasets-for-ai-testing',
-    },
     house: { code: 'delegated', review: 'delegated' },
     environments: ['team', 'regulated'],
   },

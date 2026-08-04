@@ -68,7 +68,8 @@ function breadcrumbSchema() {
 }
 
 /** Icon, name, epithet, tagline, body, the conditions that reach it, failure
- *  modes, outbound link — the crawlable copy the client island cannot provide.
+ *  modes — the crawlable copy the client island cannot provide. No outbound
+ *  link: the card ends on the failure modes rather than on a pitch (§9.5).
  *  The conditions line carries the full reachability, because with no chart on
  *  the page there is no grid left to read it off (§9.5). */
 function SignCard({ id, index, count }: { id: SignId; index: number; count: number }) {
@@ -109,7 +110,7 @@ function SignCard({ id, index, count }: { id: SignId; index: number; count: numb
         <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 block mb-2">
           Breaks when
         </span>
-        <ul className="space-y-1.5 mb-6">
+        <ul className="space-y-1.5">
           {sign.failureModes.map((line) => (
             <li
               key={line}
@@ -120,14 +121,6 @@ function SignCard({ id, index, count }: { id: SignId; index: number; count: numb
             </li>
           ))}
         </ul>
-        <a
-          href={sign.link.href}
-          target="_blank"
-          rel="noopener"
-          className="inline-flex items-center gap-2 min-h-11 font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {sign.link.label}
-        </a>
       </div>
     </article>
   )
@@ -152,7 +145,7 @@ export default function Page() {
           <div className="flex items-center gap-3 mb-5">
             <CrossAccent size={8} />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Horoscode
+              Five stars, one sign
             </span>
           </div>
           <h1 className="text-3xl md:text-5xl font-light tracking-tight text-foreground text-balance mb-4">
