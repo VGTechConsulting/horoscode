@@ -147,12 +147,6 @@ colours and the manifest points at it, the build is rooted at `/`, and the sourc
 contain no randomness, no second result taxonomy, no client-side storage, no removed
 vendor, no retired origin, and no button without a minimum target.
 
-`CHECK_LINKS=1 pnpm verify` adds a HEAD check on every outbound link in the eighteen
-records. It is deliberately not part of pull-request CI: it depends on a host this
-repository does not control, so a failure there is link rot rather than a regression,
-and gating a contributor's pull request on someone else's uptime is the wrong trade.
-`.github/workflows/links.yml` runs it weekly and on demand instead.
-
 `pnpm verify:export` asserts things about `out/` that the sources cannot show: every route
 exists as a file, nothing needs a runtime, every page links the exported icon and the
 manifest declares it, no `/api/og` path survived, no output names the retired origin or an

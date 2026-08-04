@@ -269,18 +269,16 @@ comment: a mutable major tag on a third-party action is a supply-chain decision 
 someone outside this repository. Dependabot's `github-actions` ecosystem moves the pin and
 the comment together.
 
-### 6.5 Outbound-link workflow
+### 6.5 No outbound-link workflow
 
-The outbound-link check does not run on pull requests. It reaches eighteen URLs on a host
-this repository does not control, so it fails for reasons no commit caused, and gating
-contributor pull requests on a third party's uptime turns a link-rot monitor into a build
-gate.
+Sign records carry no outbound link of their own (main spec §2), so there is nothing for a
+link-rot monitor to watch. The `CHECK_LINKS` gate, the weekly `links.yml` workflow, and the
+HEAD-request assertion were removed with the last href.
 
-- `scripts/verify.mjs` gates the check on `CHECK_LINKS`, not on `CI`.
-- `.github/workflows/links.yml` runs `pnpm verify` with `CHECK_LINKS=1` on a weekly
-  schedule and on `workflow_dispatch`, with `contents: read` and no upload.
-- Every other assertion in the harness stays on the pull-request path, where it belongs:
-  all of them are deterministic and depend on nothing outside the repository.
+The property that made them necessary is now structural rather than scheduled: every
+assertion in the harness is deterministic and depends on nothing outside the repository, so
+the whole of `pnpm verify` belongs on the pull-request path and no check can fail for a
+reason no commit caused.
 
 ---
 
@@ -333,7 +331,7 @@ Update `scripts/verify.mjs` to reflect the static share surface:
 - Remove `app/api/og/route.tsx` from the sign-name/epithet surface assertion.
 - Keep the assertion that the reading and `summariseAsText` resolve the same sign name and epithet without a Reference-derived modifier.
 - Use `https://horoscode.vgtc.io` wherever the harness needs a representative origin.
-- Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, target-size, and outbound-link assertions. The outbound-link check moves behind `CHECK_LINKS` and off the pull-request path (§6.5); it is not removed.
+- Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, and target-size assertions. The outbound-link check is removed along with the hrefs it read (§6.5).
 - Add a guard that shipped application sources do not reference `@vercel/analytics`, `/_vercel/insights`, or `horoscode.dev`.
 - Add a guard that `next.config.mjs` sets neither `basePath` nor `assetPrefix`, so the build stays rooted at `/` (§1.1).
 - Assert the §3.4 icon: a `viewBox` and no pinned pixel size, an opaque ground, a `prefers-color-scheme` rule, no script, no fill outside the two palette ends, and a manifest entry naming it with `sizes: 'any'`.

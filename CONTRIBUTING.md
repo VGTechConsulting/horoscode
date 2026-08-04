@@ -35,9 +35,6 @@ pnpm verify:export
 pnpm preview            # serves out/ on http://localhost:3000
 ```
 
-`CHECK_LINKS=1 pnpm verify` additionally makes a HEAD request to every outbound link
-in the eighteen sign records. It is not part of pull-request CI, because it depends
-on a host this repository does not control; a weekly workflow runs it instead.
 
 ## There is no test runner, so assertions go in the harness
 
@@ -63,11 +60,10 @@ A few invariants the harness enforces, so they do not surprise you:
 ## Content changes
 
 The eighteen sign records live in [`content/signs.ts`](content/signs.ts) and are
-reviewed like model changes, because they are the product. Keep links absolute, keep
-the record schema exactly as [`main.spec.md` §8.2](docs/specs/main.spec.md) lists it,
-and keep string ids aligned with their `#sign-<id>` anchors.
-
-A dead or moved outbound link is a genuinely useful issue to file.
+reviewed like model changes, because they are the product. Keep the record schema
+exactly as [`main.spec.md` §8.2](docs/specs/main.spec.md) lists it, keep string ids
+aligned with their `#sign-<id>` anchors, and add no outbound link to a record — a
+link at the end of a card reads as a pitch attached to the visitor's result (§2).
 
 ## Style
 
