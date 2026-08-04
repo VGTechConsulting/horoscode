@@ -83,7 +83,7 @@ That list is a hard boundary, not a starting position: adding to it is out of sc
 
 ### 3.1 Palette
 
-Pure black, pure white, mid-greys. No brand colour, no accent hue, no gradient. The whole system is these tokens, in `app/globals.css`, Tailwind v4 (`@theme inline`):
+Pure black, pure white, mid-greys. No gradient, and no hue in the interface: verdict tone is typographic, because a colour-coded verdict reads as a score and there is no score. The one hue in the repository is the VGTC accent `#e23122`, which belongs to the parent brand and is carried by the application icon (deployment spec §3.4) — it is not an interface token and nothing in the reading may reach for it. The whole system is these tokens, in `app/globals.css`, Tailwind v4 (`@theme inline`):
 
 ```css
 :root {
@@ -244,7 +244,7 @@ app/
   layout.tsx            fonts, <html lang="en">, color-scheme, top bar, bottom rule
   page.tsx              server: static metadata, schemas, hero, sign catalogue
   globals.css           tokens, dashed grid, cross accent, motion, target hygiene
-  icon.svg              the cross accent as a favicon (deployment spec §3.4)
+  icon.svg              the astrolabe mark as a favicon (deployment spec §3.4)
   opengraph-image.tsx   the one generic share card, drawn at build time
   manifest.ts, robots.ts, sitemap.ts
   privacy/page.tsx

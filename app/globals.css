@@ -1,9 +1,10 @@
 @import 'tailwindcss';
 
 /* ── Palette (spec §3.1) ───────────────────────────────────────────────────
-   Pure black, pure white, mid-greys. No brand colour, no accent hue, no
-   gradient. Verdict tone is typographic, not chromatic: a colour-coded verdict
-   would read as a score, and there is no score. */
+   Pure black, pure white, mid-greys. No gradient and no hue here: verdict tone
+   is typographic, not chromatic, because a colour-coded verdict would read as a
+   score and there is no score. The VGTC accent #e23122 is the parent brand's
+   and lives in app/icon.svg alone — it is deliberately not a token below. */
 :root {
   color-scheme: light dark;
   --background: oklch(1 0 0); /* #ffffff */

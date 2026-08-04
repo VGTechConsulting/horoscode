@@ -618,7 +618,7 @@ check('The icon is one scalable file, and the manifest and the palette agree wit
   // so it cannot land on its own colour, and a manifest that actually points at
   // it — `display: standalone` with no icons is an uninstallable manifest.
   const icon = readFileSync(new URL('app/icon.svg', ROOT), 'utf8')
-  assert(icon.includes('viewBox="0 0 32 32"'), 'app/icon.svg lost its viewBox')
+  assert(icon.includes('viewBox="0 0 48 48"'), 'app/icon.svg lost its viewBox')
   assert(
     !/<svg[^>]*\s(width|height)=/.test(icon),
     'app/icon.svg pins a pixel size — it would stop being treated as scalable',
@@ -626,13 +626,24 @@ check('The icon is one scalable file, and the manifest and the palette agree wit
   assert(icon.includes('prefers-color-scheme: dark'), 'app/icon.svg does not invert with the system')
   assert(/<rect class="bg"/.test(icon), 'app/icon.svg has no opaque ground')
   assert(!icon.includes('<script'), 'app/icon.svg carries a script')
-  // Both ends of the palette, and nothing in between: the icon is the same
-  // black-and-white system as §3.1, with no brand colour and no accent hue.
-  const fills = [...icon.matchAll(/fill:\s*(#[0-9a-f]{3,8})/gi)].map((m) => m[1].toLowerCase())
-  assert(fills.length > 0, 'app/icon.svg declares no fill')
-  for (const fill of fills) {
-    assert(fill === '#ffffff' || fill === '#000000', `app/icon.svg introduces a colour — ${fill}`)
+  // Both ends of the palette, the star, and nothing else: the icon is the
+  // black-and-white system of §3.1 carrying the one hue in the repository, the
+  // VGTC accent, which §3.4 places here and only here.
+  const colours = [...icon.matchAll(/(?:fill|stroke):\s*(#[0-9a-f]{3,8})/gi)].map((m) =>
+    m[1].toLowerCase(),
+  )
+  assert(colours.length > 0, 'app/icon.svg declares no colour')
+  for (const colour of colours) {
+    assert(
+      colour === '#ffffff' || colour === '#0b0b0b' || colour === '#e23122',
+      `app/icon.svg introduces a colour — ${colour}`,
+    )
   }
+  assert(icon.includes('#e23122'), 'app/icon.svg lost the star')
+  // The mark is legible at sixteen pixels only because the stroke is fattened
+  // past the source drawing's 1.9; a hairline here is the failure mode.
+  const [, weight] = icon.match(/stroke-width:\s*([\d.]+)/) ?? []
+  assert(Number(weight) >= 2.5, `app/icon.svg strokes at ${weight ?? 'nothing'} — too thin for 16px`)
 
   const manifest = readFileSync(new URL('app/manifest.ts', ROOT), 'utf8')
   assert(manifest.includes("src: '/icon.svg'"), 'app/manifest.ts does not reference the icon')

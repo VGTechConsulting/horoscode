@@ -140,11 +140,12 @@ The page must not read search parameters on the server or during metadata genera
 
 The application ships one icon, `app/icon.svg`, picked up by Next as a static file convention rather than generated: it exports with a real extension, so unlike the share card in §4.1 it needs nothing from the postbuild finalizer.
 
-- The mark is the cross accent of `main.spec.md` §3.3 — the application's own glyph, not the firm's wordmark.
+- The mark is an astrolabe: a circle, an inscribed triangle whose three points sit on it, one chord across, and a fixed star at the upper vertex. It is the application's own glyph, not the firm's wordmark, and it is drawn on a 48-unit box.
 - One scalable file covers every size. It declares a `viewBox` and no pixel `width` or `height`, because a pinned size would be treated as a raster of that size and rejected for the larger slots.
-- The stroke is an eighth of the box rather than the hairline `components/cross-accent.tsx` draws, which is invisible at sixteen pixels.
+- The stroke is `2.8` on that box, thickened from the source drawing's `1.9`, which disappears at sixteen pixels.
 - The square is opaque. A favicon is composited onto browser chrome, launcher, and bookmark backgrounds the file cannot see, and a transparent glyph that inverts can land on its own colour.
-- Light and dark come from `prefers-color-scheme` inside the file, matching `app/globals.css`. The two fills are that palette's ends — `#ffffff` and `#000000` — spelled in hex, because an SVG icon is parsed on its own and cannot read the application's tokens. No third colour.
+- Light and dark come from `prefers-color-scheme` inside the file, matching `app/globals.css`. Ground and stroke are the palette's ends — `#ffffff` and `#0b0b0b` — and trade places on inversion, spelled in hex because an SVG icon is parsed on its own and cannot read the application's tokens.
+- The star is `#e23122` in both modes. That is the VGTC accent hue, inherited from the parent brand rather than invented here, and it does not invert — an accent that flips is not a brand colour. The interface itself stays achromatic under `main.spec.md` §3.1; the hue is the parent's, and this mark is where the application carries it. No fourth colour in the file.
 - `app/manifest.ts` declares it as the sole entry in `icons`, with `sizes: 'any'` and `type: 'image/svg+xml'`. A manifest with `display: 'standalone'` and no icons is not installable.
 
 Out of scope, and deliberately: an `apple-touch-icon`, which Safari will not accept as SVG and which would mean either a committed binary or a rasterizer this repository does not have.
