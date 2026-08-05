@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import Link from 'next/link'
+import { HoroscodeMark } from '@/components/horoscode-mark'
 import { REPO_URL, SITE_NAME, SITE_URL, TITLE } from '@/lib/site'
 import './globals.css'
 
@@ -26,13 +27,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-/** The top bar (§9.1). One element: a mono product name. No nav links, no
- *  button, and it scrolls away rather than sitting fixed, so the stage subtracts
- *  it only on first paint. */
+/** The top bar (§9.1). The firm's mark and a mono product name, nothing else:
+ *  no nav links, no button, and it scrolls away rather than sitting fixed, so
+ *  the stage subtracts it only on first paint. The mark is decorative — the
+ *  wordmark beside it is what a screen reader reads. */
 function TopBar() {
   return (
     <header className="border-b border-dashed border-border">
-      <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-3">
+      <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-2.5">
+        <HoroscodeMark size={20} className="text-foreground shrink-0" />
         <span className="font-mono text-sm font-medium tracking-widest uppercase text-foreground">
           {SITE_NAME}
         </span>

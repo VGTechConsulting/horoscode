@@ -33,17 +33,37 @@ export default function OpengraphImage() {
           border: '1px dashed #b3b3b3',
         }}
       >
+        {/* The mark and the wordmark, as in the top bar. Drawn inline rather
+            than imported from components/horoscode-mark.tsx: this renders in
+            satori, not in a browser, so the colours are the light-mode literals
+            — the card has a white ground and no system query to answer to. */}
         <div
           style={{
             display: 'flex',
-            fontSize: 22,
-            letterSpacing: 8,
-            textTransform: 'uppercase',
-            color: '#737373',
+            alignItems: 'center',
+            gap: 16,
             marginBottom: 'auto',
           }}
         >
-          {SITE_NAME}
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+            <g stroke="#0b0b0b" strokeWidth="2.4">
+              <circle cx="24" cy="24" r="19" />
+              <path d="M19.08 5.65 L6.15 30.5 L39.56 34.9 Z" strokeLinejoin="round" />
+              <line x1="6.15" y1="30.5" x2="41.85" y2="17.5" />
+            </g>
+            <circle cx="19.08" cy="5.65" r="2.9" fill="#e23122" />
+          </svg>
+          <div
+            style={{
+              display: 'flex',
+              fontSize: 22,
+              letterSpacing: 8,
+              textTransform: 'uppercase',
+              color: '#737373',
+            }}
+          >
+            {SITE_NAME}
+          </div>
         </div>
         <div style={{ display: 'flex', fontSize: 84, letterSpacing: -2 }}>
           Forecast your future in your project
