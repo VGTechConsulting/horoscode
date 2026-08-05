@@ -319,7 +319,12 @@ function PickPhase({
                 'flex items-center gap-4 min-h-[72px] px-4 py-2.5',
                 'sm:flex-col sm:items-start sm:justify-start sm:gap-3 sm:p-6 sm:min-h-[190px]',
                 optionDividers(slotId, i, slot.options.length),
-                isCurrent ? 'bg-foreground/5 border-solid border-foreground' : '',
+                // Selection is drawn as an inset ring, not as a border: the
+                // borders here are dividers *shared* with the next cell, so a
+                // border-based selection would repaint only the edges this cell
+                // happens to own and read as a stray rule between two options.
+                // An inset ring also leaves `outline` free for :focus-visible.
+                isCurrent ? 'bg-foreground/5 inset-ring-1 inset-ring-foreground' : '',
               ].join(' ')}
             >
               {isCurrent && <CrossAccent size={10} className="absolute top-2 right-2" />}
