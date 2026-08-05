@@ -499,7 +499,7 @@ Sizes: option 20 (mobile) / 28 (≥sm), rail slot 14, reveal 40, catalogue card 
 A band, not a screen — the stage must be reachable with one flick.
 
 - Eyebrow: `CrossAccent` + `Five stars, one sign` in mono. A descriptor, not the product name — the top bar already carries that, and every other eyebrow on the page describes its section.
-- H1: `What kind of software engineer` / **`are you in 2026?`**
+- H1: `Forecast your future` / **`in your project`**
 - Sub: *Five stars — how you write it, who checks it, who decides, what can contradict the implementation, and what breaks. They align on one of eighteen signs.*
 - Honesty line, mono, muted: *No stars were consulted. Five picks, one lookup table, and arithmetic you can read in the source.*
 
@@ -576,7 +576,7 @@ On a clipboard rejection (denied permission, insecure context) the app says noth
 
 ### 11.1 Metadata
 
-- Title: `Horoscode — What Kind of Software Engineer Are You in 2026?`
+- Title: `Horoscode — Forecast Your Future in Your Project`
 - Description: *Pick five stars and get your engineering reading — one of eighteen signs, with a forecast for the gap between automation and verification. Free and browser-only.*
 - `metadataBase` from `NEXT_PUBLIC_SITE_URL`. Canonical `/`.
 - **Structured data:** `WebApplication` (`applicationCategory: DeveloperApplication`, `offers.price: "0"`, `publisher` → the VG Tech organisation node at `https://www.vgtc.io/#organization`), plus a two-item `BreadcrumbList`.

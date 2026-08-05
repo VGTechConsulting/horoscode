@@ -149,9 +149,9 @@ export default function Page() {
             </span>
           </div>
           <h1 className="text-3xl md:text-5xl font-light tracking-tight text-foreground text-balance mb-4">
-            What kind of software engineer
+            Forecast your future
             <br />
-            <span className="font-semibold">are you in 2026?</span>
+            <span className="font-semibold">in your project</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl font-light">
             Five stars — how you write it, who checks it, who decides, what can contradict the

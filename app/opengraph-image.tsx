@@ -3,7 +3,7 @@ import { SITE_NAME } from '@/lib/site'
 
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-export const alt = 'Horoscode — what kind of software engineer are you?'
+export const alt = 'Horoscode — forecast your future in your project'
 
 /** Drawn once at build time, then finalized as `opengraph-image.png` by the
  *  postbuild script so static hosts serve it with the correct media type. */
@@ -46,7 +46,7 @@ export default function OpengraphImage() {
           {SITE_NAME}
         </div>
         <div style={{ display: 'flex', fontSize: 84, letterSpacing: -2 }}>
-          What kind of software engineer are you?
+          Forecast your future in your project
         </div>
         <div
           style={{

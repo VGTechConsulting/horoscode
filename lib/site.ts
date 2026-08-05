@@ -9,7 +9,7 @@ export const SITE_NAME = 'Horoscode'
 /** Public source repository — linked from the footer. */
 export const REPO_URL = 'https://github.com/VGTechConsulting/horoscode'
 
-export const TITLE = 'Horoscode — What Kind of Software Engineer Are You in 2026?'
+export const TITLE = 'Horoscode — Forecast Your Future in Your Project'
 
 export const DESCRIPTION =
   'Pick five stars and get your engineering reading — one of eighteen signs, with a forecast for the gap between automation and verification. Free and browser-only.'
