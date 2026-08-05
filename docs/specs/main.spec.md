@@ -352,24 +352,24 @@ forecastFor(metrics, environment): string   // one lookup, no branching
 **Rules**, the mechanical ones asserted in §13: digit-free; no overlap with `verdictAdvice`, which says the cheapest axis to move rather than what happens if nothing does; `over-controlled` still names its cost; a balanced reading gets a calm line, because the frame does not manufacture drama the arithmetic did not find.
 
 **under-verified**
-- *Sandbox (unreachable):* Nothing is downstream of this, so the forecast is quiet — whatever breaks, breaks in front of you and nobody else.
-- *Live service:* Expect a quiet quarter and then a loud week. What ships unread does not announce itself while it is shipping; it announces itself in somebody else's incident channel, and by then the change that caused it is old enough to be hard to find.
-- *Under audit:* Somewhere in what ships next is a line no human read, and the auditor will read it before you do. That is the forecast; the date is the only variable, and it is not the variable you control.
+- *Sandbox (unreachable):* Only you depend on this project. If it breaks, you will see it first and nobody else is affected.
+- *Live service:* Things may look fine for months. Then an old, unread change causes an incident and takes longer than expected to trace.
+- *Under audit:* Unread code is likely to meet an auditor before it meets a human reviewer. When it does, the team may struggle to explain or defend it.
 
 **thin**
-- *Sandbox:* Nothing is coming for you, but there is no slack in this either. The first week you are busy is the week this posture quietly stops being followed.
-- *Live service:* You are inside tolerance with nothing spare, which feels identical to being fine until something else takes the attention. Expect the near miss first — and expect it to be described afterwards as bad luck.
-- *Under audit:* The margin is thinner than the paperwork implies. Expect a finding rather than an incident, and expect it to be about evidence you cannot produce rather than code you got wrong.
+- *Sandbox:* The process works while you have time to follow it. A busy week is enough for the checks to slip.
+- *Live service:* The process has no spare capacity. When attention shifts elsewhere, expect a near miss that looks like bad luck in hindsight.
+- *Under audit:* The paperwork suggests more coverage than the process provides. An audit is more likely to find missing evidence than faulty code.
 
 **balanced**
-- *Sandbox:* Aligned, and nothing at stake — the cheapest possible time to be in this position. Expect to learn something here that you will need somewhere it counts.
-- *Live service:* Nothing in this chart is out of place. What to watch is drift: automation rises quietly, and the day this posture starts feeling slow is the day the balance has already moved.
-- *Under audit:* Independence clears the floor for these stakes. Expect the next problem to come from outside this map — a target that went stale rather than a diff that went unread.
+- *Sandbox:* Your checks fit the stakes. This is a cheap place to learn habits that will matter on a larger project.
+- *Live service:* The balance fits the work today. Recheck it as automation grows, especially when the current process starts to feel slow.
+- *Under audit:* Independent review meets the needs of the work. The next risk is more likely to be an outdated requirement than an unread change.
 
 **over-controlled**
-- *Sandbox:* You are guarding a weekend project like a payments platform. Expect the friction to outlast the enthusiasm, and the project to end for reasons that have nothing to do with correctness.
-- *Live service:* There is more verification here than the blast radius justifies, and the surplus is paid in human attention. Expect the strongest engineers to notice before the process does.
-- *Under audit (unreachable):* Even here the controls exceed the exposure, which is a rare reading and still not a free one — the surplus is paid in attention that the stakes did not ask for.
+- *Sandbox:* A weekend project is carrying payments-platform controls. The friction may kill your interest before correctness becomes a concern.
+- *Live service:* The checks cost more attention than the risk warrants. Experienced engineers will probably start working around them.
+- *Under audit (unreachable):* Even for audited work, these controls exceed the exposure. The extra cost shows up in time and attention.
 
 **Two cells cannot be reached** — nothing at Sandbox stakes is under-verified, because nothing is downstream of it, and nothing under audit is over-controlled once the floor is that high. Both are authored anyway: the `Record` is exhaustive by type and a weight change would make them live. §13 asserts that **exactly those two** are dead, as set equality rather than as a count, so drift fails a script rather than showing a visitor a line nobody re-read.
 
@@ -448,7 +448,7 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
 
 **body**
 
-> Agents write it, an AI reviewer clears it, and when someone asks how you know it is right, the answer is that the model said so. The Dark Factory next door keeps at least one authority outside the model — a person, a team, or a codified gate can still contradict what the machines produced. Here the final authority is the model's own opinion, so the thing that generated the code, the thing that reviewed it, and the thing that ruled on it all share a set of priors, and a wrong answer gets confirmed three times instead of caught once. This is the lowest independence the map can reach, and it is the only sign that gets there by trusting rather than by cutting corners — which is exactly why it is invisible from the inside.
+> Agents write the code, an AI reviewer approves it, and the model has the final say. Unlike a Dark Factory, no person, team, or fixed gate can overrule the system. The writer, reviewer, and judge share similar blind spots, so one bad answer can be approved three times. This is the least independent position on the map, and it can look perfectly healthy from inside the loop.
 
 **signature**
 
@@ -458,19 +458,19 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
 
 **strengths** — real ones, because the model does not rank people and a sign with nothing going for it would be a caricature rather than a position anyone recognises:
 
-> - Genuinely fast, and the speed is not an illusion — nothing in this loop is waiting on a human
-> - The standard gets applied to every change, at every hour, without fatigue and without the politics of a review conversation
+> - The workflow is fast because it never waits for a person
+> - Every change receives the same automated check without fatigue or review politics
 
 **failureModes**
 
-> - Every oracle in the loop shares its priors with whatever wrote the code, so the mistakes it is worst at finding are the ones it is most likely to make
-> - Confidence rises while independence falls, and nothing in this posture can detect that direction of drift — the model reports the same clean result either way
+> - The writer and every checker share blind spots, making some mistakes hard for the whole system to see
+> - Confidence grows even as independent checking falls, and the model continues to report a clean result
 
 **nextMoves**
 
-> - Write down one standard the model does not get a vote on — a test it cannot edit, a policy file it cannot approve a change to. One is enough to start finding out what has been getting through.
-> - Take a handful of model-approved diffs and read them yourself, cold. The hit rate is the only calibration you have, and right now you do not have it.
-> - Move Judgement to Codified law before you move anything else. It costs no throughput, it is the cheapest change available here, and it is the whole difference between this sign and the Dark Factory.
+> - Create one standard the model cannot edit or approve, such as a protected test or policy file.
+> - Read a sample of model-approved diffs without seeing the review first. Record what the model missed.
+> - Move Judgement to Codified law first. It preserves throughput while adding an authority outside the model.
 
 **Arithmetic, unchanged.** No weight moves; the four states that reach The Believer already carried these values and simply resolved to a different name. Independence is fifteen with an Independent reference and five with a Loop-owned reference, against a floor of fifty-five at Live service and eighty-five Under audit — so **every state that reaches The Believer is `under-verified`, and it is the only sign of the eighteen that can say so.** The Dark Factory next door spans under-verified and thin, which is the arithmetic agreeing with the split: a lights-out pipeline held to codified law can clear the bar at Live service, and the same pipeline judged by the model cannot, anywhere.
 
@@ -500,7 +500,7 @@ A band, not a screen — the stage must be reachable with one flick.
 
 - Eyebrow: `CrossAccent` + `Five stars, one sign` in mono. A descriptor, not the product name — the top bar already carries that, and every other eyebrow on the page describes its section.
 - H1: `Forecast your future` / **`in your project`**
-- Sub: *Five stars — how you write it, who checks it, who decides, what can contradict the implementation, and what breaks. They align on one of eighteen signs.*
+- Sub: *Choose how the code is written, reviewed, and judged; who controls the standard; and what happens if it breaks. Your five answers map to one of eighteen signs.*
 - Honesty line, mono, muted: *No stars were consulted. Five picks, one lookup table, and arithmetic you can read in the source.*
 
 ### 9.3 Pick phase
@@ -577,7 +577,7 @@ On a clipboard rejection (denied permission, insecure context) the app says noth
 ### 11.1 Metadata
 
 - Title: `Horoscode — Forecast Your Future in Your Project`
-- Description: *Pick five stars and get your engineering reading — one of eighteen signs, with a forecast for the gap between automation and verification. Free and browser-only.*
+- Description: *Pick five stars to find your engineering sign and see whether your review process matches the stakes. Free, private, and browser-only.*
 - `metadataBase` from `NEXT_PUBLIC_SITE_URL`. Canonical `/`.
 - **Structured data:** `WebApplication` (`applicationCategory: DeveloperApplication`, `offers.price: "0"`, `publisher` → the VG Tech organisation node at `https://www.vgtc.io/#organization`), plus a two-item `BreadcrumbList`.
 - `robots: { index: true, follow: true }`.
@@ -618,7 +618,7 @@ One screen, no legalese, and accurate — which is the whole reason it exists.
 
 **Superseded by `github-pages-deployment.spec.md` §5.2.** The vendor sentence went with the vendor; the page now claims less, and all of it is true:
 
-> Horoscode stores nothing. Your five picks live in the page's address bar and nowhere else — there are no cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole of it.
+> Your reading stays with you. Your five picks appear in the page's address so you can share or revisit the reading. Horoscode uses no cookies, local storage, analytics, or accounts. Close the tab and nothing is left behind on your device by this site.
 
 ---
 

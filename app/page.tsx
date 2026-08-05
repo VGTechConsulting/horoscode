@@ -154,8 +154,8 @@ export default function Page() {
             <span className="font-semibold">in your project</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl font-light">
-            Five stars — how you write it, who checks it, who decides, what can contradict the
-            implementation, and what breaks. They align on one of eighteen signs.
+            Choose how the code is written, reviewed, and judged; who controls the standard; and
+            what happens if it breaks. Your five answers map to one of eighteen signs.
           </p>
           {/* The honesty line, above the fold, mono (§1.1). */}
           <p className="font-mono text-[10px] text-muted-foreground/80 leading-relaxed max-w-2xl mt-4">
@@ -180,38 +180,33 @@ export default function Page() {
             </span>
           </div>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-6">
-            Eighteen positions on a three-by-three map of how code gets written against how it gets
-            verified, with four of the nine houses splitting at Sandbox stakes and one splitting on
-            who decides. There is no best sign and no maturity ladder — vibe coding is the right
-            answer for a prototype and the wrong one for a payments platform, and agentic coding
-            under human review is neither more nor less mature than writing it by hand. What the app
-            measures is the mismatch between a position and its consequences: automation is cheap,
-            and independent verification is the scarce thing. AI code review counts as verification
-            only when the model checking the code is not the model that wrote it — two instances of
-            the same model on both sides of the loop is the case that fails silently, because the
-            priors that produced the bug are the priors used to look for it.
+            The signs sit on a three-by-three map: how code gets written against how it gets
+            checked. Some positions split when the work is a sandbox project; one also depends on
+            who has the final say. None of the signs is a rank. Vibe coding can be sensible for a
+            prototype and reckless for a payments platform. Agent-written code with human review is
+            simply a different working style from writing by hand. Horoscode looks for a mismatch
+            between your workflow and its consequences. Automation is plentiful; independent
+            checking is not. An AI review is independent only if the reviewer is different from the
+            model that wrote the code. Two copies of the same model tend to share the same blind
+            spots.
           </p>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-6">
-            Five stars produce the answer: how the code gets written, who is the last set of eyes
-            before it ships, who decides it is correct, whether the acceptance standard is one the
-            code-and-review loop can change, and what happens when it breaks. The first two place
-            you on the map. Judgement and stakes decide what the position costs — and in the
-            lights-out house, where agents write it and a machine clears it, Judgement decides the
-            name too: a dark factory where a person, a team, or a codified gate can still contradict
-            the machines is not the same posture as one that takes the model at its word.
+            The first two stars place you on the map. The next three tell us who makes the final
+            call, whether the code-and-review loop can move the goalposts, and how costly a failure
+            would be. Those answers change the risk, and sometimes the sign itself. When agents both
+            write and approve the code, a workflow with an outside authority is a Dark Factory. A
+            workflow that accepts the model&rsquo;s own verdict is a Believer.
           </p>
           {/* Reference gets no cards of its own — the model explanation is its
               single explanatory surface outside the picker and the rail
               (§9.5). */}
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-10">
-            The fourth star, Reference, is asked separately from Judgement on purpose. Reference
-            asks who controls the acceptance standard; Judgement asks who or what applies it and
-            declares the result correct. A codified gate earns its own credit because enforcement is
-            consistent — but a test suite the same loop generates and freely rewrites is not a
-            standard held outside that loop, and counting it as both is the mistake the pair of
-            questions exists to avoid. The standard is allowed to evolve. What matters is who can
-            change it, which is why neither Waterfall against Agile nor written-first against
-            discovered-later is scored anywhere on this map.
+            Reference and Judgement sound similar, but they ask different things. Reference asks who
+            controls the acceptance standard. Judgement asks who or what applies it. Tests and gates
+            deserve credit for consistent enforcement, but a loop that writes both the code and its
+            tests still controls its own standard. The standard can change; the important question is
+            who may change it. Horoscode does not score Waterfall against Agile, or written-first
+            against discovered-later.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 border border-dashed border-border">
@@ -227,13 +222,12 @@ export default function Page() {
             </span>
           </div>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light max-w-3xl mb-10">
-            When nothing is at stake there is no consequence to define the sign, so what remains is
-            who controls the target: with a standard held outside the loop the work is directed —
-            you are aiming at something you cannot quietly move — and with a loop-owned one it is
-            exploratory, because what counts as done is settled by the same loop that writes the
-            code. That is the whole difference between a Learner and a Hobbyist, or a Benchmarker
-            and a Skeptic. Above Sandbox the consequence defines the sign and an independent
-            reference is a risk modifier instead.
+            With nothing at stake, the sign comes down to who controls the target. An outside
+            standard makes the work directed: the finish line cannot move to suit the result. A
+            loop-owned standard makes it exploratory because the same loop writes the code and
+            decides what counts as done. That separates a Learner from a Hobbyist, or a Benchmarker
+            from a Skeptic. At higher stakes, the consequences define the sign and an independent
+            reference changes the risk instead.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 border border-dashed border-border">

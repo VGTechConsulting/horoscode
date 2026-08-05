@@ -204,7 +204,7 @@ Vercel Analytics is removed because its `/_vercel/insights/*` runtime endpoints 
 
 `/privacy/` must no longer claim that anonymous Vercel Analytics is collected. Its required meaning is:
 
-> Horoscode stores nothing. Your five picks live in the page's address bar and nowhere else — there are no cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole of it.
+> Your reading stays with you. Your five picks appear in the page's address so you can share or revisit the reading. Horoscode uses no cookies, local storage, analytics, or accounts. Close the tab and nothing is left behind on your device by this site.
 
 The exact wrapping and typography remain governed by the main spec.
 

@@ -64,12 +64,12 @@ export const CODE_SLOT: Slot<Zone> = {
   short: 'Code',
   question: 'How does the code get written?',
   options: [
-    { value: 'hand', name: 'Forged', line: 'I type it. The structure and the details are mine.' },
-    { value: 'blended', name: 'Assisted', line: 'I hold the pen, the model fills in around me.' },
+    { value: 'hand', name: 'Forged', line: 'I write it. I own the structure and the details.' },
+    { value: 'blended', name: 'Assisted', line: 'I lead; the model helps with the draft.' },
     {
       value: 'delegated',
       name: 'Summoned',
-      line: 'Agents type it. I write prompts, specs, and harnesses.',
+      line: 'Agents write it. I provide prompts, specs, and harnesses.',
     },
   ],
 }
@@ -84,7 +84,7 @@ export const REVIEW_SLOT: Slot<Zone> = {
     {
       value: 'blended',
       name: 'Second pair',
-      line: 'The model takes a pass, a human takes the ones that matter.',
+      line: 'A model reviews every change; a human reviews the risky ones.',
     },
     { value: 'delegated', name: 'Machine-gated', line: 'If the AI reviewer is happy, it ships.' },
   ],
@@ -96,13 +96,13 @@ export const JUDGEMENT_SLOT: Slot<Judgement> = {
   short: 'Judge',
   question: 'Who decides it is correct?',
   helper:
-    'How far the decision has been delegated away from you. Monotone in delegation, not in quality.',
+    'This measures how far you delegate the decision, not how good the decision is.',
   options: [
     { value: 'me', name: 'Own taste', line: 'My experience is the arbiter.' },
     {
       value: 'team',
       name: 'Peer council',
-      line: 'Peers decide — review conversations, shared conventions, a senior sign-off.',
+      line: 'Peers decide through review, shared conventions, or senior sign-off.',
     },
     {
       value: 'process',
@@ -123,12 +123,12 @@ export const REFERENCE_SLOT: Slot<Reference> = {
   short: 'Ref',
   question: 'Is there an acceptance standard the code-and-review loop cannot change?',
   helper:
-    'The standard may evolve. What matters is who can change it, not whether the project is Waterfall or Agile or whether the standard was written first.',
+    'Standards can evolve. What matters here is who can change them.',
   options: [
     {
       value: 'independent',
       name: 'Independent reference',
-      line: 'A contract, test, policy, rubric, or dataset is controlled outside the code-and-review loop.',
+      line: 'Someone outside the code-and-review loop controls the contract, tests, policy, rubric, or dataset.',
     },
     {
       value: 'loop',
@@ -144,7 +144,7 @@ export const ENVIRONMENT_SLOT: Slot<Environment> = {
   short: 'Stakes',
   question: 'What happens when it breaks?',
   helper:
-    'Answer for the project, not the employer. The same person picks differently for a weekend build and for the day job.',
+    'Answer for this project. Your weekend build and your day job may need different answers.',
   options: [
     {
       value: 'hobby',
@@ -285,26 +285,22 @@ export const VERDICTS: Record<VerdictId, Verdict> = {
   'under-verified': {
     id: 'under-verified',
     label: 'Under-verified for the stakes',
-    blurb:
-      'Verification is a long way behind automation for the blast radius you work at. This is the state the tool exists to find.',
+    blurb: 'Automation has moved well ahead of verification for work with this much risk.',
   },
   thin: {
     id: 'thin',
     label: 'Thin margin',
-    blurb:
-      'Close to the floor for your stakes. It holds while nothing goes wrong, and there is nothing left over for the week it does.',
+    blurb: 'Your checks just meet the needs of the project, with little room for a bad week.',
   },
   balanced: {
     id: 'balanced',
     label: 'Balanced',
-    blurb:
-      'Independent verification is roughly proportional to what a failure would cost. Keep the ratio as automation rises.',
+    blurb: 'Your independent checks are in line with the cost of a failure.',
   },
   'over-controlled': {
     id: 'over-controlled',
     label: 'Over-controlled for the stakes',
-    blurb:
-      'More verification than the blast radius justifies. Not a compliment — you are paying an enterprise tax on something allowed to break.',
+    blurb: 'The project has more controls than its likely failures warrant.',
   },
 }
 
@@ -391,31 +387,31 @@ export function computeMetrics(position: Position, environment: Environment): Me
 export const FORECASTS: Record<VerdictId, Record<Environment, string>> = {
   'under-verified': {
     hobby:
-      'Nothing is downstream of this, so the forecast is quiet — whatever breaks, breaks in front of you and nobody else.',
-    team: 'Expect a quiet quarter and then a loud week. What ships unread does not announce itself while it is shipping; it announces itself in somebody else\'s incident channel, and by then the change that caused it is old enough to be hard to find.',
+      'Only you depend on this project. If it breaks, you will see it first and nobody else is affected.',
+    team: 'Things may look fine for months. Then an old, unread change causes an incident and takes longer than expected to trace.',
     regulated:
-      'Somewhere in what ships next is a line no human read, and the auditor will read it before you do. That is the forecast; the date is the only variable, and it is not the variable you control.',
+      'Unread code is likely to meet an auditor before it meets a human reviewer. When it does, the team may struggle to explain or defend it.',
   },
   thin: {
     hobby:
-      'Nothing is coming for you, but there is no slack in this either. The first week you are busy is the week this posture quietly stops being followed.',
-    team: 'You are inside tolerance with nothing spare, which feels identical to being fine until something else takes the attention. Expect the near miss first — and expect it to be described afterwards as bad luck.',
+      'The process works while you have time to follow it. A busy week is enough for the checks to slip.',
+    team: 'The process has no spare capacity. When attention shifts elsewhere, expect a near miss that looks like bad luck in hindsight.',
     regulated:
-      'The margin is thinner than the paperwork implies. Expect a finding rather than an incident, and expect it to be about evidence you cannot produce rather than code you got wrong.',
+      'The paperwork suggests more coverage than the process provides. An audit is more likely to find missing evidence than faulty code.',
   },
   balanced: {
     hobby:
-      'Aligned, and nothing at stake — the cheapest possible time to be in this position. Expect to learn something here that you will need somewhere it counts.',
-    team: 'Nothing in this chart is out of place. What to watch is drift: automation rises quietly, and the day this posture starts feeling slow is the day the balance has already moved.',
+      'Your checks fit the stakes. This is a cheap place to learn habits that will matter on a larger project.',
+    team: 'The balance fits the work today. Recheck it as automation grows, especially when the current process starts to feel slow.',
     regulated:
-      'Independence clears the floor for these stakes. Expect the next problem to come from outside this map — a target that went stale rather than a diff that went unread.',
+      'Independent review meets the needs of the work. The next risk is more likely to be an outdated requirement than an unread change.',
   },
   'over-controlled': {
     hobby:
-      'You are guarding a weekend project like a payments platform. Expect the friction to outlast the enthusiasm, and the project to end for reasons that have nothing to do with correctness.',
-    team: 'There is more verification here than the blast radius justifies, and the surplus is paid in human attention. Expect the strongest engineers to notice before the process does.',
+      'A weekend project is carrying payments-platform controls. The friction may kill your interest before correctness becomes a concern.',
+    team: 'The checks cost more attention than the risk warrants. Experienced engineers will probably start working around them.',
     regulated:
-      'Even here the controls exceed the exposure, which is a rare reading and still not a free one — the surplus is paid in attention that the stakes did not ask for.',
+      'Even for audited work, these controls exceed the exposure. The extra cost shows up in time and attention.',
   },
 }
 
@@ -456,10 +452,10 @@ export function meterCaption(metrics: Metrics): string {
   const gap = automation - verification
   if (gap >= 3)
     return 'Machines write it, machines check it. Nobody independent is left in the loop.'
-  if (gap > 0) return 'Output is running ahead of the checking, and the gap is where surprises live.'
+  if (gap > 0) return 'Code is being produced faster than it can be checked independently.'
   if (gap === 0)
-    return 'Making and checking move together. Whatever else is true, the picture is proportionate.'
-  return 'More checking than making. Everything that ships has been looked at by something that did not write it.'
+    return 'Code production and independent checking are moving at about the same pace.'
+  return 'Independent checking is running ahead of code production.'
 }
 
 // ─── Houses and resolution (spec §8.1, §8.3) ────────────────────────────────
@@ -625,13 +621,13 @@ export function conditionsFor(id: SignId): string[] {
 export function verdictAdvice(metrics: Metrics, sign: Sign): string {
   switch (metrics.verdict.id) {
     case 'under-verified':
-      return 'Verification is behind the stakes, and it is a gap rather than a rounding error. The cheapest point of leverage is the Verification star: pulling the last set of eyes back to a human or a codified gate buys more independence than any other single change, and it buys most while authorship stays Summoned.'
+      return 'Verification is well behind the stakes. Start with the Verification star: add a human reviewer or a gate the authoring model cannot change.'
     case 'thin':
-      return 'You are inside tolerance with nothing spare. Moving Judgement to Codified law is usually the cheapest change available, because it changes who decides without changing how much ships.'
+      return 'Your margin is thin. Moving Judgement to Codified law is usually the cheapest improvement because it changes who decides without slowing authorship.'
     case 'balanced':
-      return `Independence clears the floor for these stakes. The thing to watch is drift — automation rises quietly, so re-check this when the ${sign.name.replace('The ', '').toLowerCase()} posture starts feeling slow.`
+      return `The balance fits the stakes. Check again when the ${sign.name.replace('The ', '').toLowerCase()} workflow starts to feel slow; that often means automation has moved ahead.`
     default:
-      return 'There is more verification here than the blast radius justifies, and the surplus is paid for in human attention. Spend it somewhere the blast radius warrants it, or delegate a class of change you are currently reading in full.'
+      return 'The controls cost more attention than the risk warrants. Relax them for one low-risk class of change, or spend that review time on higher-risk work.'
   }
 }
 
