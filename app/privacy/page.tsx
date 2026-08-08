@@ -4,7 +4,7 @@ import { CrossAccent } from '@/components/cross-accent'
 
 export const metadata: Metadata = {
   title: 'Privacy — Horoscode',
-  description: 'Horoscode stores nothing. No cookies, no local storage, no accounts.',
+  description: 'Horoscode keeps your choices in the URL. No cookies, analytics, or accounts.',
   alternates: { canonical: '/privacy/' },
 }
 
@@ -21,12 +21,12 @@ export default function PrivacyPage() {
           </span>
         </div>
         <h1 className="text-3xl md:text-5xl font-light tracking-tight text-foreground text-balance mb-8">
-          Horoscode stores <span className="font-semibold">nothing</span>.
+          Your reading stays <span className="font-semibold">with you</span>.
         </h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light">
-          Your five picks live in the page&rsquo;s address bar and nowhere else — there are no
-          cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole
-          of it.
+          Your five picks appear in the page&rsquo;s address so you can share or revisit the reading.
+          Horoscode uses no cookies, local storage, analytics, or accounts. Close the tab and nothing
+          is left behind on your device by this site.
         </p>
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/80 mt-10">
           <Link href="/" className="inline-flex items-center min-h-11 hover:text-foreground transition-colors">

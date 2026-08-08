@@ -6,15 +6,10 @@
 // the properties the spec claims in prose. Exits non-zero on the first failure.
 //
 // Usage:
-//   node scripts/verify.mjs              # everything except the link check
-//   CHECK_LINKS=1 node scripts/verify.mjs  # adds the outbound-link HEAD check
+//   node scripts/verify.mjs
 //
-// The link check is opt-in rather than on whenever CI is set, because it is the
-// only assertion here that can fail for a reason no commit caused: it reaches
-// eighteen URLs on a host this repository does not control. Gating pull requests
-// on someone else's uptime turns a link-rot monitor into a build gate, and a
-// contributor who changed a stylesheet gets a red check. It runs on a schedule
-// instead — see .github/workflows/links.yml.
+// Every assertion here is deterministic and depends on nothing outside the
+// repository, so the whole harness is safe on the pull-request path.
 
 import { readFileSync, readdirSync } from 'node:fs'
 
@@ -454,8 +449,6 @@ check('No forecast line appears verbatim inside any verdictAdvice output', () =>
 // ─── Copy and contract (§13) ────────────────────────────────────────────────
 
 check('No user-facing string contains a digit', () => {
-  // `link.label` and `link.href` are exempt: published titles and slugs carry
-  // years, and those are not scores.
   for (const slotId of SLOT_ORDER) {
     const slot = SLOTS[slotId]
     for (const field of [slot.axis, slot.short, slot.question, slot.helper ?? '']) {
@@ -506,7 +499,6 @@ check('Sign records carry every authored field, at the shape the reading expects
     'strengths',
     'failureModes',
     'nextMoves',
-    'link',
     'house',
     'environments',
   ].sort()
@@ -517,7 +509,6 @@ check('Sign records carry every authored field, at the shape the reading expects
     assert(sign.strengths.length === 2, `${id}: expected two strengths`)
     assert(sign.failureModes.length === 2, `${id}: expected two failure modes`)
     assert(sign.nextMoves.length === 3, `${id}: expected three next moves`)
-    assert(sign.link.href.startsWith('https://www.vgtc.io/'), `${id}: link is not absolute — ${sign.link.href}`)
     assert(
       JSON.stringify(Object.keys(sign).sort()) === JSON.stringify(EXPECTED_FIELDS),
       `${id}: record fields drifted`,
@@ -618,7 +609,7 @@ check('The icon is one scalable file, and the manifest and the palette agree wit
   // so it cannot land on its own colour, and a manifest that actually points at
   // it — `display: standalone` with no icons is an uninstallable manifest.
   const icon = readFileSync(new URL('app/icon.svg', ROOT), 'utf8')
-  assert(icon.includes('viewBox="0 0 32 32"'), 'app/icon.svg lost its viewBox')
+  assert(icon.includes('viewBox="0 0 48 48"'), 'app/icon.svg lost its viewBox')
   assert(
     !/<svg[^>]*\s(width|height)=/.test(icon),
     'app/icon.svg pins a pixel size — it would stop being treated as scalable',
@@ -626,13 +617,24 @@ check('The icon is one scalable file, and the manifest and the palette agree wit
   assert(icon.includes('prefers-color-scheme: dark'), 'app/icon.svg does not invert with the system')
   assert(/<rect class="bg"/.test(icon), 'app/icon.svg has no opaque ground')
   assert(!icon.includes('<script'), 'app/icon.svg carries a script')
-  // Both ends of the palette, and nothing in between: the icon is the same
-  // black-and-white system as §3.1, with no brand colour and no accent hue.
-  const fills = [...icon.matchAll(/fill:\s*(#[0-9a-f]{3,8})/gi)].map((m) => m[1].toLowerCase())
-  assert(fills.length > 0, 'app/icon.svg declares no fill')
-  for (const fill of fills) {
-    assert(fill === '#ffffff' || fill === '#000000', `app/icon.svg introduces a colour — ${fill}`)
+  // Both ends of the palette, the star, and nothing else: the icon is the
+  // black-and-white system of §3.1 carrying the one hue in the repository, the
+  // VGTC accent, which §3.4 places here and only here.
+  const colours = [...icon.matchAll(/(?:fill|stroke):\s*(#[0-9a-f]{3,8})/gi)].map((m) =>
+    m[1].toLowerCase(),
+  )
+  assert(colours.length > 0, 'app/icon.svg declares no colour')
+  for (const colour of colours) {
+    assert(
+      colour === '#ffffff' || colour === '#0b0b0b' || colour === '#e23122',
+      `app/icon.svg introduces a colour — ${colour}`,
+    )
   }
+  assert(icon.includes('#e23122'), 'app/icon.svg lost the star')
+  // The mark is legible at sixteen pixels only because the stroke is fattened
+  // past the source drawing's 1.9; a hairline here is the failure mode.
+  const [, weight] = icon.match(/stroke-width:\s*([\d.]+)/) ?? []
+  assert(Number(weight) >= 2.5, `app/icon.svg strokes at ${weight ?? 'nothing'} — too thin for 16px`)
 
   const manifest = readFileSync(new URL('app/manifest.ts', ROOT), 'utf8')
   assert(manifest.includes("src: '/icon.svg'"), 'app/manifest.ts does not reference the icon')
@@ -805,32 +807,6 @@ check('The five stars, their questions, and their helpers are intact (§6.1)', (
     `helpers sit on [${withHelper.join(', ')}], expected the three that get misread`,
   )
 })
-
-// ─── Outbound links, opt-in (§13) ───────────────────────────────────────────
-
-const linkCheck = process.env.CHECK_LINKS
-  ? (async () => {
-      checks += 1
-      const hrefs = [...new Set(SIGN_ORDER.map((id) => SIGNS[id].link.href))]
-      const bad = []
-      for (const href of hrefs) {
-        try {
-          const response = await fetch(href, { method: 'HEAD', redirect: 'follow' })
-          if (!response.ok) bad.push(`${href} → ${response.status}`)
-        } catch (error) {
-          bad.push(`${href} → ${error.message}`)
-        }
-      }
-      if (bad.length === 0) {
-        console.log('  ok   Every outbound link in the eighteen records resolves')
-      } else {
-        failures += 1
-        console.error(`  FAIL Outbound links\n       ${bad.join('\n       ')}`)
-      }
-    })()
-  : Promise.resolve()
-
-await linkCheck
 
 console.log(`\n${checks - failures} of ${checks} checks passed.`)
 if (failures > 0) process.exit(1)

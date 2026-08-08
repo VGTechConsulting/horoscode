@@ -1,6 +1,6 @@
 ---
 name: Content correction
-about: A sign's copy is wrong, unclear, or a link is dead
+about: A sign's copy is wrong, unclear, or contradicts the model
 labels: content
 ---
 
@@ -10,8 +10,8 @@ labels: content
 
 **What is wrong**
 
-<!-- A dead or redirected outbound link, a claim that does not hold, a line that
-     reads as ranking people, or copy that contradicts the model. -->
+<!-- A claim that does not hold, a line that reads as ranking people, or copy
+     that contradicts the model. -->
 
 **Suggested wording**
 

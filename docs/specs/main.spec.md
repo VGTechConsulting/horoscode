@@ -57,7 +57,7 @@ The application is published by VG Tech and carries its mark. It carries nothing
 
 | Element | Treatment |
 | --- | --- |
-| Wordmark | `VG` + muted `/` + `Tech`, mono, `text-sm`, `tracking-widest`, uppercase — identical to the site's. Links to `https://vgtc.io`, `rel="noopener"`, `aria-label="VG Tech Consulting"`. Top bar only. |
+| Attribution | `A playground from VG Tech — vgtc.io`, mono, muted, linking to `https://vgtc.io` with `rel="noopener"`. Bottom rule only — the top bar carries the product name, not the firm's. |
 | Copyright | `© VG Tech` in the bottom rule, mono, `text-[10px]`, muted. Year-free, so it never goes stale. |
 | Palette | The same black-and-white system, token for token (§3.1). |
 | Type | Inter for text, JetBrains Mono for labels — the site's pairing, self-hosted via `next/font` (§3.2). |
@@ -68,7 +68,7 @@ The application is published by VG Tech and carries its mark. It carries nothing
 
 - No navbar, no site footer, no service list, no team, no email addresses.
 - No booking CTA, no Cal.com embed, no chat widget, no newsletter, no exit intent.
-- No links into the firm *from the frame* beyond the two in the table above, both to the homepage. The one editorial link each sign record carries (§14) is content, not chrome, and is governed there.
+- No links into the firm anywhere but the bottom rule, both to the homepage. Sign records carry no outbound link of their own: an editorial or service link at the end of a card reads as a pitch attached to the visitor's result, which is the impression the whole frame exists to avoid.
 - No case studies, no logos, no testimonial strip.
 
 That list is a hard boundary, not a starting position: adding to it is out of scope (§15), and §13 greps the sources for a booking trigger, a third-party widget, and a site `Navbar` or `Footer` import.
@@ -83,7 +83,7 @@ That list is a hard boundary, not a starting position: adding to it is out of sc
 
 ### 3.1 Palette
 
-Pure black, pure white, mid-greys. No brand colour, no accent hue, no gradient. The whole system is these tokens, in `app/globals.css`, Tailwind v4 (`@theme inline`):
+Pure black, pure white, mid-greys. No gradient, and no hue in the interface: verdict tone is typographic, because a colour-coded verdict reads as a score and there is no score. The one hue in the repository is the VGTC accent `#e23122`, which belongs to the parent brand and is carried by the application icon (deployment spec §3.4) — it is not an interface token and nothing in the reading may reach for it. The whole system is these tokens, in `app/globals.css`, Tailwind v4 (`@theme inline`):
 
 ```css
 :root {
@@ -161,7 +161,7 @@ One question is on screen at a time, with its two-to-four options, and nothing e
 | Option card, `sm` and up | column cell × **min 190px** | The card format; the whole cell is the button. |
 | Rail slot | ≥ 1/5 viewport width × **min 64px** | Five across at 375px is 75px each. |
 | Stage-footer controls | **min 44px** tall, `px-4` | Back, Read again, Copy. |
-| Reading actions, footer and reference links | **min 44px** tall | The smallest targets in the app, and still at the floor. |
+| Reading actions and footer links | **min 44px** tall | The smallest targets in the app, and still at the floor. |
 
 **The button is the cell.** Every option is a `<button>` that fills its grid cell — `w-full h-full`, padding on the button not the cell — so there is no border strip that looks tappable and is not. No nested interactive elements inside an option card, ever: a link inside a tappable card is the single most common mis-tap on mobile.
 
@@ -244,7 +244,7 @@ app/
   layout.tsx            fonts, <html lang="en">, color-scheme, top bar, bottom rule
   page.tsx              server: static metadata, schemas, hero, sign catalogue
   globals.css           tokens, dashed grid, cross accent, motion, target hygiene
-  icon.svg              the cross accent as a favicon (deployment spec §3.4)
+  icon.svg              the astrolabe mark as a favicon (deployment spec §3.4)
   opengraph-image.tsx   the one generic share card, drawn at build time
   manifest.ts, robots.ts, sitemap.ts
   privacy/page.tsx
@@ -352,24 +352,24 @@ forecastFor(metrics, environment): string   // one lookup, no branching
 **Rules**, the mechanical ones asserted in §13: digit-free; no overlap with `verdictAdvice`, which says the cheapest axis to move rather than what happens if nothing does; `over-controlled` still names its cost; a balanced reading gets a calm line, because the frame does not manufacture drama the arithmetic did not find.
 
 **under-verified**
-- *Sandbox (unreachable):* Nothing is downstream of this, so the forecast is quiet — whatever breaks, breaks in front of you and nobody else.
-- *Live service:* Expect a quiet quarter and then a loud week. What ships unread does not announce itself while it is shipping; it announces itself in somebody else's incident channel, and by then the change that caused it is old enough to be hard to find.
-- *Under audit:* Somewhere in what ships next is a line no human read, and the auditor will read it before you do. That is the forecast; the date is the only variable, and it is not the variable you control.
+- *Sandbox (unreachable):* Only you depend on this project. If it breaks, you will see it first and nobody else is affected.
+- *Live service:* Things may look fine for months. Then an old, unread change causes an incident and takes longer than expected to trace.
+- *Under audit:* Unread code is likely to meet an auditor before it meets a human reviewer. When it does, the team may struggle to explain or defend it.
 
 **thin**
-- *Sandbox:* Nothing is coming for you, but there is no slack in this either. The first week you are busy is the week this posture quietly stops being followed.
-- *Live service:* You are inside tolerance with nothing spare, which feels identical to being fine until something else takes the attention. Expect the near miss first — and expect it to be described afterwards as bad luck.
-- *Under audit:* The margin is thinner than the paperwork implies. Expect a finding rather than an incident, and expect it to be about evidence you cannot produce rather than code you got wrong.
+- *Sandbox:* The process works while you have time to follow it. A busy week is enough for the checks to slip.
+- *Live service:* The process has no spare capacity. When attention shifts elsewhere, expect a near miss that looks like bad luck in hindsight.
+- *Under audit:* The paperwork suggests more coverage than the process provides. An audit is more likely to find missing evidence than faulty code.
 
 **balanced**
-- *Sandbox:* Aligned, and nothing at stake — the cheapest possible time to be in this position. Expect to learn something here that you will need somewhere it counts.
-- *Live service:* Nothing in this chart is out of place. What to watch is drift: automation rises quietly, and the day this posture starts feeling slow is the day the balance has already moved.
-- *Under audit:* Independence clears the floor for these stakes. Expect the next problem to come from outside this map — a target that went stale rather than a diff that went unread.
+- *Sandbox:* Your checks fit the stakes. This is a cheap place to learn habits that will matter on a larger project.
+- *Live service:* The balance fits the work today. Recheck it as automation grows, especially when the current process starts to feel slow.
+- *Under audit:* Independent review meets the needs of the work. The next risk is more likely to be an outdated requirement than an unread change.
 
 **over-controlled**
-- *Sandbox:* You are guarding a weekend project like a payments platform. Expect the friction to outlast the enthusiasm, and the project to end for reasons that have nothing to do with correctness.
-- *Live service:* There is more verification here than the blast radius justifies, and the surplus is paid in human attention. Expect the strongest engineers to notice before the process does.
-- *Under audit (unreachable):* Even here the controls exceed the exposure, which is a rare reading and still not a free one — the surplus is paid in attention that the stakes did not ask for.
+- *Sandbox:* A weekend project is carrying payments-platform controls. The friction may kill your interest before correctness becomes a concern.
+- *Live service:* The checks cost more attention than the risk warrants. Experienced engineers will probably start working around them.
+- *Under audit (unreachable):* Even for audited work, these controls exceed the exposure. The extra cost shows up in time and attention.
 
 **Two cells cannot be reached** — nothing at Sandbox stakes is under-verified, because nothing is downstream of it, and nothing under audit is over-controlled once the floor is that high. Both are authored anyway: the `Record` is exhaustive by type and a weight change would make them live. §13 asserts that **exactly those two** are dead, as set equality rather than as a count, so drift fails a script rather than showing a visitor a line nobody re-read.
 
@@ -425,7 +425,7 @@ Pure, total, exhaustive: 216 combinations, 18 signs, no fallback. Order matters 
 | The Spec Runner | wrote the spec, let it rip | Summoned · Machine-gated | Sandbox + Independent reference | `FileCog` |
 | The Vibe Coder | ship it and see | Summoned · Machine-gated | Sandbox + Loop-owned reference | `Sparkles` |
 
-Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `link`, `house`, `environments`. All eighteen canonical records live in `content/signs.ts`; the rule that distinguishes The Believer is specified below.
+Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]`, `strengths: [2]`, `failureModes: [2]`, `nextMoves: [3]`, `house`, `environments`. All eighteen canonical records live in `content/signs.ts`; the rule that distinguishes The Believer is specified below.
 
 ### 8.3 The Believer
 
@@ -443,13 +443,12 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
   tagline: 'Machines write it, machines check it, and the machine says it is correct',
   house: { code: 'delegated', review: 'delegated' },
   environments: ['team', 'regulated'],
-  link: { label: 'Golden datasets for testing AI', href: '/insights/golden-datasets-for-ai-testing' },
 }
 ```
 
 **body**
 
-> Agents write it, an AI reviewer clears it, and when someone asks how you know it is right, the answer is that the model said so. The Dark Factory next door keeps at least one authority outside the model — a person, a team, or a codified gate can still contradict what the machines produced. Here the final authority is the model's own opinion, so the thing that generated the code, the thing that reviewed it, and the thing that ruled on it all share a set of priors, and a wrong answer gets confirmed three times instead of caught once. This is the lowest independence the map can reach, and it is the only sign that gets there by trusting rather than by cutting corners — which is exactly why it is invisible from the inside.
+> Agents write the code, an AI reviewer approves it, and the model has the final say. Unlike a Dark Factory, no person, team, or fixed gate can overrule the system. The writer, reviewer, and judge share similar blind spots, so one bad answer can be approved three times. This is the least independent position on the map, and it can look perfectly healthy from inside the loop.
 
 **signature**
 
@@ -459,19 +458,19 @@ Each record carries: `id`, `name`, `epithet`, `tagline`, `body`, `signature: [3]
 
 **strengths** — real ones, because the model does not rank people and a sign with nothing going for it would be a caricature rather than a position anyone recognises:
 
-> - Genuinely fast, and the speed is not an illusion — nothing in this loop is waiting on a human
-> - The standard gets applied to every change, at every hour, without fatigue and without the politics of a review conversation
+> - The workflow is fast because it never waits for a person
+> - Every change receives the same automated check without fatigue or review politics
 
 **failureModes**
 
-> - Every oracle in the loop shares its priors with whatever wrote the code, so the mistakes it is worst at finding are the ones it is most likely to make
-> - Confidence rises while independence falls, and nothing in this posture can detect that direction of drift — the model reports the same clean result either way
+> - The writer and every checker share blind spots, making some mistakes hard for the whole system to see
+> - Confidence grows even as independent checking falls, and the model continues to report a clean result
 
 **nextMoves**
 
-> - Write down one standard the model does not get a vote on — a test it cannot edit, a policy file it cannot approve a change to. One is enough to start finding out what has been getting through.
-> - Take a handful of model-approved diffs and read them yourself, cold. The hit rate is the only calibration you have, and right now you do not have it.
-> - Move Judgement to Codified law before you move anything else. It costs no throughput, it is the cheapest change available here, and it is the whole difference between this sign and the Dark Factory.
+> - Create one standard the model cannot edit or approve, such as a protected test or policy file.
+> - Read a sample of model-approved diffs without seeing the review first. Record what the model missed.
+> - Move Judgement to Codified law first. It preserves throughput while adding an authority outside the model.
 
 **Arithmetic, unchanged.** No weight moves; the four states that reach The Believer already carried these values and simply resolved to a different name. Independence is fifteen with an Independent reference and five with a Loop-owned reference, against a floor of fifty-five at Live service and eighty-five Under audit — so **every state that reaches The Believer is `under-verified`, and it is the only sign of the eighteen that can say so.** The Dark Factory next door spans under-verified and thin, which is the arithmetic agreeing with the split: a lights-out pipeline held to codified law can clear the bar at Live service, and the same pipeline judged by the model cannot, anywhere.
 
@@ -491,22 +490,22 @@ Sizes: option 20 (mobile) / 28 (≥sm), rail slot 14, reveal 40, catalogue card 
 
 ### 9.1 Frame
 
-**Top bar** — `h-12`, dashed bottom border, two elements: the wordmark linking to `vgtc.io`, and after a muted separator a mono `Horoscode`. No nav links, no button. It scrolls away rather than sitting fixed, so the stage subtracts it only on first paint.
+**Top bar** — `h-12`, dashed bottom border, one element: a mono `Horoscode` wordmark. No nav links, no button, and no outbound link — the firm is named in the footer only. It scrolls away rather than sitting fixed, so the stage subtracts it only on first paint.
 
-**Bottom rule** — mono, `text-[10px]`, muted: `© VG Tech` · `Privacy` · `A playground from VG Tech — vgtc.io`. Each link ≥44px tall on touch.
+**Bottom rule** — mono, `text-[10px]`, muted: `© VG Tech` · `Privacy` · `GitHub` · `A playground from VG Tech — vgtc.io`. Each link ≥44px tall on touch.
 
 ### 9.2 Hero
 
 A band, not a screen — the stage must be reachable with one flick.
 
-- Eyebrow: `CrossAccent` + `Horoscode` in mono.
-- H1: `What kind of software engineer` / **`are you in 2026?`**
-- Sub: *Five stars — how you write it, who checks it, who decides, what can contradict the implementation, and what breaks. They align on one of eighteen signs.*
+- Eyebrow: `CrossAccent` + `Five stars, one sign` in mono. A descriptor, not the product name — the top bar already carries that, and every other eyebrow on the page describes its section.
+- H1: `Forecast your future` / **`in your project`**
+- Sub: *Choose how the code is written, reviewed, and judged; who controls the standard; and what happens if it breaks. Your five answers map to one of eighteen signs.*
 - Honesty line, mono, muted: *No stars were consulted. Five picks, one lookup table, and arithmetic you can read in the source.*
 
 ### 9.3 Pick phase
 
-Rail, question (+ helper where the slot has one), option grid, stage footer. The footer holds the counter — `Star 2 of 5` while picking, `3 of 5 stars` on a partial reading — plus `Back` where there is somewhere to go, and one disclosure line: *Nothing is stored. The five stars and the sign live in the URL.*
+Rail, question (+ helper where the slot has one), option grid, stage footer. The footer holds the counter — `Star 2 of 5` while picking, `3 of 5 stars` on a partial reading — plus `Back` where there is somewhere to go. No disclosure line — the storage claim lives on `/privacy` (§12.2) for whoever wants it.
 
 ### 9.4 The reading
 
@@ -532,7 +531,7 @@ The rail is also the complete trait summary. Reference is displayed there exactl
 
 ### 9.5 Sign catalogue
 
-Server-rendered, and the reason the page is indexable: a tool whose content is entirely behind client state gives a crawler nothing. Eighteen cards — icon, name, epithet, tagline, body, the conditions that reach it, failure modes, outbound link — grouped into the ten reachable above Sandbox and the eight that exist only there, each with `id="sign-<id>"` for deep links.
+Server-rendered, and the reason the page is indexable: a tool whose content is entirely behind client state gives a crawler nothing. Eighteen cards — icon, name, epithet, tagline, body, the conditions that reach it, failure modes — grouped into the ten reachable above Sandbox and the eight that exist only there, each with `id="sign-<id>"` for deep links.
 
 **It is also the only enumeration of the eighteen**, which is a change in its job rather than in its markup: with no chart on the page, this section is where `See all eighteen signs` lands and where a visitor compares their reading against the rest. Two consequences follow. The conditions line on each card carries the full reachability — house, stakes tiers, and the Reference or Judgement value where one of those resolves the sign — because there is no grid left to read it off. And the card for the visitor's own sign takes `aria-current="true"` and a dashed outline when the reading is complete, which is the one piece of client state this otherwise-static section accepts. The Reference star gets no separate cards; the model explanation in §6.2 is its single explanatory surface outside the picker and rail.
 
@@ -577,8 +576,8 @@ On a clipboard rejection (denied permission, insecure context) the app says noth
 
 ### 11.1 Metadata
 
-- Title: `Horoscode — What Kind of Software Engineer Are You in 2026?`
-- Description: *Pick five stars and get your engineering reading — one of eighteen signs, with a forecast for the gap between automation and verification. Free and browser-only.*
+- Title: `Horoscode — Forecast Your Future in Your Project`
+- Description: *Pick five stars to find your engineering sign and see whether your review process matches the stakes. Free, private, and browser-only.*
 - `metadataBase` from `NEXT_PUBLIC_SITE_URL`. Canonical `/`.
 - **Structured data:** `WebApplication` (`applicationCategory: DeveloperApplication`, `offers.price: "0"`, `publisher` → the VG Tech organisation node at `https://www.vgtc.io/#organization`), plus a two-item `BreadcrumbList`.
 - `robots: { index: true, follow: true }`.
@@ -619,7 +618,7 @@ One screen, no legalese, and accurate — which is the whole reason it exists.
 
 **Superseded by `github-pages-deployment.spec.md` §5.2.** The vendor sentence went with the vendor; the page now claims less, and all of it is true:
 
-> Horoscode stores nothing. Your five picks live in the page's address bar and nowhere else — there are no cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole of it.
+> Your reading stays with you. Your five picks appear in the page's address so you can share or revisit the reading. Horoscode uses no cookies, local storage, analytics, or accounts. Close the tab and nothing is left behind on your device by this site.
 
 ---
 
@@ -657,7 +656,7 @@ No test runner. `pnpm verify` runs `next typegen && tsc --noEmit`, `eslint .`, a
 - `serialise` round-trips over all 216 complete states plus every partial plus empty; parsing is a pure function of the URL.
 - **`serialise` emits exactly the five star params and no others**, and `parseState` drops every unrecognised key — the assertion that catches a sixth param being reintroduced by a feature that needs somewhere to put its state.
 - The reading and `summariseAsText` resolve the same sign name and epithet, and neither adds a Reference-derived modifier to it. *The share card was a third surface here until `github-pages-deployment.spec.md` §4.1 made it generic; it now names no sign at all, so there is nothing left to agree with (§8.1).*
-- Every `link.href` in the eighteen records resolves (HEAD request, run in CI only).
+- No record in `content/signs.ts` carries an outbound href, and no sign card or reading action renders one (§2).
 
 **Mechanical guards**
 - **No randomness**: grep `lib/`, `components/`, `content/`, `app/` for `Math.random`, `Date.now`, and `new Date`, failing on a hit.
@@ -689,12 +688,12 @@ The model in §6–§8 is fully specified here — every weight, band, matrix ce
 
 | Content | Canonical source |
 | --- | --- |
-| Sign names, epithets, taglines, bodies, lists, placement, and public links | `content/signs.ts` |
+| Sign names, epithets, taglines, bodies, lists, and placement | `content/signs.ts` |
 | The Believer's resolution rule and rationale | §8.3 and its record in `content/signs.ts` |
 
 Content maintenance follows three rules:
 
-1. **Public links stay absolute** — insight and service links use `https://www.vgtc.io/…`, with `target="_blank" rel="noopener"` at the rendering surface.
+1. **Records carry no links** — sign copy never points outward, to the firm or anywhere else (§2). The only outbound links on the site are in the bottom rule.
 2. **The record schema stays narrow** — each sign contains only the fields listed in §8.2. There is no second result taxonomy and there are no transits (§15).
 3. **Identifiers use the product vocabulary** — `Sign`, `SignId`, `SIGNS`, `resolveSign`, and `House`; string ids remain aligned with their `#sign-<id>` anchors.
 

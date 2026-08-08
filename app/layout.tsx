@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import Link from 'next/link'
-import { SITE_NAME, SITE_URL, TITLE } from '@/lib/site'
+import { HoroscodeMark } from '@/components/horoscode-mark'
+import { REPO_URL, SITE_NAME, SITE_URL, TITLE } from '@/lib/site'
 import './globals.css'
 
 // Two families, three weights of Inter and one of mono. Self-hosted at build
@@ -26,27 +27,16 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-/** The top bar (§9.1). Two elements: the wordmark, and after a muted separator
- *  a mono product name. No nav links, no button, and it scrolls away rather than
- *  sitting fixed, so the stage subtracts it only on first paint. */
+/** The top bar (§9.1). The firm's mark and a mono product name, nothing else:
+ *  no nav links, no button, and it scrolls away rather than sitting fixed, so
+ *  the stage subtracts it only on first paint. The mark is decorative — the
+ *  wordmark beside it is what a screen reader reads. */
 function TopBar() {
   return (
     <header className="border-b border-dashed border-border">
-      <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-3">
-        <a
-          href="https://vgtc.io"
-          rel="noopener"
-          aria-label="VG Tech Consulting"
-          className="inline-flex items-center min-h-11"
-        >
-          <span className="font-mono text-sm font-medium tracking-widest uppercase text-foreground">
-            VG<span className="text-muted-foreground">/</span>Tech
-          </span>
-        </a>
-        <span className="text-muted-foreground/50" aria-hidden="true">
-          /
-        </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+      <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-2.5">
+        <HoroscodeMark size={20} className="text-foreground shrink-0" />
+        <span className="font-mono text-sm font-medium tracking-widest uppercase text-foreground">
           {SITE_NAME}
         </span>
       </div>
@@ -54,9 +44,8 @@ function TopBar() {
   )
 }
 
-/** The bottom rule (§9.1). Year-free, so it never goes stale, and the only two
- *  inbound links into the firm are here and on the wordmark — both to the
- *  homepage. */
+/** The bottom rule (§9.1). Year-free, so it never goes stale, and the only
+ *  inbound link into the firm is here, to the homepage. */
 function BottomRule() {
   return (
     <footer className="border-t border-dashed border-border">
@@ -66,6 +55,13 @@ function BottomRule() {
           <Link href="/privacy" className="inline-flex items-center min-h-11 hover:text-foreground transition-colors">
             Privacy
           </Link>
+          <a
+            href={REPO_URL}
+            rel="noopener"
+            className="inline-flex items-center min-h-11 hover:text-foreground transition-colors"
+          >
+            GitHub
+          </a>
           <span className="inline-flex items-center min-h-11">
             A playground from VG Tech —&nbsp;
             <a href="https://vgtc.io" rel="noopener" className="hover:text-foreground transition-colors">

@@ -140,11 +140,12 @@ The page must not read search parameters on the server or during metadata genera
 
 The application ships one icon, `app/icon.svg`, picked up by Next as a static file convention rather than generated: it exports with a real extension, so unlike the share card in §4.1 it needs nothing from the postbuild finalizer.
 
-- The mark is the cross accent of `main.spec.md` §3.3 — the application's own glyph, not the firm's wordmark.
+- The mark is an astrolabe: a circle, an inscribed triangle whose three points sit on it, one chord across, and a fixed star at the upper vertex. It is the application's own glyph, not the firm's wordmark, and it is drawn on a 48-unit box.
 - One scalable file covers every size. It declares a `viewBox` and no pixel `width` or `height`, because a pinned size would be treated as a raster of that size and rejected for the larger slots.
-- The stroke is an eighth of the box rather than the hairline `components/cross-accent.tsx` draws, which is invisible at sixteen pixels.
+- The stroke is `2.8` on that box, thickened from the source drawing's `1.9`, which disappears at sixteen pixels.
 - The square is opaque. A favicon is composited onto browser chrome, launcher, and bookmark backgrounds the file cannot see, and a transparent glyph that inverts can land on its own colour.
-- Light and dark come from `prefers-color-scheme` inside the file, matching `app/globals.css`. The two fills are that palette's ends — `#ffffff` and `#000000` — spelled in hex, because an SVG icon is parsed on its own and cannot read the application's tokens. No third colour.
+- Light and dark come from `prefers-color-scheme` inside the file, matching `app/globals.css`. Ground and stroke are the palette's ends — `#ffffff` and `#0b0b0b` — and trade places on inversion, spelled in hex because an SVG icon is parsed on its own and cannot read the application's tokens.
+- The star is `#e23122` in both modes. That is the VGTC accent hue, inherited from the parent brand rather than invented here, and it does not invert — an accent that flips is not a brand colour. The interface itself stays achromatic under `main.spec.md` §3.1; the hue is the parent's, and this mark is where the application carries it. No fourth colour in the file.
 - `app/manifest.ts` declares it as the sole entry in `icons`, with `sizes: 'any'` and `type: 'image/svg+xml'`. A manifest with `display: 'standalone'` and no icons is not installable.
 
 Out of scope, and deliberately: an `apple-touch-icon`, which Safari will not accept as SVG and which would mean either a committed binary or a rasterizer this repository does not have.
@@ -203,7 +204,7 @@ Vercel Analytics is removed because its `/_vercel/insights/*` runtime endpoints 
 
 `/privacy/` must no longer claim that anonymous Vercel Analytics is collected. Its required meaning is:
 
-> Horoscode stores nothing. Your five picks live in the page's address bar and nowhere else — there are no cookies, no local storage, no analytics, and no accounts, so closing the tab is the whole of it.
+> Your reading stays with you. Your five picks appear in the page's address so you can share or revisit the reading. Horoscode uses no cookies, local storage, analytics, or accounts. Close the tab and nothing is left behind on your device by this site.
 
 The exact wrapping and typography remain governed by the main spec.
 
@@ -268,18 +269,16 @@ comment: a mutable major tag on a third-party action is a supply-chain decision 
 someone outside this repository. Dependabot's `github-actions` ecosystem moves the pin and
 the comment together.
 
-### 6.5 Outbound-link workflow
+### 6.5 No outbound-link workflow
 
-The outbound-link check does not run on pull requests. It reaches eighteen URLs on a host
-this repository does not control, so it fails for reasons no commit caused, and gating
-contributor pull requests on a third party's uptime turns a link-rot monitor into a build
-gate.
+Sign records carry no outbound link of their own (main spec §2), so there is nothing for a
+link-rot monitor to watch. The `CHECK_LINKS` gate, the weekly `links.yml` workflow, and the
+HEAD-request assertion were removed with the last href.
 
-- `scripts/verify.mjs` gates the check on `CHECK_LINKS`, not on `CI`.
-- `.github/workflows/links.yml` runs `pnpm verify` with `CHECK_LINKS=1` on a weekly
-  schedule and on `workflow_dispatch`, with `contents: read` and no upload.
-- Every other assertion in the harness stays on the pull-request path, where it belongs:
-  all of them are deterministic and depend on nothing outside the repository.
+The property that made them necessary is now structural rather than scheduled: every
+assertion in the harness is deterministic and depends on nothing outside the repository, so
+the whole of `pnpm verify` belongs on the pull-request path and no check can fail for a
+reason no commit caused.
 
 ---
 
@@ -332,7 +331,7 @@ Update `scripts/verify.mjs` to reflect the static share surface:
 - Remove `app/api/og/route.tsx` from the sign-name/epithet surface assertion.
 - Keep the assertion that the reading and `summariseAsText` resolve the same sign name and epithet without a Reference-derived modifier.
 - Use `https://horoscode.vgtc.io` wherever the harness needs a representative origin.
-- Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, target-size, and outbound-link assertions. The outbound-link check moves behind `CHECK_LINKS` and off the pull-request path (§6.5); it is not removed.
+- Keep all arithmetic, reachability, serialization, no-randomness, no-storage, copy, and target-size assertions. The outbound-link check is removed along with the hrefs it read (§6.5).
 - Add a guard that shipped application sources do not reference `@vercel/analytics`, `/_vercel/insights`, or `horoscode.dev`.
 - Add a guard that `next.config.mjs` sets neither `basePath` nor `assetPrefix`, so the build stays rooted at `/` (§1.1).
 - Assert the §3.4 icon: a `viewBox` and no pinned pixel size, an opaque ground, a `prefers-color-scheme` rule, no script, no fill outside the two palette ends, and a manifest entry naming it with `sizes: 'any'`.

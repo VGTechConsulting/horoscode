@@ -6,7 +6,10 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://horoscode.v
 
 export const SITE_NAME = 'Horoscode'
 
-export const TITLE = 'Horoscode — What Kind of Software Engineer Are You in 2026?'
+/** Public source repository — linked from the footer. */
+export const REPO_URL = 'https://github.com/VGTechConsulting/horoscode'
+
+export const TITLE = 'Horoscode — Forecast Your Future in Your Project'
 
 export const DESCRIPTION =
-  'Pick five stars and get your engineering reading — one of eighteen signs, with a forecast for the gap between automation and verification. Free and browser-only.'
+  'Pick five stars to find your engineering sign and see whether your review process matches the stakes. Free, private, and browser-only.'
