@@ -10,7 +10,7 @@
 // minimum height (§13), which is why the phrase is spelled out rather than
 // written as a tag even in a comment.
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowDown, ArrowLeft, Check, Copy, RotateCcw } from 'lucide-react'
 import { CrossAccent } from '@/components/cross-accent'
@@ -152,19 +152,21 @@ function StarRail({
   stamp,
   onSelect,
   onKeep,
+  onBack,
 }: {
   state: HoroscodeState
   activeSlot: SlotId | null
   stamp: Stamp | null
   onSelect: (slot: SlotId) => void
   onKeep: () => void
+  onBack: () => void
 }) {
   return (
     <div
       className="shrink-0 max-sm:order-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-background"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <RailStrip state={state} activeSlot={activeSlot} onKeep={onKeep} />
+      <RailStrip state={state} activeSlot={activeSlot} onKeep={onKeep} onBack={onBack} />
       <nav
         aria-label="Your five stars"
         className="grid grid-cols-5 border-dashed border-border max-sm:border-t sm:border-b"
@@ -258,19 +260,23 @@ function StarRail({
 }
 
 /** Phone only: one line directly above the rail that says what the stage is
- *  doing, so the answer to a rail tap sits next to the thumb that made it. On a
- *  revisited star it also offers the way out without changing anything. The
- *  live region already announces the phase, so the text is not read twice. */
+ *  doing, so the answer to a rail tap sits next to the thumb that made it. It
+ *  also carries Back, and on a revisited star the way out without changing
+ *  anything, so the phone needs no second bar under the rail. The live region
+ *  already announces the phase, so the text is not read twice. */
 function RailStrip({
   state,
   activeSlot,
   onKeep,
+  onBack,
 }: {
   state: HoroscodeState
   activeSlot: SlotId | null
   onKeep: () => void
+  onBack: () => void
 }) {
   const value = activeSlot ? state[activeSlot] : null
+  const canGoBack = activeSlot !== null && SLOT_ORDER.indexOf(activeSlot) > 0
   const message =
     activeSlot === null
       ? 'Tap a star to change it'
@@ -279,10 +285,20 @@ function RailStrip({
         : `Picking ${SLOTS[activeSlot].axis}`
 
   return (
-    <div className="sm:hidden flex items-center justify-between gap-3 min-h-11 px-5 border-t border-dashed border-border">
+    <div className="sm:hidden flex items-center gap-3 min-h-11 px-5 border-t border-dashed border-border">
+      {canGoBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Back"
+          className="horoscode-target inline-flex items-center justify-center min-h-11 min-w-11 -ml-5 shrink-0 text-muted-foreground cursor-pointer"
+        >
+          <ArrowLeft size={13} aria-hidden="true" />
+        </button>
+      )}
       <span
         aria-hidden="true"
-        className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground truncate"
+        className="flex-1 min-w-0 font-mono text-[10px] uppercase tracking-widest text-muted-foreground truncate"
       >
         {message}
       </span>
@@ -364,12 +380,16 @@ function PickPhase({
           {slot.helper}
         </p>
       )}
+      {/* On a phone the options sit on the rail, not under the question: a
+          question that runs to three lines moves only itself, and the last
+          option ends at the same height on every step, under the same thumb. */}
+      <div aria-hidden="true" className="sm:hidden flex-1 min-h-4" />
       <div
         ref={groupRef}
         role="group"
         aria-labelledby={labelId}
         onKeyDown={onKeyDown}
-        className={`grid grid-cols-1 ${OPTION_GRID[slotId]} border border-dashed border-border mt-4 md:mt-8`}
+        className={`grid grid-cols-1 ${OPTION_GRID[slotId]} border border-dashed border-border sm:mt-4 md:mt-8`}
       >
         {slot.options.map((option, i) => {
           const isCurrent = option.value === value
@@ -519,6 +539,10 @@ function Reading({
 
 // ─── The island ─────────────────────────────────────────────────────────────
 
+function viewportBottom(node: HTMLElement | null): number | null {
+  return node ? node.getBoundingClientRect().bottom : null
+}
+
 export function Horoscode() {
   const router = useRouter()
   const uid = useId()
@@ -540,6 +564,10 @@ export function Horoscode() {
   // straight to the reading, so it is one tap, one tap, done (§9.4).
   const returnToReadingRef = useRef(false)
   const movedRef = useRef(false)
+  // Where the stage's bottom edge — and so the phone's rail — sat on screen at
+  // the moment of the tap that moved the phase, read before the new phase
+  // renders so the layout effect can put it back in the same place.
+  const railAnchorRef = useRef<number | null>(null)
 
   const stageRef = useRef<HTMLDivElement | null>(null)
   const firstOptionRef = useRef<HTMLButtonElement | null>(null)
@@ -606,18 +634,43 @@ export function Horoscode() {
   // Focus follows the phase: the new group's first option, or the current choice
   // when a filled slot is revisited, or the sign heading on the reading. Never
   // on the initial render, which would steal focus from the page (§4.5).
-  useEffect(() => {
+  //
+  // A layout effect, so a phone's correction lands before the new phase is
+  // painted: the stage changes height between a question and the reading, and
+  // correcting after paint shows the rail leaping away and sliding back.
+  useLayoutEffect(() => {
     if (!hydrated || !movedRef.current) return
     // A viewport-height stage only means something when it is at the viewport,
     // and the browser's own focus scroll only guarantees the focused element is
     // visible. Skipped when already within a pixel, and skipped entirely under
     // reduced motion.
+    //
+    // A phone is the exception: there the rail sits under the thumb and must
+    // not move. The stage's bottom edge goes back exactly where it was on screen
+    // when the tap landed, instantly, so only the content above the rail
+    // changes. When the rail was pinned to the bottom of the screen and the
+    // reading arrives, nothing scrolls at all — the stage outgrows the screen
+    // and the sticky rail stays put, with the reading filling in above it.
     const stage = stageRef.current
     if (stage) {
-      const top = stage.getBoundingClientRect().top + window.scrollY
+      const rect = stage.getBoundingClientRect()
+      const phone = window.matchMedia('(max-width: 639px)').matches
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (Math.abs(window.scrollY - top) > 1) {
-        window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
+      if (phone) {
+        const anchor = Math.min(railAnchorRef.current ?? window.innerHeight, window.innerHeight)
+        const pinned = anchor >= window.innerHeight - 1
+        if (activeSlot !== null || !pinned) {
+          const max = document.documentElement.scrollHeight - window.innerHeight
+          const target = Math.min(Math.max(0, rect.bottom + window.scrollY - anchor), max)
+          if (Math.abs(window.scrollY - target) > 1) {
+            window.scrollTo({ top: target, behavior: 'auto' })
+          }
+        }
+      } else {
+        const target = rect.top + window.scrollY
+        if (Math.abs(window.scrollY - target) > 1) {
+          window.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' })
+        }
       }
     }
     const target =
@@ -628,6 +681,7 @@ export function Horoscode() {
   const pick = useCallback((slotId: SlotId, value: string) => {
     dirtyRef.current = true
     movedRef.current = true
+    railAnchorRef.current = viewportBottom(stageRef.current)
     track('horoscode_pick', { slot: slotId, trait: value, index: SLOT_ORDER.indexOf(slotId) })
 
     const next = { ...stateRef.current, [slotId]: value } as HoroscodeState
@@ -651,6 +705,7 @@ export function Horoscode() {
     (slotId: SlotId) => {
       if (stateRef.current[slotId] === null) return
       movedRef.current = true
+      railAnchorRef.current = viewportBottom(stageRef.current)
       currentOptionRef.current = null
       returnToReadingRef.current = activeSlot === null
       setActiveSlot(slotId)
@@ -662,6 +717,7 @@ export function Horoscode() {
   const escape = useCallback(() => {
     if (!returnToReadingRef.current || !isComplete(stateRef.current)) return
     movedRef.current = true
+    railAnchorRef.current = viewportBottom(stageRef.current)
     returnToReadingRef.current = false
     currentOptionRef.current = null
     setActiveSlot(null)
@@ -672,6 +728,7 @@ export function Horoscode() {
   const keep = useCallback(() => {
     const current = stateRef.current
     movedRef.current = true
+    railAnchorRef.current = viewportBottom(stageRef.current)
     returnToReadingRef.current = false
     currentOptionRef.current = null
     setActiveSlot(isComplete(current) ? null : firstEmptySlot(current))
@@ -682,6 +739,7 @@ export function Horoscode() {
     const index = SLOT_ORDER.indexOf(activeSlot)
     if (index <= 0) return
     movedRef.current = true
+    railAnchorRef.current = viewportBottom(stageRef.current)
     currentOptionRef.current = null
     returnToReadingRef.current = false
     setActiveSlot(SLOT_ORDER[index - 1])
@@ -692,6 +750,7 @@ export function Horoscode() {
   const readAgain = useCallback(() => {
     dirtyRef.current = false
     movedRef.current = true
+    railAnchorRef.current = viewportBottom(stageRef.current)
     returnToReadingRef.current = false
     currentOptionRef.current = null
     stateRef.current = { ...EMPTY_STATE }
@@ -726,15 +785,15 @@ export function Horoscode() {
 
   return (
     <>
-      <section className="border-b border-dashed border-border">
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="border-b border-dashed border-border max-sm:flex-1 max-sm:flex max-sm:flex-col">
+        <div className="max-w-5xl w-full mx-auto px-6 max-sm:flex-1 max-sm:flex max-sm:flex-col">
           {/* svh rather than vh: on mobile Safari `100vh` is the URL-bar-hidden
               height and would push the last option under the browser chrome.
               3rem is the top bar, which scrolls away rather than sitting fixed,
               so the stage subtracts it only on first paint (§4.1). */}
           <div
             ref={stageRef}
-            className="flex flex-col min-h-[calc(100svh-3rem)] border-x border-dashed border-border"
+            className="flex flex-col max-sm:flex-1 sm:min-h-[calc(100svh-3rem)] border-x border-dashed border-border"
           >
             <StarRail
               state={state}
@@ -742,6 +801,7 @@ export function Horoscode() {
               stamp={stamp}
               onSelect={jumpToSlot}
               onKeep={keep}
+              onBack={back}
             />
 
             {/* One region, announcing the phase the stage moved to (§4.5). */}
@@ -770,7 +830,7 @@ export function Horoscode() {
               )}
             </div>
 
-            <div className="shrink-0 border-t border-dashed border-border px-5 py-2.5 md:px-10 md:py-3 max-sm:order-3">
+            <div className="max-sm:hidden shrink-0 border-t border-dashed border-border px-5 py-2.5 md:px-10 md:py-3">
               <div className="flex items-center justify-between gap-4">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                   {activeSlot === null
