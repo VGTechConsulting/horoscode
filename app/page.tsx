@@ -138,34 +138,40 @@ export default function Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema()) }}
       />
 
-      {/* Hero — a band, not a screen: the stage must be reachable with one
-          flick (§9.2). */}
-      <section className="border-b border-dashed border-border">
-        <div className="max-w-5xl mx-auto px-6 py-8 md:py-10">
-          <div className="flex items-center gap-3 mb-5">
-            <CrossAccent size={8} />
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Five stars, one sign
-            </span>
+      {/* On a phone the hero and the stage share the first screen: the hero
+          shrinks to a title and the honesty line, and the stage takes whatever
+          height is left, so the first pick is on screen without scrolling and
+          nothing jumps when it is made. */}
+      <div className="max-sm:flex max-sm:flex-col max-sm:min-h-[calc(100svh-3rem)]">
+        {/* Hero — a band, not a screen: the stage must be reachable with one
+            flick (§9.2). */}
+        <section className="border-b border-dashed border-border">
+          <div className="max-w-5xl mx-auto px-6 py-5 sm:py-8 md:py-10">
+            <div className="max-sm:hidden flex items-center gap-3 mb-5">
+              <CrossAccent size={8} />
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                Five stars, one sign
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-light tracking-tight text-foreground text-balance mb-2 sm:mb-4">
+              Forecast your future
+              <br />
+              <span className="font-semibold">in your project</span>
+            </h1>
+            <p className="max-sm:hidden text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl font-light">
+              Choose how the code is written, reviewed, and judged; who controls the standard; and
+              what happens if it breaks. Your five answers map to one of eighteen signs.
+            </p>
+            {/* The honesty line, above the fold, mono (§1.1). */}
+            <p className="font-mono text-[10px] text-muted-foreground/80 leading-relaxed max-w-2xl sm:mt-4">
+              No stars were consulted. Five picks, one lookup table, and arithmetic you can read in
+              the source.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-light tracking-tight text-foreground text-balance mb-4">
-            Forecast your future
-            <br />
-            <span className="font-semibold">in your project</span>
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl font-light">
-            Choose how the code is written, reviewed, and judged; who controls the standard; and
-            what happens if it breaks. Your five answers map to one of eighteen signs.
-          </p>
-          {/* The honesty line, above the fold, mono (§1.1). */}
-          <p className="font-mono text-[10px] text-muted-foreground/80 leading-relaxed max-w-2xl mt-4">
-            No stars were consulted. Five picks, one lookup table, and arithmetic you can read in
-            the source.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      <Horoscode />
+        <Horoscode />
+      </div>
 
       {/* The sign catalogue — server-rendered, and the reason the page is
           indexable: a tool whose content is entirely behind client state gives a
