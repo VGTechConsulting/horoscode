@@ -126,6 +126,43 @@
   .horoscode-pip {
     animation: horoscode-pip 60ms ease-out both;
   }
+  /* A pick lands on the rail: the slot's box swells once and settles, so the
+     choice visibly goes somewhere rather than the stage just moving on. */
+  .horoscode-stamp {
+    animation: horoscode-stamp 260ms ease-out both;
+  }
+  /* The active rail slot's underline starts as a short tick and runs out to the
+     label's width, fast then settling (ease-out-quint). */
+  .horoscode-underline {
+    animation: horoscode-underline 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes horoscode-underline {
+  0% {
+    transform: scaleX(0.12);
+    opacity: 0;
+  }
+  15% {
+    transform: scaleX(0.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes horoscode-stamp {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes horoscode-fade {
